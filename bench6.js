@@ -56,7 +56,7 @@ function score(p, t) {
 
 const llmId = await sdk.loadModel({ modelSrc: sdk[MODEL_NAME] });
 let nmtId = null;
-if (MODE === 'traducido') nmtId = await sdk.loadModel({ modelSrc: sdk.BERGAMOT_ES_EN });
+if (MODE === 'traducido') nmtId = await sdk.loadModel({ modelSrc: sdk.BERGAMOT_ES_EN, modelConfig: { engine: 'Bergamot', from: 'es', to: 'en' } });
 
 console.log(`modo: ${MODE} | extractor: ${MODEL_NAME}${nmtId ? ' | traductor: BERGAMOT_ES_EN' : ''}\n`);
 
@@ -69,8 +69,8 @@ for (let i = 0; i < CASES.length; i++) {
 
   if (MODE === 'traducido') {
     const tt = Date.now();
-    const r = await sdk.translate({ modelId: nmtId, text: CASES[i].es, from: 'es', to: 'en', stream: false });
-    translated = (r.text || r.translations?.[0] || '').trim();
+    const r = await sdk.translate({ modelId: nmtId, text: CASES[i].es, from: 'es', to: 'en', stream: false, modelType: 'nmt' });
+    translated = String(await r.text ?? '').trim();
     trMs += Date.now() - tt;
     note = translated; system = SYSTEM_EN;
   }

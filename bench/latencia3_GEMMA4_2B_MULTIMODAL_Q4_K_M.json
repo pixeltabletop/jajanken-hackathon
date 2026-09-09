@@ -1,0 +1,32 @@
+{
+  "model": "GEMMA4_2B_MULTIMODAL_Q4_K_M",
+  "variantes": [
+    {
+      "variante": "A completo",
+      "prompt": 499,
+      "salida": 128,
+      "ttft": 2032,
+      "tps": 8.9,
+      "total_ms": 17227,
+      "muestra": "{\"facility\":\"Hospital DemoCare Pacific\",\"city\":\"Panama\",\"country\":null,\"equipment\":[{\"modality\":\"MR\",\"quantity\":2,\"quantity_is_estimate\":false,\"brand\":null,\"model\":null,\"approx_age_years\":null,\"age_qualitative\":null,\"confidence\":\"Medium\",\"status\":\"Confirmed\",\"evidence\":\"Tienen dos resonadores\"},{\"modality\":\"CT\",\"quantity\":1,\"quantity_is_estimate\":false,\"brand\":null,\"model\":null,\"approx_age_years\":null,\"age_qualitative\":null,\"confidence\":\"Medium\",\"status\":\"Confirmed\",\"evidence\":\"y un tomografo\"}],\"missing_fields\":[]}"
+    },
+    {
+      "variante": "E compacto",
+      "prompt": 352,
+      "salida": 102,
+      "ttft": 1367,
+      "tps": 9.1,
+      "total_ms": 13236,
+      "muestra": "{\"f\": \"Hospital DemoCare Pacific\", \"eq\": [{\"m\": 0, \"q\": 2, \"e\": true, \"b\": -1, \"a\": null, \"c\": 0, \"s\": 0, \"ev\": \"dos resonadores\"}, {\"m\": 1, \"q\": 1, \"e\": false, \"b\": -1, \"a\": null, \"c\": 0, \"s\": 0, \"ev\": \"un tomografo\"}]}"
+    },
+    {
+      "variante": "E compacto + cache",
+      "prompt": 37,
+      "salida": 73,
+      "ttft": 343,
+      "tps": 9.2,
+      "total_ms": 9205,
+      "muestra": "{\"f\": \"Hospital DemoCare Pacific\", \"eq\": [{\"m\": 0, \"q\": 2, \"e\": true, \"b\": -1, \"a\": null, \"c\": 0, \"s\": 0, \"ev\": \"dos resonadores y un tomografo\"}]}"
+    }
+  ]
+}
