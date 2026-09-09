@@ -26,8 +26,20 @@ export interface Equipment {
   notes: string | null
 }
 
+/** Una versión anterior de la observación, guardada al editarla. */
+export interface Revision {
+  /** Cuándo se hizo el cambio, no cuándo fue la visita. */
+  at: string
+  by: string
+  /** Descripción legible de qué cambió, calculada al guardar. */
+  changes: string[]
+  /** La observación tal como estaba antes del cambio. */
+  before: Omit<Observation, 'history'>
+}
+
 export interface Observation {
   id: string
+  /** Fecha de la visita (Visit Date en el workbook de Philips). */
   createdAt: string
   observer: string
   source: Source
@@ -39,7 +51,11 @@ export interface Observation {
   country: string | null
   equipment: Equipment[]
   missingFields: string[]
+  /** Respuesta del técnico a la pregunta de seguimiento (columna 18 de Philips). */
+  followUpAnswer?: string | null
   reviewed: boolean
+  /** Historial de cambios, más reciente primero. Vacío si nunca se editó. */
+  history?: Revision[]
 }
 
 export interface Customer {

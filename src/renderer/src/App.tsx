@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import './assets/components.css'
+import { DEFAULT_COLUMNS, type ColumnKey } from '../../shared/columns.ts'
 import type { TimingTable } from '../../shared/timings.ts'
 import type { TranscriptFix } from '../../shared/transcript.ts'
 import type { DedupResult, ModelStatus, Observation, QueryFilter } from '../../shared/types.ts'
@@ -9,6 +10,7 @@ import { Dashboard } from './components/Dashboard.tsx'
 import { Footer } from './components/Footer.tsx'
 import { GuideSection } from './components/GuideSection.tsx'
 import { Header } from './components/Header.tsx'
+import { ReportsSection } from './components/ReportsSection.tsx'
 import { Review } from './components/Review.tsx'
 import { Stats } from './components/Stats.tsx'
 import { call } from './lib/api.ts'
@@ -40,6 +42,8 @@ export default function App(): JSX.Element {
   const [level, setLevel] = useState(0)
   const [message, setMessage] = useState(MSG_LOADING)
   const [filter, setFilter] = useState<QueryFilter>(EMPTY_FILTER)
+  const [columns, setColumns] = useState<ColumnKey[]>(DEFAULT_COLUMNS)
+  const [operator, setOperator] = useState('Técnico de campo')
 
   const recorder = useRef(new WavRecorder())
   const textFromVoice = useRef(false)
@@ -61,6 +65,7 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (!hasApi) return
     call(window.api.list()).then(setObservations).catch((e: Error) => setMessage(e.message))
+    call(window.api.settingsGet()).then((s) => setOperator(s.operator)).catch(() => undefined)
     refreshTimings()
     refreshCities()
   }, [hasApi, refreshTimings, refreshCities])
@@ -99,6 +104,11 @@ export default function App(): JSX.Element {
   const rows = useMemo(() => applyFilter(flatten(observations), filter), [observations, filter])
 
   const onText = useCallback((t: string) => { textFromVoice.current = false; setFixes([]); setText(t) }, [])
+
+  const onOperator = useCallback((o: string) => {
+    setOperator(o)
+    if (hasApi) void call(window.api.settingsSet({ operator: o })).catch(() => undefined)
+  }, [hasApi])
 
   const fail = (e: unknown): void => setMessage(e instanceof Error ? e.message : String(e))
 
@@ -230,7 +240,15 @@ export default function App(): JSX.Element {
           onChange={setDraft} onSave={onSave} onDiscard={onDiscard} onCancelWait={onCancelWait}
         />
       </div>
-      <Dashboard observations={observations} filter={filter} onFilter={setFilter} onEdit={onEdit} editingId={editingId} />
+      <Dashboard
+        observations={observations} filter={filter} onFilter={setFilter}
+        columns={columns} onColumns={setColumns}
+        onEdit={onEdit} editingId={editingId}
+      />
+      <ReportsSection
+        observations={observations} filter={filter} columns={columns}
+        operator={operator} onOperator={onOperator} rowsShown={rows.length}
+      />
       <GuideSection timings={timings} />
       <Footer />
     </main>

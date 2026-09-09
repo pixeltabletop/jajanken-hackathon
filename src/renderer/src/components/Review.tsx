@@ -5,6 +5,7 @@ import { DuplicateAlert } from './DuplicateAlert.tsx'
 import { EquipmentRow } from './EquipmentRow.tsx'
 import { EvidenceHighlight } from './EvidenceHighlight.tsx'
 import { FollowUp } from './FollowUp.tsx'
+import { HistoryPanel } from './HistoryPanel.tsx'
 import { HelpTip } from './HelpTip.tsx'
 import { LocationFields } from './LocationFields.tsx'
 import { Progress } from './Progress.tsx'
@@ -96,6 +97,16 @@ export function Review(p: Props): JSX.Element {
               onCountry={(country) => p.onChange({ ...d, country })}
               onCity={(city) => p.onChange({ ...d, city })}
             />
+            <label htmlFor="rv-o">Observador
+              <input id="rv-o" value={d.observer} onChange={(e) => p.onChange({ ...d, observer: e.target.value })} />
+            </label>
+            <label htmlFor="rv-d">Fecha de visita
+              <input id="rv-d" type="date" value={d.createdAt.slice(0, 10)} onChange={(e) => {
+                const createdAt = e.target.value || d.createdAt
+                const year = Number(createdAt.slice(0, 4))
+                p.onChange({ ...d, createdAt, equipment: d.equipment.map((e2) => ({ ...e2, installYearEstimate: e2.approxAgeYears !== null ? year - e2.approxAgeYears : null })) })
+              }} />
+            </label>
           </div>
 
           <div className="eq-list">
@@ -108,7 +119,14 @@ export function Review(p: Props): JSX.Element {
           </div>
 
           <FollowUp missingFields={d.missingFields} />
+          {d.missingFields.length > 0 && (
+            <label className="followup-answer" htmlFor="rv-fa">Respuesta del técnico a esa pregunta
+              <input id="rv-fa" value={d.followUpAnswer ?? ''} placeholder="Lo que contestó, tal cual" onChange={(e) => p.onChange({ ...d, followUpAnswer: e.target.value.trim() || null })} />
+            </label>
+          )}
           <DuplicateAlert result={p.dedup} loading={p.dedupLoading} chosen={p.chosenCustomer} facility={d.facility} onChoose={p.onChooseCustomer} />
+
+          {p.editing && <HistoryPanel obs={d} />}
 
           {p.warnings.length > 0 && <aside role="note"><b>Avisos del extractor:</b> {p.warnings.join(' · ')}</aside>}
 

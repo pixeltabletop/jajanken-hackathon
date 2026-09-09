@@ -4,8 +4,9 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { diffObservation } from '../shared/reports.ts'
 import { record, type TimingKey, type TimingTable } from '../shared/timings.ts'
-import type { Customer, Equipment, Observation } from '../shared/types.ts'
+import type { Customer, Equipment, Observation, Revision } from '../shared/types.ts'
 import type { VectorCache } from './qvac/dedup.ts'
 
 export interface StoreOptions {
@@ -66,8 +67,10 @@ export function createStore(opts: StoreOptions) {
   const obsPath = join(opts.userDataDir, 'observations.json')
   const vecPath = join(opts.userDataDir, 'embeddings.json')
   const timePath = join(opts.userDataDir, 'timings.json')
+  const setPath = join(opts.userDataDir, 'settings.json')
   let observations: Observation[] | null = null
   let timings: TimingTable | null = null
+  let settings: { operator: string } | null = null
 
   async function loadSeeds(): Promise<Observation[]> {
     const out: Observation[] = []
@@ -97,13 +100,44 @@ export function createStore(opts: StoreOptions) {
       return [...(await ensureLoaded())]
     },
 
-    async save(obs: Observation): Promise<Observation[]> {
+    /**
+     * Guarda una observación. Si ya existía, calcula qué cambió y lo apila en
+     * `history` antes de reemplazarla: editar nunca borra lo anterior, porque
+     * la trazabilidad de las correcciones es parte de la confianza en el dato.
+     */
+    async save(obs: Observation, by = 'Técnico de campo'): Promise<Observation[]> {
       const all = await ensureLoaded()
       const i = all.findIndex((o) => o.id === obs.id)
-      if (i >= 0) all[i] = obs
-      else all.push(obs)
+      let next = obs
+      if (i >= 0) {
+        const before = all[i]
+        const changes = diffObservation(before, obs)
+        if (changes.length) {
+          const { history: _drop, ...snapshot } = before
+          const rev: Revision = { at: new Date().toISOString(), by, changes, before: snapshot }
+          next = { ...obs, history: [rev, ...(before.history ?? [])].slice(0, 50) }
+        } else {
+          next = { ...obs, history: before.history ?? [] }
+        }
+        all[i] = next
+      } else {
+        all.push(next)
+      }
       await writeFile(obsPath, JSON.stringify(all, null, 2))
       return [...all]
+    },
+
+    async getSettings(): Promise<{ operator: string }> {
+      settings ??= await readJson<{ operator: string }>(setPath, { operator: 'Técnico de campo' })
+      return settings
+    },
+
+    async setSettings(patch: Partial<{ operator: string }>): Promise<{ operator: string }> {
+      const current = await this.getSettings()
+      settings = { ...current, ...patch }
+      await mkdir(opts.userDataDir, { recursive: true })
+      await writeFile(setPath, JSON.stringify(settings, null, 2))
+      return settings
     },
 
     /** Clientes únicos por nombre canónico, para Whisper y para deduplicación. */

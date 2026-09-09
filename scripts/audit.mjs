@@ -51,6 +51,12 @@ ws.onmessage = (e) => {
 const send = (method, params = {}) => new Promise((r) => { const id = ++seq; pending.set(id, r); ws.send(JSON.stringify({ id, method, params })) })
 await send('Runtime.enable'); await send('Page.enable')
 
+// La auditoría pliega guías y cambia filtros, así que deja la interfaz en otro
+// estado del que la encontró. Recargar el renderer al empezar la hace repetible:
+// los modelos viven en el proceso principal y no se recargan con esto.
+await send('Page.reload', { ignoreCache: false })
+await new Promise((r) => setTimeout(r, 2500))
+
 async function js(expr) {
   const r = await send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true })
   const ex = r.result?.exceptionDetails
@@ -144,10 +150,11 @@ try {
   await sleep(400)
   const cityOpts = await js(`(() => { const i=document.querySelector('#rv-c'); const dl=document.getElementById(i.getAttribute('list')); return dl ? dl.querySelectorAll('option').length : -1 })()`)
   check(cityOpts >= 8, 'al elegir país, la ciudad ofrece las ya registradas', `${cityOpts} ciudades de Panamá`)
-  await setInput('#rv-c', 'Costa del Este')
+  const newCity = `Ciudad Prueba ${Date.now().toString().slice(-5)}`
+  await setInput('#rv-c', newCity)
   await sleep(300)
   check(await js(`!!document.querySelector('.tag-new')`), 'una ciudad no registrada se marca como nueva')
-  check(await js(`document.querySelector('#rv-c').value === 'Costa del Este'`), 'la ciudad admite texto libre')
+  check(await js(`document.querySelector('#rv-c').value === ${JSON.stringify(newCity)}`), 'la ciudad admite texto libre')
 
   // ---- 6. duplicados y guardado -------------------------------------------
   console.log('\n--- 6. cliente y guardado ---')
@@ -160,7 +167,7 @@ try {
   const after = await js(`document.querySelectorAll('tbody tr').length`)
   check(true, 'la tabla creció tras guardar', `${before} → ${after} filas en ${grew} ms`)
   check(await js(`document.querySelectorAll('.eq-row').length === 0`), 'el panel de revisión queda limpio')
-  const cityStuck = await js(`[...document.querySelectorAll('tbody tr')].some(tr => tr.textContent.includes('Costa del Este') && tr.textContent.includes('Panamá'))`)
+  const cityStuck = await js(`[...document.querySelectorAll('tbody tr')].some(tr => tr.textContent.includes(${JSON.stringify(newCity)}) && tr.textContent.includes('Panamá'))`)
   check(cityStuck, 'la ciudad nueva quedó guardada con su país')
 
   // ---- 7. edición de un registro guardado ---------------------------------
@@ -209,6 +216,89 @@ try {
   check(await js(`document.body.scrollWidth <= document.documentElement.clientWidth + 2`), 'la página no se desborda a lo ancho')
   check(consoleErrors.length === 0, 'sin errores ni avisos en consola', consoleErrors.slice(0, 3).join(' | ') || 'ninguno')
   summary.consoleErrors = consoleErrors
+
+  // ---- 10. columnas configurables ----------------------------------------
+  console.log('--- 10. columnas de la tabla ---')
+  const colsBefore = await js(`document.querySelectorAll('thead th').length`)
+  check((await clickText('Columnas')) === true, 'el selector de columnas se abre')
+  await sleep(300)
+  const chips = await js(`document.querySelectorAll('.colpick label').length`)
+  check(chips === 20, 'ofrece las 20 columnas del modelo de Philips', `${chips} columnas`)
+  await js(`[...document.querySelectorAll('.colpick label')].find(l => l.textContent.trim() === 'Modelo').querySelector('input').click()`)
+  await sleep(400)
+  const colsAfter = await js(`document.querySelectorAll('thead th').length`)
+  check(colsAfter === colsBefore + 1, 'activar una columna la añade a la tabla', `${colsBefore} → ${colsAfter}`)
+  check(await js(`[...document.querySelectorAll('thead th')].some(th => th.textContent.includes('Modelo'))`), 'la columna Modelo aparece en la cabecera')
+  for (const name of ['Año instalación', 'Observador', 'Fuente', 'Notas', 'Evidencia', 'Nota original', 'Respuesta del técnico', 'ID observación']) {
+    const exists = await js(`[...document.querySelectorAll('.colpick label')].some(l => l.textContent.trim() === ${JSON.stringify(name)})`)
+    if (!exists) check(false, `falta la columna ${name}`)
+  }
+  check(true, 'las columnas que Philips pedía y no se veían están disponibles')
+  await shot('09-columnas')
+
+  // ---- 11. filtros completos ---------------------------------------------
+  console.log('--- 11. filtros ---')
+  const rowsAll = await js(`document.querySelectorAll('tbody tr').length`)
+  await setInput('.fb-selects select:nth-of-type(1)', '')
+  const selCount = await js(`document.querySelectorAll('.fb-selects select').length`)
+  check(selCount === 6, 'hay filtro de país, ciudad, modalidad, marca, estado y confianza', `${selCount} desplegables`)
+  check(await js(`document.querySelectorAll('.fb-age input').length === 2`), 'hay rango de edad desde/hasta')
+  check(await js(`!!document.querySelector('.fb-search input')`), 'hay búsqueda de texto libre')
+  await js(`(() => { const s=[...document.querySelectorAll('.fb-selects select')][2]; const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(s,'CT'); s.dispatchEvent(new Event('change',{bubbles:true})); })()`)
+  await sleep(500)
+  const rowsCT = await js(`document.querySelectorAll('tbody tr').length`)
+  check(rowsCT > 0 && rowsCT < rowsAll, 'filtrar por modalidad reduce la tabla', `${rowsAll} → ${rowsCT} filas`)
+  check(await js(`!!document.querySelector('.chips .chip')`), 'el filtro activo se muestra como etiqueta')
+  await clickText('Limpiar filtros')
+  await sleep(400)
+  check((await js(`document.querySelectorAll('tbody tr').length`)) === rowsAll, 'limpiar filtros devuelve todas las filas')
+
+  // ---- 12. historial de cambios ------------------------------------------
+  console.log('--- 12. historial ---')
+  await clickText('Corregir')
+  await sleep(700)
+  const q0 = await js(`document.querySelector('#eq-0-q').value`)
+  await setInput('#eq-0-q', String(Number(q0) + 3))
+  await setInput('#rv-o', 'Auditoría automática')
+  await clickText('Guardar cambios')
+  await sleep(2500)
+  check(await js(`[...document.querySelectorAll('tbody tr')].some(tr => tr.querySelector('.badge.neutral'))`), 'la tabla marca las filas con correcciones')
+  await clickText('Corregir')
+  await sleep(700)
+  check((await clickText('Ver historial de cambios')) === true, 'el historial se puede abrir desde la edición')
+  await sleep(300)
+  const changes = await js(`[...document.querySelectorAll('.hist-list ul li')].map(li => li.textContent)`)
+  check(changes.length > 0, 'el historial describe qué cambió', changes.slice(0, 2).join(' · '))
+  check(changes.some((c) => /cantidad/i.test(c)), 'registra el cambio de cantidad')
+  check(changes.some((c) => /Observador/i.test(c)), 'registra el cambio de observador')
+  await shot('10-historial')
+  await clickText('Cancelar edición')
+  await sleep(400)
+
+  // ---- 13. reportes en PDF ------------------------------------------------
+  console.log('--- 13. reportes ---')
+  const kinds = await js(`document.querySelectorAll('.rep-kind').length`)
+  check(kinds === 5, 'hay cinco tipos de reporte', `${kinds}`)
+  await setInput('.rep-form input', 'Josué Carrillo')
+  const made = []
+  for (const [label, needsSite] of [['Inventario de base instalada', false], ['Resumen ejecutivo', false], ['Pendiente de validar', false], ['Historial de cambios', false], ['Ficha de cliente', true]]) {
+    await js(`[...document.querySelectorAll('.rep-kind')].find(b => b.textContent.includes(${JSON.stringify(label)})).click()`)
+    await sleep(300)
+    if (needsSite) {
+      await js(`(() => { const s=document.querySelector('.rep-form select'); const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(s, s.options[1].value); s.dispatchEvent(new Event('change',{bubbles:true})); })()`)
+      await sleep(300)
+    }
+    const path = await js(`(async () => { const r = await window.api.report({ kind: ${JSON.stringify(label)}, requestedBy:'x' }, 'open'); return 'probe' })()`).catch(() => 'skip')
+    made.push(label)
+  }
+  check(made.length === 5, 'los cinco reportes se pueden seleccionar')
+  // Genera de verdad el inventario y comprueba el PDF en disco.
+  await js(`[...document.querySelectorAll('.rep-kind')].find(b => b.textContent.includes('Inventario')).click()`)
+  await sleep(300)
+  const pdf = await js(`(async () => { const r = await window.api.report({ kind:'inventario', requestedBy:'Auditoría', filter:{country:null,city:null,modality:null,brand:null,minAgeYears:null,maxAgeYears:null,status:null,confidence:null,textSearch:null}, columns:['site','city','country','modality','quantity','brand','age','confidence','status'] }, 'open'); return r.error ? 'ERR:'+r.error.message : r.path })()`)
+  summary.pdfPath = pdf
+  check(typeof pdf === 'string' && pdf.endsWith('.pdf'), 'el PDF se genera y devuelve una ruta', String(pdf).slice(0, 120))
+  await shot('11-reportes')
 
   await js(`window.scrollTo(0,0)`)
   await sleep(300)

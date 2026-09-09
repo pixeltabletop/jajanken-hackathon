@@ -71,6 +71,9 @@ export function EquipmentRow({ index, eq, onChange, onRemove }: Props): JSX.Elem
           </select>
         </label>
       </div>
+      <label className="eq-notes" htmlFor={id('n')}>Notas
+        <input id={id('n')} value={eq.notes ?? ''} placeholder="Lo que notaste y no cabe en un campo" onChange={(e) => onChange({ notes: e.target.value.trim() || null })} />
+      </label>
       <p className="eq-quote">
         Evidencia: <q>{eq.evidence || '—'}</q>
         {eq.evidenceInvalid && <strong> · esta cita no aparece en la nota</strong>}

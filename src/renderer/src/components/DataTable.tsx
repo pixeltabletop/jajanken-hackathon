@@ -1,14 +1,19 @@
 import type { JSX } from 'react'
-import { CONFIDENCE_LABEL_ES, MODALITY_LABEL_ES, STATUS_LABEL_ES } from '../../../shared/catalog.ts'
+import { COLUMN_BY_KEY, type ColumnKey } from '../../../shared/columns.ts'
 import type { Observation } from '../../../shared/types.ts'
 import type { EquipmentRowView } from '../lib/filter.ts'
-import { countryLabel } from '../lib/labels.ts'
 import { HelpTip } from './HelpTip.tsx'
 
-const AGE_WORD_ES: Record<string, string> = { new: 'nuevo', recent: 'reciente', old: 'viejo', 'very old': 'muy viejo' }
+interface Props {
+  rows: EquipmentRowView[]
+  columns: ColumnKey[]
+  onEdit: (o: Observation) => void
+  editingId: string | null
+}
 
-export function DataTable({ rows, onEdit, editingId }: { rows: EquipmentRowView[]; onEdit: (o: Observation) => void; editingId: string | null }): JSX.Element {
-  if (!rows.length) return <p className="empty">No hay equipos para este filtro.</p>
+export function DataTable({ rows, columns, onEdit, editingId }: Props): JSX.Element {
+  if (!rows.length) return <p className="empty">No hay equipos para este filtro. Prueba a limpiar los filtros o a ampliar el rango de edad.</p>
+  const cols = columns.map((k) => COLUMN_BY_KEY[k]).filter(Boolean)
   const sorted = [...rows].sort((a, b) => b.obs.createdAt.localeCompare(a.obs.createdAt) || a.site.localeCompare(b.site))
   return (
     <div className="table-wrap">
@@ -16,34 +21,33 @@ export function DataTable({ rows, onEdit, editingId }: { rows: EquipmentRowView[
         <caption className="sr-only">Base instalada, una fila por equipo observado</caption>
         <thead>
           <tr>
-            <th scope="col">Cliente</th>
-            <th scope="col">Ubicación</th>
-            <th scope="col">Modalidad</th>
-            <th scope="col" className="num">Cant.<HelpTip termKey="cantidadAprox" /></th>
-            <th scope="col">Marca<HelpTip termKey="marcaDesconocida" /></th>
-            <th scope="col" className="num">Edad<HelpTip termKey="edad" /></th>
-            <th scope="col">Confianza<HelpTip termKey="confianza" /></th>
-            <th scope="col">Estado<HelpTip termKey="estado" align="right" /></th>
-            <th scope="col">Visto</th>
+            {cols.map((c) => (
+              <th key={c.key} scope="col" className={c.numeric ? 'num' : undefined}>
+                {c.label}{c.help && <HelpTip termKey={c.help} align={c.numeric ? 'right' : 'left'} />}
+              </th>
+            ))}
             <th scope="col"><span className="sr-only">Acciones</span></th>
           </tr>
         </thead>
         <tbody>
-          {sorted.map(({ key, obs, eq, site }) => (
+          {sorted.map(({ key, obs, eq }) => (
             <tr key={key} className={editingId === obs.id ? 'editing' : undefined}>
-              <td>{site}</td>
-              <td>{[obs.city, countryLabel(obs.country)].filter((x) => x && x !== '—').join(', ') || '—'}</td>
-              <td>{MODALITY_LABEL_ES[eq.modality]}</td>
-              <td className="num">{eq.quantityIsEstimate ? '~' : ''}{eq.quantity}</td>
-              <td>{eq.brand ?? <span className="muted">Desconocida</span>}</td>
-              <td className="num">{eq.approxAgeYears !== null ? `${eq.approxAgeYears} a` : eq.ageQualitative ? <span className="muted">{AGE_WORD_ES[eq.ageQualitative] ?? eq.ageQualitative}</span> : '—'}</td>
-              <td><span className={`badge ${eq.confidence.toLowerCase()}`} title={eq.evidence ? `Evidencia: “${eq.evidence}”` : undefined}>{CONFIDENCE_LABEL_ES[eq.confidence]}</span></td>
-              <td>{STATUS_LABEL_ES[eq.status]}</td>
-              <td className="muted">{obs.createdAt}</td>
+              {cols.map((c) => {
+                const v = c.text(obs, eq)
+                if (c.key === 'confidence') return <td key={c.key}><span className={`badge ${eq.confidence.toLowerCase()}`}>{v}</span></td>
+                if (c.key === 'brand' && eq.brand === null) return <td key={c.key}><span className="muted">{v}</span></td>
+                if (c.key === 'rawText' || c.key === 'evidence' || c.key === 'notes') return <td key={c.key} className="cell-long" title={v}>{v}</td>
+                return <td key={c.key} className={c.numeric ? 'num' : undefined}>{v}</td>
+              })}
               <td>
-                <button type="button" className="ghost small" onClick={() => onEdit(obs)} aria-label={`Corregir la observación de ${site} del ${obs.createdAt}`}>
-                  Corregir
-                </button>
+                <span className="row-actions">
+                  {(obs.history?.length ?? 0) > 0 && (
+                    <span className="badge neutral" title={`${obs.history?.length} corrección(es)`}>{obs.history?.length}✎</span>
+                  )}
+                  <button type="button" className="ghost small" onClick={() => onEdit(obs)} aria-label={`Corregir la observación de ${obs.facilityCanonical ?? obs.facility} del ${obs.createdAt}`}>
+                    Corregir
+                  </button>
+                </span>
               </td>
             </tr>
           ))}

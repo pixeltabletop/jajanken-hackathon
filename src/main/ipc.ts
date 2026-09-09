@@ -2,8 +2,13 @@
 // Nunca lanzan al renderer: devuelven { error: { code, message } }.
 // Este es el único archivo del motor que importa Electron.
 
-import { ipcMain } from 'electron'
+import { app, dialog, ipcMain, shell } from 'electron'
+import { writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
 import { BRANDS } from '../shared/catalog.ts'
+import { REPORT_BY_KIND, type ReportRequest } from '../shared/reports.ts'
+import { renderReportPdf } from './reports.ts'
 import type { TimingTable } from '../shared/timings.ts'
 import type {
   ApiError,
@@ -101,7 +106,8 @@ export function registerIpc(store: Store): void {
   ipcMain.handle('obs:save', safe<[Observation], Observation[]>('SAVE', async (obs) => {
     const t0 = Date.now()
     const before = new Set((await store.customers()).map((c) => c.name))
-    const all = await store.save(obs)
+    const { operator } = await store.getSettings()
+    const all = await store.save(obs, operator)
     await store.recordTiming('save', Date.now() - t0)
     // Cliente nuevo: Whisper lleva el catálogo en su prompt y hay que recargarlo.
     const name = obs.facilityCanonical ?? obs.facility
@@ -113,6 +119,61 @@ export function registerIpc(store: Store): void {
   }))
 
   ipcMain.handle('obs:list', safe<[], Observation[]>('LIST', () => store.list()))
+
+  ipcMain.handle('settings:get', safe<[], { operator: string }>('SETTINGS', () => store.getSettings()))
+  ipcMain.handle('settings:set', safe<[Partial<{ operator: string }>], { operator: string }>('SETTINGS_SET', (p) => store.setSettings(p)))
+
+  // Reportes: se compone HTML y lo imprime Chromium. Sin librerias ni red.
+  ipcMain.handle(
+    'report:generate',
+    safe<[{ req: ReportRequest; action: 'save' | 'open' | 'mail' }], { path: string; action: string }>(
+      'REPORT',
+      async ({ req, action }) => {
+        const all = await store.list()
+        const pdf = await renderReportPdf(req, all, app.getAppPath())
+        const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')
+        const base = `Eco-${req.kind}${req.facility ? '-' + req.facility.replace(/[^\p{L}\p{N}]+/gu, '-') : ''}-${stamp}.pdf`
+
+        if (action === 'save') {
+          const r = await dialog.showSaveDialog({
+            title: 'Guardar reporte',
+            defaultPath: join(app.getPath('documents'), base),
+            filters: [{ name: 'PDF', extensions: ['pdf'] }]
+          })
+          if (r.canceled || !r.filePath) return { path: '', action: 'cancelado' }
+          await writeFile(r.filePath, pdf)
+          void shell.showItemInFolder(r.filePath)
+          return { path: r.filePath, action: 'guardado' }
+        }
+
+        const target = action === 'mail' ? join(app.getPath('documents'), base) : join(tmpdir(), base)
+        await writeFile(target, pdf)
+        if (action === 'mail') {
+          const def = REPORT_BY_KIND[req.kind]
+          const subject = encodeURIComponent(`${def.title} — Eco`)
+          const body = encodeURIComponent(
+            `Adjunto el reporte "${def.title}" generado con Eco.
+
+` +
+            `Solicitado por: ${req.requestedBy}
+Generado: ${new Date().toLocaleString('es-PA')}
+
+` +
+            `El archivo está en: ${target}
+(adjúntalo a este correo antes de enviarlo)
+
+` +
+            'Datos sintéticos. Prototipo del equipo Jajanken para el reto Philips.'
+          )
+          void shell.openExternal(`mailto:?subject=${subject}&body=${body}`)
+          void shell.showItemInFolder(target)
+          return { path: target, action: 'correo' }
+        }
+        void shell.openPath(target)
+        return { path: target, action: 'abierto' }
+      }
+    )
+  )
 
   // Bloque 5. Se conecta solo si mide >= 7/10 en bench/bench_query.js.
   ipcMain.handle('query:parse', safe<[{ question: string }], never>('QUERY', () => {

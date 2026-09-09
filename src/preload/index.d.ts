@@ -1,3 +1,4 @@
+import type { ReportRequest } from '../shared/reports.ts'
 import type { TimingTable } from '../shared/timings.ts'
 import type {
   ApiError,
@@ -24,6 +25,9 @@ export interface EcoApi {
   dedup(facility: string, city: string | null): R<DedupResult>
   save(observation: Observation): R<Observation[]>
   list(): R<Observation[]>
+  settingsGet(): R<{ operator: string }>
+  settingsSet(patch: { operator?: string }): R<{ operator: string }>
+  report(req: ReportRequest, action: 'save' | 'open' | 'mail'): R<{ path: string; action: string }>
   queryParse(question: string): R<{ filter: QueryFilter; ms: number }>
 }
 
