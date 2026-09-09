@@ -128,6 +128,22 @@ export function createStore(opts: StoreOptions) {
       return best
     },
 
+    /**
+     * Ciudad conocida que aparece literal en la nota, o null. Determinista y
+     * auditable: solo devuelve algo si el texto contiene el nombre exacto de una
+     * ciudad ya registrada. Gana la coincidencia más larga.
+     */
+    async inferCityFromText(text: string): Promise<string | null> {
+      const hay = ` ${text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')} `
+      let best: string | null = null
+      for (const o of await ensureLoaded()) {
+        if (!o.city) continue
+        const key = o.city.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+        if (hay.includes(key) && (!best || o.city.length > best.length)) best = o.city
+      }
+      return best
+    },
+
     async getVectors(): Promise<VectorCache> {
       return readJson<VectorCache>(vecPath, {})
     },

@@ -47,6 +47,8 @@ Cambiar una decisión exige una entrada nueva que la reemplace, no editar la vie
 
 **D21 · El workbook de Philips se carga tal cual, con sus inconsistencias señaladas, no corregidas.** La fila 3 (Horizon) dice cantidad 3 marcada "Aggregate row" y la fila 4 añade 1 más: el tablero suma 4 resonadores donde el texto dice tres. Se conserva porque es su dato declarado; el aviso queda en `_avisos` de `data/seed-philips.json` y va a "Limitaciones" del README.
 
+**D22 · Si `npm run dev` dice "Electron uninstall", el binario se extrae a mano.** Con Node 24.16 en Windows, el postinstall del paquete `electron` (`install.js`) descarga el zip completo (136 MB) pero `extract-zip` termina en silencio sin extraer nada y sin error: `dist/` queda con una carpeta `locales` vacía y no existe `path.txt`. Arreglo verificado: `Expand-Archive` del zip cacheado en `%LOCALAPPDATA%\electron\Cache\<hash>\` hacia `node_modules/electron/dist`, mover `electron.d.ts` un nivel arriba y escribir `node_modules/electron/path.txt` con el texto exacto `electron.exe` sin salto de línea. Va al README en "Notas para construir" porque Diego lo va a encontrar al hacer `npm ci`.
+
 ## Pendientes de decisión
 
 - Voz vive o muere (18:00 hoy, Anexo G del blueprint).

@@ -64,7 +64,17 @@ export function registerIpc(store: Store): void {
           language,
           source: source ?? 'Text'
         })
-        // La extracción no adivina el país. Se infiere del catálogo por ciudad.
+        // El modelo a veces omite la ciudad aunque esté literal en la nota. Si es
+        // una ciudad ya conocida, se recupera por coincidencia exacta (auditable);
+        // el país nunca se adivina, se infiere del catálogo por ciudad.
+        if (!r.observation.city) {
+          const city = await store.inferCityFromText(text)
+          if (city) {
+            r.observation.city = city
+            r.observation.missingFields = r.observation.missingFields.filter((f) => f !== 'city')
+            r.warnings.push(`Ciudad recuperada del texto por coincidencia exacta: ${city}`)
+          }
+        }
         r.observation.country = await store.inferCountry(r.observation.city)
         return r
       }

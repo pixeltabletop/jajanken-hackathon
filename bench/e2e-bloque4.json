@@ -1,0 +1,47 @@
+{
+  "note": "Estoy en la Clínica DemoCare Costa del Este, en Ciudad de Panamá. Vi dos resonadores Zenith MedTech de unos cinco años y tres ecógrafos, la marca no la vi.",
+  "steps": {
+    "modelsReadyMs": 1,
+    "extractMs": 25623,
+    "rows": 1,
+    "marks": 1,
+    "invalid": 0,
+    "facility": "Hospital Panamaclinic",
+    "rowTitles": [
+      "Equipo 1 · Resonancia magnética"
+    ],
+    "quotes": [
+      "resonador magnético"
+    ],
+    "dupItems": 4,
+    "dupReason": "Mejor coincidencia 0.74, por debajo del piso 0.75",
+    "quality": {
+      "expectedRows": 2,
+      "gotRows": 1,
+      "hasMR": true,
+      "hasUS": false
+    },
+    "saveMs": 80,
+    "rowsBefore": 44,
+    "rowsAfter": 45,
+    "statsBefore": [
+      "24",
+      "24",
+      "31",
+      "1"
+    ],
+    "statsAfter": [
+      "25",
+      "25",
+      "32",
+      "1"
+    ],
+    "message": "Guardado en esta laptop. 1 equipo en Hospital Panamaclinic."
+  },
+  "ok": false,
+  "failures": [
+    "clic en Interpretar (disabled)",
+    "aparece el estado de espera con progreso",
+    "sitio reconocido: Hospital Panamaclinic"
+  ]
+}

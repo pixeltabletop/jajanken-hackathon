@@ -1,0 +1,17 @@
+VERIFICACION EN PANTALLA - Bloque 4 (renderer) - 2026-09-09 ~16:25 - app real via CDP (scripts/e2e-cycle.mjs), capturas en bench/e2e/
+
+typecheck:node : limpio | typecheck:web : limpio
+arranque       : electron-vite dev; los tres modelos en 'listo' (pills verdes); 23 obs / 43 filas de equipo sembradas
+
+CORRIDA 1 (nota nueva: Clinica DemoCare Costa del Este, 2 equipos en el texto)
+  extraccion   : 12.2 s; el modelo devolvio 1 fila (fusiono resonadores + ecografos en una cita). Calidad 8/10 esperada, no defecto de UI.
+  evidencia    : 1 cita resaltada, 0 invalidas; sitio correcto; ciudad no extraida por el modelo -> se anadio inferencia determinista por coincidencia exacta
+  dedup        : 3 candidatos + 'nuevo'; se eligio nuevo
+  guardar      : OK. Almacen real paso a 24 obs / 44 filas, Costa del Este persistida reviewed=true. (Mi prueba asumia +2 filas fijas y marco falso fallo; corregido a +N)
+  capturas     : 01-listo, 02-esperando (barra de progreso + esqueleto), 03-revision (cita en amarillo, badges), 99-error (tabla + 3 graficos + pie legal)
+
+CORRIDA 2      : colisiono con una persona usando la app en vivo (borrador 'Hospital Panamaclinic' ajeno). El script guardo ese borrador. Se anadio guarda: aborta si hay extraccion en curso, borrador o texto.
+                 Aun asi confirmo: guardar +1 fila (44->45), panel vaciado, cliente en tabla, mensaje de guardado, graficos con etiquetas inclinadas.
+
+ARREGLOS       : etiquetas de graficos (MODALITY_SHORT_ES + inclinacion), 'Sin pais' en vez de '-', inferCityFromText en store + ipc
+RESULTADO      : ciclo completo verificado en pantalla; el criterio del blueprint se cumple

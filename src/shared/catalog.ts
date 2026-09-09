@@ -44,6 +44,17 @@ export const MODALITY_LABEL_ES: Record<Modality, string> = {
   Other: 'Otro'
 }
 
+// Versión corta para ejes de gráficos, donde las etiquetas largas se pisan.
+export const MODALITY_SHORT_ES: Record<Modality, string> = {
+  MR: 'Resonancia',
+  CT: 'Tomografía',
+  Ultrasound: 'Ecografía',
+  'X-Ray': 'Rayos X',
+  'Patient Monitoring': 'Monitoreo',
+  'Image Guided Therapy': 'Terapia guiada',
+  Other: 'Otro'
+}
+
 export const STATUS_LABEL_ES: Record<Status, string> = {
   Confirmed: 'Confirmado',
   Reported: 'Reportado',
