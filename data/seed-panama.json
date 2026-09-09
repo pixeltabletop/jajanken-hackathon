@@ -1,0 +1,170 @@
+{
+  "_aviso": "DATOS HIPOTETICOS. Los diez centros de salud de este archivo son FICTICIOS, creados para la demo del hackathon ISD Summit 2026 siguiendo la convencion DemoCare del workbook de Philips. Las ciudades son reales, las instituciones y sus inventarios NO existen. Ninguna cifra describe equipo real de ninguna institucion panamena.",
+  "_formato": "Observation v1: una observacion por visita, con lista equipment[]. evidence es cita textual de rawText.",
+  "observations": [
+    {
+      "id": "pa-01",
+      "createdAt": "2026-09-01",
+      "observer": "Técnico de campo PA-01",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Estoy en el Hospital DemoCare Bella Vista, en Ciudad de Panamá. Tienen dos resonadores NovaMed de unos seis años y un tomógrafo Aurelia Health que se ve nuevo, como de tres años.",
+      "facility": "Hospital DemoCare Bella Vista",
+      "city": "Ciudad de Panamá",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "MR", "quantity": 2, "quantity_is_estimate": false, "brand": "NovaMed", "model": null, "approx_age_years": 6, "age_qualitative": null, "confidence": "High", "status": "Reported", "evidence": "dos resonadores NovaMed de unos seis años", "notes": null },
+        { "modality": "CT", "quantity": 1, "quantity_is_estimate": false, "brand": "Aurelia Health", "model": null, "approx_age_years": 3, "age_qualitative": "new", "confidence": "Medium", "status": "Estimated", "evidence": "un tomógrafo Aurelia Health que se ve nuevo, como de tres años", "notes": null }
+      ],
+      "missing_fields": ["model"]
+    },
+    {
+      "id": "pa-02",
+      "createdAt": "2026-09-01",
+      "observer": "Técnico de campo PA-01",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Clínica DemoCare San Francisco, también en la capital. Vi tres ecógrafos HelixCare bastante recientes, de dos años más o menos, y un equipo de rayos X del que no pude ver la marca.",
+      "facility": "Clínica DemoCare San Francisco",
+      "city": "Ciudad de Panamá",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "Ultrasound", "quantity": 3, "quantity_is_estimate": false, "brand": "HelixCare", "model": null, "approx_age_years": 2, "age_qualitative": "recent", "confidence": "High", "status": "Reported", "evidence": "tres ecógrafos HelixCare bastante recientes, de dos años más o menos", "notes": null },
+        { "modality": "X-Ray", "quantity": 1, "quantity_is_estimate": false, "brand": null, "model": null, "approx_age_years": null, "age_qualitative": null, "confidence": "Medium", "status": "Reported", "evidence": "un equipo de rayos X del que no pude ver la marca", "notes": "Marca no visible" }
+      ],
+      "missing_fields": ["brand", "approx_age_years"]
+    },
+    {
+      "id": "pa-03",
+      "createdAt": "2026-08-28",
+      "observer": "Técnico de campo PA-02",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Centro Médico DemoCare San Miguelito. Tienen un tomógrafo Orion Imaging que ya está viejo, calculo unos doce años. También dos ecógrafos pero no sé la marca ni la edad.",
+      "facility": "Centro Médico DemoCare San Miguelito",
+      "city": "San Miguelito",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "CT", "quantity": 1, "quantity_is_estimate": false, "brand": "Orion Imaging", "model": null, "approx_age_years": 12, "age_qualitative": "old", "confidence": "Medium", "status": "Estimated", "evidence": "un tomógrafo Orion Imaging que ya está viejo, calculo unos doce años", "notes": "Posible oportunidad de renovación" },
+        { "modality": "Ultrasound", "quantity": 2, "quantity_is_estimate": false, "brand": null, "model": null, "approx_age_years": null, "age_qualitative": null, "confidence": "Medium", "status": "Reported", "evidence": "dos ecógrafos pero no sé la marca ni la edad", "notes": null }
+      ],
+      "missing_fields": ["brand", "approx_age_years"]
+    },
+    {
+      "id": "pa-04",
+      "createdAt": "2026-08-27",
+      "observer": "Técnico de campo PA-02",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Hospital DemoCare del Istmo en Arraiján. Un resonador BluePeak Medical y un tomógrafo Zenith MedTech, los dos como de nueve años, se instalaron juntos según me dijeron.",
+      "facility": "Hospital DemoCare del Istmo",
+      "city": "Arraiján",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "MR", "quantity": 1, "quantity_is_estimate": false, "brand": "BluePeak Medical", "model": null, "approx_age_years": 9, "age_qualitative": null, "confidence": "Medium", "status": "Reported", "evidence": "Un resonador BluePeak Medical", "notes": "Edad referida por el personal, no verificada" },
+        { "modality": "CT", "quantity": 1, "quantity_is_estimate": false, "brand": "Zenith MedTech", "model": null, "approx_age_years": 9, "age_qualitative": null, "confidence": "Medium", "status": "Reported", "evidence": "un tomógrafo Zenith MedTech, los dos como de nueve años", "notes": "Edad referida por el personal, no verificada" }
+      ],
+      "missing_fields": ["model"]
+    },
+    {
+      "id": "pa-05",
+      "createdAt": "2026-08-26",
+      "observer": "Técnico de campo PA-03",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Policlínica DemoCare Chorrera. Cuatro ecógrafos Aurelia Health de edades mezcladas, dos nuevos y dos ya con años. Y un rayos X de unos cinco años, marca no la vi.",
+      "facility": "Policlínica DemoCare Chorrera",
+      "city": "La Chorrera",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "Ultrasound", "quantity": 2, "quantity_is_estimate": false, "brand": "Aurelia Health", "model": null, "approx_age_years": null, "age_qualitative": "new", "confidence": "Medium", "status": "Reported", "evidence": "dos nuevos", "notes": "Fila para los dos equipos nuevos" },
+        { "modality": "Ultrasound", "quantity": 2, "quantity_is_estimate": false, "brand": "Aurelia Health", "model": null, "approx_age_years": null, "age_qualitative": "old", "confidence": "Medium", "status": "Reported", "evidence": "dos ya con años", "notes": "Fila para los dos equipos viejos" },
+        { "modality": "X-Ray", "quantity": 1, "quantity_is_estimate": false, "brand": null, "model": null, "approx_age_years": 5, "age_qualitative": null, "confidence": "Medium", "status": "Estimated", "evidence": "un rayos X de unos cinco años, marca no la vi", "notes": null }
+      ],
+      "missing_fields": ["brand", "approx_age_years"]
+    },
+    {
+      "id": "pa-06",
+      "createdAt": "2026-08-25",
+      "observer": "Técnico de campo PA-03",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Hospital DemoCare Atlántico, en Colón. El tomógrafo es un BluePeak muy viejo, catorce años me dijeron. Dos equipos de rayos X sin marca visible.",
+      "facility": "Hospital DemoCare Atlántico",
+      "city": "Colón",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "CT", "quantity": 1, "quantity_is_estimate": false, "brand": "BluePeak Medical", "model": null, "approx_age_years": 14, "age_qualitative": "very old", "confidence": "Medium", "status": "Reported", "evidence": "El tomógrafo es un BluePeak muy viejo, catorce años me dijeron", "notes": "Candidato claro a renovación" },
+        { "modality": "X-Ray", "quantity": 2, "quantity_is_estimate": false, "brand": null, "model": null, "approx_age_years": null, "age_qualitative": null, "confidence": "Medium", "status": "Reported", "evidence": "Dos equipos de rayos X sin marca visible", "notes": null }
+      ],
+      "missing_fields": ["brand", "approx_age_years", "model"]
+    },
+    {
+      "id": "pa-07",
+      "createdAt": "2026-08-22",
+      "observer": "Técnico de campo PA-04",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Hospital DemoCare Chiriquí en David. Es grande. Dos resonadores Orion Imaging de unos cuatro años, dos tomógrafos Aurelia Health de siete, y como seis ecógrafos NovaMed casi nuevos, de tres años.",
+      "facility": "Hospital DemoCare Chiriquí",
+      "city": "David",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "MR", "quantity": 2, "quantity_is_estimate": false, "brand": "Orion Imaging", "model": null, "approx_age_years": 4, "age_qualitative": null, "confidence": "High", "status": "Reported", "evidence": "Dos resonadores Orion Imaging de unos cuatro años", "notes": null },
+        { "modality": "CT", "quantity": 2, "quantity_is_estimate": false, "brand": "Aurelia Health", "model": null, "approx_age_years": 7, "age_qualitative": null, "confidence": "High", "status": "Reported", "evidence": "dos tomógrafos Aurelia Health de siete", "notes": null },
+        { "modality": "Ultrasound", "quantity": 6, "quantity_is_estimate": true, "brand": "NovaMed", "model": null, "approx_age_years": 3, "age_qualitative": "new", "confidence": "Medium", "status": "Estimated", "evidence": "como seis ecógrafos NovaMed casi nuevos, de tres años", "notes": "Cantidad aproximada" }
+      ],
+      "missing_fields": ["model"]
+    },
+    {
+      "id": "pa-08",
+      "createdAt": "2026-08-21",
+      "observer": "Técnico de campo PA-04",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Clínica DemoCare Veraguas, Santiago. Un tomógrafo Zenith MedTech de ocho años y tres ecógrafos HelixCare, la edad de esos no la sé.",
+      "facility": "Clínica DemoCare Veraguas",
+      "city": "Santiago",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "CT", "quantity": 1, "quantity_is_estimate": false, "brand": "Zenith MedTech", "model": null, "approx_age_years": 8, "age_qualitative": null, "confidence": "High", "status": "Reported", "evidence": "Un tomógrafo Zenith MedTech de ocho años", "notes": null },
+        { "modality": "Ultrasound", "quantity": 3, "quantity_is_estimate": false, "brand": "HelixCare", "model": null, "approx_age_years": null, "age_qualitative": null, "confidence": "Medium", "status": "Reported", "evidence": "tres ecógrafos HelixCare, la edad de esos no la sé", "notes": null }
+      ],
+      "missing_fields": ["approx_age_years", "model"]
+    },
+    {
+      "id": "pa-09",
+      "createdAt": "2026-08-20",
+      "observer": "Técnico de campo PA-05",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Hospital DemoCare Azuero en Chitré. Un resonador NovaMed de unos once años, un tomógrafo de marca que no identifiqué, también viejo, como diez años, y en el piso de cuidados intensivos conté ocho monitores de paciente.",
+      "facility": "Hospital DemoCare Azuero",
+      "city": "Chitré",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "MR", "quantity": 1, "quantity_is_estimate": false, "brand": "NovaMed", "model": null, "approx_age_years": 11, "age_qualitative": "old", "confidence": "Medium", "status": "Estimated", "evidence": "Un resonador NovaMed de unos once años", "notes": "Candidato a renovación" },
+        { "modality": "CT", "quantity": 1, "quantity_is_estimate": false, "brand": null, "model": null, "approx_age_years": 10, "age_qualitative": "old", "confidence": "Low", "status": "Estimated", "evidence": "un tomógrafo de marca que no identifiqué, también viejo, como diez años", "notes": null },
+        { "modality": "Patient Monitoring", "quantity": 8, "quantity_is_estimate": false, "brand": null, "model": null, "approx_age_years": null, "age_qualitative": null, "confidence": "High", "status": "Confirmed", "evidence": "conté ocho monitores de paciente", "notes": "Conteo directo" }
+      ],
+      "missing_fields": ["brand", "model"]
+    },
+    {
+      "id": "pa-10",
+      "createdAt": "2026-08-19",
+      "observer": "Técnico de campo PA-05",
+      "source": "Voice",
+      "language": "es",
+      "rawText": "Centro Diagnóstico DemoCare Coclé, Penonomé. Dos ecógrafos Aurelia Health recién instalados, de un año, y un rayos X HelixCare de unos seis años. No tienen resonancia ni tomografía.",
+      "facility": "Centro Diagnóstico DemoCare Coclé",
+      "city": "Penonomé",
+      "country": "Panamá",
+      "equipment": [
+        { "modality": "Ultrasound", "quantity": 2, "quantity_is_estimate": false, "brand": "Aurelia Health", "model": null, "approx_age_years": 1, "age_qualitative": "new", "confidence": "High", "status": "Reported", "evidence": "Dos ecógrafos Aurelia Health recién instalados, de un año", "notes": null },
+        { "modality": "X-Ray", "quantity": 1, "quantity_is_estimate": false, "brand": "HelixCare", "model": null, "approx_age_years": 6, "age_qualitative": null, "confidence": "Medium", "status": "Estimated", "evidence": "un rayos X HelixCare de unos seis años", "notes": null }
+      ],
+      "missing_fields": ["model"],
+      "_nota_prueba": "Este caso prueba la negacion: 'No tienen resonancia ni tomografia' NO debe generar filas de MR ni CT."
+    }
+  ]
+}
