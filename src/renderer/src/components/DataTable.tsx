@@ -3,6 +3,8 @@ import { CONFIDENCE_LABEL_ES, MODALITY_LABEL_ES, STATUS_LABEL_ES } from '../../.
 import type { EquipmentRowView } from '../lib/filter.ts'
 import { countryLabel } from '../lib/labels.ts'
 
+const AGE_WORD_ES: Record<string, string> = { new: 'nuevo', recent: 'reciente', old: 'viejo', 'very old': 'muy viejo' }
+
 export function DataTable({ rows }: { rows: EquipmentRowView[] }): JSX.Element {
   if (!rows.length) return <p className="empty">No hay equipos para este filtro.</p>
   const sorted = [...rows].sort((a, b) => b.obs.createdAt.localeCompare(a.obs.createdAt) || a.site.localeCompare(b.site))
@@ -31,7 +33,7 @@ export function DataTable({ rows }: { rows: EquipmentRowView[] }): JSX.Element {
               <td>{MODALITY_LABEL_ES[eq.modality]}</td>
               <td className="num">{eq.quantityIsEstimate ? '~' : ''}{eq.quantity}</td>
               <td>{eq.brand ?? <span className="muted">Desconocida</span>}</td>
-              <td className="num">{eq.approxAgeYears !== null ? `${eq.approxAgeYears} a` : eq.ageQualitative ? <span className="muted">{eq.ageQualitative}</span> : '—'}</td>
+              <td className="num">{eq.approxAgeYears !== null ? `${eq.approxAgeYears} a` : eq.ageQualitative ? <span className="muted">{AGE_WORD_ES[eq.ageQualitative] ?? eq.ageQualitative}</span> : '—'}</td>
               <td><span className={`badge ${eq.confidence.toLowerCase()}`}>{CONFIDENCE_LABEL_ES[eq.confidence]}</span></td>
               <td>{STATUS_LABEL_ES[eq.status]}</td>
               <td className="muted">{obs.createdAt}</td>
