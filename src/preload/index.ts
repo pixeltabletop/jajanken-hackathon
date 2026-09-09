@@ -4,6 +4,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('api', {
   modelsStatus: () => ipcRenderer.invoke('models:status'),
   modelsWarmup: () => ipcRenderer.invoke('models:warmup'),
+  timings: () => ipcRenderer.invoke('timings:get'),
+  cities: () => ipcRenderer.invoke('data:cities'),
   transcribe: (wav: Uint8Array) => ipcRenderer.invoke('audio:transcribe', { wav }),
   extract: (text: string, language: 'es' | 'en', source?: 'Voice' | 'Text') =>
     ipcRenderer.invoke('obs:extract', { text, language, source }),

@@ -10,11 +10,13 @@ interface Props {
   observations: Observation[]
   filter: QueryFilter
   onFilter: (f: QueryFilter) => void
+  onEdit: (o: Observation) => void
+  editingId: string | null
   /** Ranura para la barra de pregunta en español (Bloque 5). */
   queryBar?: JSX.Element | null
 }
 
-export function Dashboard({ observations, filter, onFilter, queryBar }: Props): JSX.Element {
+export function Dashboard({ observations, filter, onFilter, onEdit, editingId, queryBar }: Props): JSX.Element {
   const all = useMemo(() => flatten(observations), [observations])
   const rows = useMemo(() => applyFilter(all, filter), [all, filter])
   const countries = useMemo(() => [...new Set(all.map((r) => r.obs.country).filter((c): c is string => !!c))].sort(), [all])
@@ -46,7 +48,7 @@ export function Dashboard({ observations, filter, onFilter, queryBar }: Props): 
         </div>
       )}
 
-      <DataTable rows={rows} />
+      <DataTable rows={rows} onEdit={onEdit} editingId={editingId} />
       <Charts rows={rows} />
     </section>
   )

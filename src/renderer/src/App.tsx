@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import './assets/components.css'
+import type { TimingTable } from '../../shared/timings.ts'
+import type { TranscriptFix } from '../../shared/transcript.ts'
 import type { DedupResult, ModelStatus, Observation, QueryFilter } from '../../shared/types.ts'
 import { WavRecorder } from './audio/wav-recorder.ts'
 import { Capture } from './components/Capture.tsx'
 import { Dashboard } from './components/Dashboard.tsx'
 import { Footer } from './components/Footer.tsx'
+import { GuideSection } from './components/GuideSection.tsx'
 import { Header } from './components/Header.tsx'
 import { Review } from './components/Review.tsx'
 import { Stats } from './components/Stats.tsx'
@@ -14,21 +17,27 @@ import { VOICE_ENABLED } from './lib/flags.ts'
 import { detectLanguage } from './lib/labels.ts'
 
 const MSG_LOADING = 'Cargando los modelos locales… la primera vez tarda hasta un minuto.'
-const MSG_READY = 'Listo · QVAC local · sin nube'
+const MSG_READY = 'Listo. Dicta o escribe una observación de campo.'
 
 export default function App(): JSX.Element {
   const [observations, setObservations] = useState<Observation[]>([])
   const [status, setStatus] = useState<ModelStatus | null>(null)
+  const [timings, setTimings] = useState<TimingTable>({})
+  const [cities, setCities] = useState<Record<string, string[]>>({})
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
   const [draft, setDraft] = useState<Observation | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [extractMs, setExtractMs] = useState<number | null>(null)
   const [warnings, setWarnings] = useState<string[]>([])
+  const [fixes, setFixes] = useState<TranscriptFix[]>([])
   const [dedup, setDedup] = useState<DedupResult | null>(null)
   const [dedupLoading, setDedupLoading] = useState(false)
   const [chosen, setChosen] = useState<string | null>(null)
   const [recording, setRecording] = useState(false)
   const [seconds, setSeconds] = useState(0)
+  const [level, setLevel] = useState(0)
   const [message, setMessage] = useState(MSG_LOADING)
   const [filter, setFilter] = useState<QueryFilter>(EMPTY_FILTER)
 
@@ -39,11 +48,22 @@ export default function App(): JSX.Element {
   const hasApi = typeof window !== 'undefined' && !!window.api
   const allReady = !!status && status.gemma.state === 'ready' && status.whisper.state === 'ready' && status.embed.state === 'ready'
 
-  // Observaciones al montar.
+  const refreshTimings = useCallback(() => {
+    if (!hasApi) return
+    call(window.api.timings()).then(setTimings).catch(() => undefined)
+  }, [hasApi])
+
+  const refreshCities = useCallback(() => {
+    if (!hasApi) return
+    call(window.api.cities()).then(setCities).catch(() => undefined)
+  }, [hasApi])
+
   useEffect(() => {
     if (!hasApi) return
     call(window.api.list()).then(setObservations).catch((e: Error) => setMessage(e.message))
-  }, [hasApi])
+    refreshTimings()
+    refreshCities()
+  }, [hasApi, refreshTimings, refreshCities])
 
   // Estado de modelos: cada 2 s hasta que los tres estén listos, luego cada 15 s.
   useEffect(() => {
@@ -61,45 +81,55 @@ export default function App(): JSX.Element {
   }, [hasApi, allReady])
 
   useEffect(() => {
-    if (allReady) setMessage((m) => (m === MSG_LOADING ? MSG_READY : m))
-  }, [allReady])
+    if (!allReady) return
+    setMessage((m) => (m === MSG_LOADING ? MSG_READY : m))
+    refreshTimings()
+  }, [allReady, refreshTimings])
 
-  // Cronómetro de grabación.
+  // Cronómetro y nivel del micrófono mientras se graba.
   useEffect(() => {
     if (!recording) return
-    const id = setInterval(() => setSeconds(recorder.current.seconds), 250)
+    const id = setInterval(() => {
+      setSeconds(recorder.current.seconds)
+      setLevel(recorder.current.level)
+    }, 80)
     return () => clearInterval(id)
   }, [recording])
 
   const rows = useMemo(() => applyFilter(flatten(observations), filter), [observations, filter])
 
-  const onText = useCallback((t: string) => { textFromVoice.current = false; setText(t) }, [])
+  const onText = useCallback((t: string) => { textFromVoice.current = false; setFixes([]); setText(t) }, [])
 
   const fail = (e: unknown): void => setMessage(e instanceof Error ? e.message : String(e))
+
+  function resetDraft(): void {
+    setDraft(null); setDedup(null); setChosen(null); setEditingId(null); setWarnings([])
+  }
 
   async function onExtract(): Promise<void> {
     if (!text.trim()) return
     cancelled.current = false
-    setBusy(true); setDraft(null); setDedup(null); setChosen(null); setWarnings([])
-    setMessage('Interpretando la nota con Gemma 2B, en esta laptop…')
+    setBusy(true); resetDraft()
+    setMessage('Interpretando la nota con Gemma 2B, en esta computadora…')
     try {
       const r = await call(window.api.extract(text, detectLanguage(text), textFromVoice.current ? 'Voice' : 'Text'))
       if (cancelled.current) return
       setDraft(r.observation); setExtractMs(r.ms); setWarnings(r.warnings)
-      setMessage(`Extraído en ${(r.ms / 1000).toFixed(1)} s. Revisa cada fila y confirma.`)
+      refreshTimings()
+      setMessage('Revisa cada fila y confirma. Cada dato apunta a las palabras que lo justifican.')
       setDedupLoading(true)
       try {
         const d = await call(window.api.dedup(r.observation.facility, r.observation.city))
         if (cancelled.current) return
         setDedup(d); setChosen(d.suggestion)
-      } catch (e) { fail(e) } finally { setDedupLoading(false) }
+      } catch (e) { fail(e) } finally { setDedupLoading(false); refreshTimings() }
     } catch (e) { fail(e) } finally { setBusy(false) }
   }
 
   function onCancelWait(): void {
     cancelled.current = true
     setBusy(false)
-    setMessage('Cancelado en pantalla. El modelo termina en segundo plano y el resultado se descarta.')
+    setMessage('Dejaste de esperar. El modelo termina en segundo plano y el resultado se descarta.')
   }
 
   async function onSave(): Promise<void> {
@@ -113,68 +143,95 @@ export default function App(): JSX.Element {
       country: draft.country ?? match?.country ?? null,
       reviewed: true
     }
+    const wasEditing = editingId !== null
     setBusy(true)
     try {
       const all = await call(window.api.save(obs))
-      setObservations(all); setDraft(null); setDedup(null); setChosen(null); setText('')
-      textFromVoice.current = false
-      setMessage(`Guardado en esta laptop. ${obs.equipment.length} equipo${obs.equipment.length !== 1 ? 's' : ''} en ${canonical}.`)
+      setObservations(all)
+      resetDraft()
+      if (!wasEditing) { setText(''); textFromVoice.current = false; setFixes([]) }
+      refreshCities(); refreshTimings()
+      setMessage(wasEditing
+        ? `Cambios guardados en ${canonical}.`
+        : `Guardado en esta computadora. ${obs.equipment.length} equipo${obs.equipment.length !== 1 ? 's' : ''} en ${canonical}.`)
     } catch (e) { fail(e) } finally { setBusy(false) }
   }
 
   function onDiscard(): void {
-    setDraft(null); setDedup(null); setChosen(null)
-    setMessage('Resultado descartado. La nota sigue en el cuadro por si quieres editarla.')
+    const wasEditing = editingId !== null
+    resetDraft()
+    setMessage(wasEditing ? 'Edición cancelada. El registro quedó como estaba.' : 'Resultado descartado. La nota sigue en el cuadro por si quieres editarla.')
+  }
+
+  function onEdit(o: Observation): void {
+    setDraft(o)
+    setEditingId(o.id)
+    setChosen(o.facilityCanonical ?? o.facility)
+    setDedup(null)
+    setWarnings([])
+    setExtractMs(null)
+    setMessage(`Editando la observación de ${o.facilityCanonical ?? o.facility}. Corrige lo que haga falta y guarda.`)
+    document.getElementById('rev-h')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   async function onRecord(): Promise<void> {
     try {
       await recorder.current.start()
-      setRecording(true); setSeconds(0)
-      setMessage('Grabando… habla con naturalidad y pulsa Detener al terminar.')
+      setRecording(true); setSeconds(0); setLevel(0); setFixes([])
+      setMessage('Grabando. Habla con naturalidad y pulsa Detener al terminar.')
     } catch (e) {
-      setMessage(e instanceof Error && /denied|permission/i.test(e.message) ? 'Debes permitir el acceso al micrófono.' : `No se pudo iniciar el micrófono: ${e instanceof Error ? e.message : String(e)}`)
+      setMessage(e instanceof Error && /denied|permission/i.test(e.message)
+        ? 'Debes permitir el acceso al micrófono para dictar.'
+        : `No se pudo iniciar el micrófono: ${e instanceof Error ? e.message : String(e)}`)
     }
   }
 
   async function onStop(): Promise<void> {
-    setBusy(true)
+    const dur = recorder.current.seconds
+    setBusy(true); setTranscribing(true)
     try {
       const wav = await recorder.current.stop()
       setRecording(false)
-      setMessage(`Whisper está transcribiendo ${seconds.toFixed(0)} s de audio, localmente…`)
+      setMessage(`Transcribiendo ${dur.toFixed(0)} s de audio, localmente…`)
       const t = await call(window.api.transcribe(wav))
-      setText(t.text); textFromVoice.current = true
-      setMessage(`Transcrito en ${(t.ms / 1000).toFixed(1)} s. Corrige el texto si hace falta y pulsa Interpretar.`)
-    } catch (e) { setRecording(false); fail(e) } finally { setBusy(false) }
+      setText(t.text); setFixes(t.fixes); textFromVoice.current = true
+      refreshTimings()
+      setMessage(t.fixes.length
+        ? `Transcrito y corregidos ${t.fixes.length} términos. Revisa el texto y pulsa Interpretar.`
+        : 'Transcrito. Revisa el texto y pulsa Interpretar.')
+    } catch (e) { setRecording(false); fail(e) } finally { setTranscribing(false); setBusy(false) }
   }
 
   if (!hasApi) {
     return (
       <main>
-        <Header status={null} />
-        <section><p className="empty">Esta interfaz solo funciona dentro de la aplicación FieldLens, porque los modelos corren en el proceso principal de Electron. Ábrela con <code>npm run dev</code> o desde el instalador.</p></section>
+        <Header status={null} timings={{}} />
+        <section><p className="empty">Esta interfaz solo funciona dentro de la aplicación Eco, porque los modelos corren en el proceso principal de Electron. Ábrela con <code>npm run dev</code> o desde el instalador.</p></section>
       </main>
     )
   }
 
   return (
     <main>
-      <Header status={status} />
+      <Header status={status} timings={timings} />
       <Stats rows={rows} total={observations.length} />
       <div className="grid">
         <Capture
-          text={text} onText={onText} busy={busy} recording={recording} seconds={seconds}
-          voiceEnabled={VOICE_ENABLED} modelsReady={allReady}
+          text={text} onText={onText} busy={busy} transcribing={transcribing} recording={recording}
+          seconds={seconds} level={level} fixes={fixes}
+          voiceEnabled={VOICE_ENABLED} modelsReady={allReady} timings={timings}
           onRecord={onRecord} onStop={onStop} onExtract={onExtract} message={message}
         />
         <Review
-          draft={draft} extracting={busy && !draft && !recording} extractMs={extractMs} warnings={warnings}
+          draft={draft} editing={editingId !== null} extracting={busy && !draft && !recording && !transcribing}
+          extractMs={extractMs} warnings={warnings} timings={timings}
           dedup={dedup} dedupLoading={dedupLoading} chosenCustomer={chosen} onChooseCustomer={setChosen}
+          citiesByCountry={cities}
           onChange={setDraft} onSave={onSave} onDiscard={onDiscard} onCancelWait={onCancelWait}
         />
       </div>
-      <Dashboard observations={observations} filter={filter} onFilter={setFilter} />
+      <Dashboard observations={observations} filter={filter} onFilter={setFilter} onEdit={onEdit} editingId={editingId} />
+      <GuideSection timings={timings} />
       <Footer />
     </main>
   )

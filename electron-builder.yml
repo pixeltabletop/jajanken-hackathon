@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: philips-installed-base
+appId: com.jajanken.eco
+productName: Eco
 asar: false
 directories:
   buildResources: build
@@ -13,7 +13,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: philips-installed-base
+  executableName: Eco
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

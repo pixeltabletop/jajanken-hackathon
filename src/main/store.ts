@@ -4,6 +4,7 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { record, type TimingKey, type TimingTable } from '../shared/timings.ts'
 import type { Customer, Equipment, Observation } from '../shared/types.ts'
 import type { VectorCache } from './qvac/dedup.ts'
 
@@ -64,7 +65,9 @@ async function readJson<T>(path: string, fallback: T): Promise<T> {
 export function createStore(opts: StoreOptions) {
   const obsPath = join(opts.userDataDir, 'observations.json')
   const vecPath = join(opts.userDataDir, 'embeddings.json')
+  const timePath = join(opts.userDataDir, 'timings.json')
   let observations: Observation[] | null = null
+  let timings: TimingTable | null = null
 
   async function loadSeeds(): Promise<Observation[]> {
     const out: Observation[] = []
@@ -142,6 +145,30 @@ export function createStore(opts: StoreOptions) {
         if (hay.includes(key) && (!best || o.city.length > best.length)) best = o.city
       }
       return best
+    },
+
+    /** Ciudades ya registradas, agrupadas por país. Alimenta el desplegable. */
+    async citiesByCountry(): Promise<Record<string, string[]>> {
+      const map: Record<string, Set<string>> = {}
+      for (const o of await ensureLoaded()) {
+        if (!o.country || !o.city) continue
+        ;(map[o.country] ??= new Set()).add(o.city)
+      }
+      return Object.fromEntries(Object.entries(map).map(([k, v]) => [k, [...v].sort()]))
+    },
+
+    async getTimings(): Promise<TimingTable> {
+      timings ??= await readJson<TimingTable>(timePath, {})
+      return timings
+    },
+
+    /** Acumula una medición y la persiste. Los promedios sobreviven al cierre. */
+    async recordTiming(key: TimingKey, ms: number): Promise<TimingTable> {
+      const current = timings ?? (await readJson<TimingTable>(timePath, {}))
+      timings = record(current, key, ms)
+      await mkdir(opts.userDataDir, { recursive: true })
+      await writeFile(timePath, JSON.stringify(timings, null, 2))
+      return timings
     },
 
     async getVectors(): Promise<VectorCache> {

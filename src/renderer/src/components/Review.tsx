@@ -1,19 +1,25 @@
-import { useEffect, useState, type JSX } from 'react'
+import type { JSX } from 'react'
 import type { DedupResult, Equipment, Observation } from '../../../shared/types.ts'
-import { COUNTRY_ES } from '../lib/labels.ts'
+import { fmt, type TimingTable } from '../../../shared/timings.ts'
 import { DuplicateAlert } from './DuplicateAlert.tsx'
 import { EquipmentRow } from './EquipmentRow.tsx'
 import { EvidenceHighlight } from './EvidenceHighlight.tsx'
 import { FollowUp } from './FollowUp.tsx'
+import { HelpTip } from './HelpTip.tsx'
+import { LocationFields } from './LocationFields.tsx'
+import { Progress } from './Progress.tsx'
 
 interface Props {
   draft: Observation | null
+  editing: boolean
   extracting: boolean
   extractMs: number | null
   warnings: string[]
   dedup: DedupResult | null
   dedupLoading: boolean
   chosenCustomer: string | null
+  citiesByCountry: Record<string, string[]>
+  timings: TimingTable
   onChooseCustomer: (name: string | null) => void
   onChange: (next: Observation) => void
   onSave: () => void
@@ -21,32 +27,11 @@ interface Props {
   onCancelWait: () => void
 }
 
-function Waiting({ onCancel }: { onCancel: () => void }): JSX.Element {
-  const [s, setS] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setS((x) => x + 1), 1000)
-    return () => clearInterval(t)
-  }, [])
-  const phase = s < 4 ? 'Leyendo la nota…' : s < 12 ? 'Identificando equipos…' : 'Buscando la evidencia de cada fila…'
-  return (
-    <div className="wait" role="status" aria-live="polite">
-      <p>{phase} <span className="muted">Gemma 2B · local · sin red · {s} s</span></p>
-      <div className="progress" aria-hidden="true" />
-      <div className="skeleton" aria-hidden="true" />
-      <div className="skeleton" aria-hidden="true" />
-      {s >= 30 && (
-        <p className="slow">Está tardando más de lo normal. <button type="button" className="ghost small" onClick={onCancel}>Cancelar</button></p>
-      )}
-    </div>
-  )
-}
-
 export function Review(p: Props): JSX.Element {
   const d = p.draft
   const patchEq = (i: number, patch: Partial<Equipment>): void => {
     if (!d) return
-    const equipment = d.equipment.map((e, j) => (j === i ? { ...e, ...patch } : e))
-    p.onChange({ ...d, equipment })
+    p.onChange({ ...d, equipment: d.equipment.map((e, j) => (j === i ? { ...e, ...patch } : e)) })
   }
   const removeEq = (i: number): void => {
     if (!d) return
@@ -64,29 +49,53 @@ export function Review(p: Props): JSX.Element {
 
   return (
     <section aria-labelledby="rev-h">
-      <h2 id="rev-h">2 · Resultado para confirmar</h2>
+      <h2 id="rev-h">
+        2 · {p.editing ? 'Editar registro guardado' : 'Resultado para confirmar'}
+        <HelpTip termKey="evidencia" />
+      </h2>
 
-      {p.extracting && !d && <Waiting onCancel={p.onCancelWait} />}
+      {p.extracting && !d && (
+        <Progress
+          expectedMs={p.timings.extract?.avgMs ?? null}
+          phases={[
+            { label: 'Leyendo la nota', until: 0.18 },
+            { label: 'Identificando equipos y cantidades', until: 0.62 },
+            { label: 'Buscando la cita que justifica cada fila', until: 0.9 },
+            { label: 'Comprobando la evidencia contra el texto', until: 1 }
+          ]}
+          note="Gemma 2B · en esta computadora · sin red"
+          onCancel={p.onCancelWait}
+        />
+      )}
 
-      {!p.extracting && !d && <p className="empty">El resultado local aparecerá aquí, con cada dato apuntando a la frase de la nota que lo justifica.</p>}
+      {!p.extracting && !d && (
+        <p className="empty">
+          El resultado local aparecerá aquí, con cada dato apuntando a la frase de la nota que lo justifica.
+          También puedes abrir cualquier registro de la tabla de abajo para corregirlo.
+        </p>
+      )}
 
       {d && (
         <>
+          {p.editing && (
+            <div className="edit-banner" role="note">
+              Editando una observación ya guardada del <b>{d.createdAt}</b>. Los cambios reemplazan el registro anterior.
+            </div>
+          )}
+
           <EvidenceHighlight rawText={d.rawText} quotes={d.equipment.map((e) => ({ text: e.evidence, invalid: e.evidenceInvalid }))} />
 
           <div className="review-head">
             <label htmlFor="rv-f">Cliente / sitio
               <input id="rv-f" value={d.facility} onChange={(e) => p.onChange({ ...d, facility: e.target.value })} />
             </label>
-            <label htmlFor="rv-c">Ciudad
-              <input id="rv-c" value={d.city ?? ''} placeholder="—" onChange={(e) => p.onChange({ ...d, city: e.target.value.trim() || null })} />
-            </label>
-            <label htmlFor="rv-p">País
-              <select id="rv-p" value={d.country ?? ''} onChange={(e) => p.onChange({ ...d, country: e.target.value || null })}>
-                <option value="">—</option>
-                {Object.entries(COUNTRY_ES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
-            </label>
+            <LocationFields
+              country={d.country}
+              city={d.city}
+              citiesByCountry={p.citiesByCountry}
+              onCountry={(country) => p.onChange({ ...d, country })}
+              onCity={(city) => p.onChange({ ...d, city })}
+            />
           </div>
 
           <div className="eq-list">
@@ -94,24 +103,24 @@ export function Review(p: Props): JSX.Element {
               <EquipmentRow key={i} index={i} eq={eq} onChange={(patch) => patchEq(i, patch)} onRemove={() => removeEq(i)} />
             ))}
           </div>
-          <div>
-            <button type="button" className="ghost small" onClick={addEq}>+ Añadir equipo que el modelo no vio</button>
+          <div className="actions">
+            <button type="button" className="ghost small" onClick={addEq}>+ Añadir un equipo que falte</button>
           </div>
 
           <FollowUp missingFields={d.missingFields} />
           <DuplicateAlert result={p.dedup} loading={p.dedupLoading} chosen={p.chosenCustomer} facility={d.facility} onChoose={p.onChooseCustomer} />
 
-          {p.warnings.length > 0 && (
-            <aside role="note"><b>Avisos del extractor:</b> {p.warnings.join(' · ')}</aside>
-          )}
+          {p.warnings.length > 0 && <aside role="note"><b>Avisos del extractor:</b> {p.warnings.join(' · ')}</aside>}
 
           <p className="muted">
-            {p.extractMs !== null && `Extraído en ${(p.extractMs / 1000).toFixed(1)} s. `}
-            {d.equipment.length} equipo{d.equipment.length !== 1 ? 's' : ''} · idioma {d.language === 'es' ? 'español' : 'inglés'} · fuente {d.source === 'Voice' ? 'voz' : 'texto'}
+            {p.extractMs !== null && !p.editing && `Interpretado en ${fmt(p.extractMs)}. `}
+            {d.equipment.length} equipo{d.equipment.length !== 1 ? 's' : ''} · idioma {d.language === 'es' ? 'español' : 'inglés'} · fuente {d.source === 'Voice' ? 'voz' : d.source === 'Seed' ? 'semilla' : 'texto'}
           </p>
-          <div>
-            <button type="button" onClick={p.onSave} disabled={d.equipment.length === 0 || p.dedupLoading}>Confirmar y guardar localmente</button>
-            <button type="button" className="ghost" onClick={p.onDiscard}>Descartar</button>
+          <div className="actions">
+            <button type="button" className="primary" onClick={p.onSave} disabled={d.equipment.length === 0 || p.dedupLoading}>
+              {p.editing ? 'Guardar cambios' : 'Confirmar y guardar localmente'}
+            </button>
+            <button type="button" className="ghost" onClick={p.onDiscard}>{p.editing ? 'Cancelar edición' : 'Descartar'}</button>
           </div>
         </>
       )}

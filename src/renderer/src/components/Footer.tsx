@@ -5,7 +5,7 @@ import type { JSX } from 'react'
 export function Footer(): JSX.Element {
   return (
     <footer className="legal">
-      Prototipo del equipo Jajanken para el reto Philips · Hackathon ISD Summit 2026 · No es un producto oficial de Philips.
+      <b>Eco</b> · Prototipo del equipo Jajanken para el reto Philips · Hackathon ISD Summit 2026 · No es un producto oficial de Philips.
       <br />
       Todos los clientes, marcas y equipos son sintéticos: 13 sitios del workbook de Philips y 10 sitios ficticios de Panamá. Ninguna cifra describe una institución real.
       <br />

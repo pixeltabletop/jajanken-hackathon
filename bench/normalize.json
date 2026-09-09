@@ -1,0 +1,59 @@
+{
+  "manual": "4/5",
+  "corpus": [
+    {
+      "file": "asr_WHISPER_BASE_Q8_0_es+prompt.json",
+      "model": "WHISPER_BASE_Q8_0",
+      "wer_before": 17,
+      "wer_after": 17.2,
+      "facility_before": "9/10",
+      "facility_after": "9/10",
+      "fixes": 7
+    },
+    {
+      "file": "asr_WHISPER_BASE_Q8_0_es.json",
+      "model": "WHISPER_BASE_Q8_0",
+      "wer_before": 33.2,
+      "wer_after": 29.1,
+      "facility_before": "1/10",
+      "facility_after": "2/10",
+      "fixes": 16
+    },
+    {
+      "file": "asr_WHISPER_SMALL_Q8_0_es+prompt.json",
+      "model": "WHISPER_SMALL_Q8_0",
+      "wer_before": 13.3,
+      "wer_after": 15.1,
+      "facility_before": "9/10",
+      "facility_after": "10/10",
+      "fixes": 6
+    },
+    {
+      "file": "asr_WHISPER_SPANISH_TINY_Q8_0.json",
+      "model": "WHISPER_SPANISH_TINY_Q8_0",
+      "wer_before": 106.5,
+      "wer_after": 100.8,
+      "facility_before": "0/10",
+      "facility_after": "2/10",
+      "fixes": 10
+    },
+    {
+      "file": "asr_WHISPER_SPANISH_TINY_Q8_0_es+prompt.json",
+      "model": "WHISPER_SPANISH_TINY_Q8_0",
+      "wer_before": 33.8,
+      "wer_after": 22.2,
+      "facility_before": "3/10",
+      "facility_after": "9/10",
+      "fixes": 13
+    },
+    {
+      "file": "asr_WHISPER_SPANISH_TINY_Q8_0_es.json",
+      "model": "WHISPER_SPANISH_TINY_Q8_0",
+      "wer_before": 41.5,
+      "wer_after": 31.1,
+      "facility_before": "0/10",
+      "facility_after": "2/10",
+      "fixes": 15
+    }
+  ]
+}

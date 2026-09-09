@@ -94,6 +94,10 @@ export interface ExtractResult {
 export interface TranscribeResult {
   text: string
   ms: number
+  /** Términos corregidos contra el catálogo. La interfaz los muestra. */
+  fixes: import('./transcript.ts').TranscriptFix[]
+  /** Lo que devolvió Whisper antes de corregir, para poder auditar. */
+  rawText: string
 }
 
 export interface ApiError {

@@ -29,7 +29,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(async () => {
-  electronApp.setAppUserModelId('com.jajanken.fieldlens')
+  electronApp.setAppUserModelId('com.jajanken.eco')
   app.on('browser-window-created', (_, w) => optimizer.watchWindowShortcuts(w))
 
   // El SDK lee esta variable al arrancar su worker, que ocurre en el primer loadModel.
@@ -45,7 +45,21 @@ app.whenReady().then(async () => {
 
   // No bloquea la ventana. El renderer sondea models:status hasta ver los tres en ready.
   const customers = await store.customers()
+  const warmStart = Date.now()
   void models.warmup(customers.map((c) => c.name)).then(async (st) => {
+    // Los tiempos de carga se registran aquí, que es donde ocurre el arranque
+    // real. El handler models:warmup casi nunca se llama, así que si solo se
+    // midiera allí la tabla de tiempos nunca vería las cargas.
+    try {
+      if (st.gemma.ms) await store.recordTiming('load:gemma', st.gemma.ms)
+      if (st.whisper.ms) await store.recordTiming('load:whisper', st.whisper.ms)
+      if (st.embed.ms) await store.recordTiming('load:embed', st.embed.ms)
+      const all = (['gemma', 'whisper', 'embed'] as const).every((k) => st[k].state === 'ready')
+      if (all) await store.recordTiming('load:all', Date.now() - warmStart)
+    } catch (e) {
+      console.error('[tiempos de carga]', e)
+    }
+
     // Vectores canónicos listos antes de la primera deduplicación: ~50 ms por cliente
     // con el modelo caliente, y se cachean en userData/embeddings.json.
     if (st.embed.state !== 'ready') return
