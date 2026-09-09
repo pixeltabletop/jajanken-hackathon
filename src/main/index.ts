@@ -6,6 +6,7 @@ import { join } from 'node:path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerIpc } from './ipc.ts'
+import { buildCanonical } from './qvac/dedup.ts'
 import * as models from './qvac/models.ts'
 import { createStore } from './store.ts'
 
@@ -44,7 +45,17 @@ app.whenReady().then(async () => {
 
   // No bloquea la ventana. El renderer sondea models:status hasta ver los tres en ready.
   const customers = await store.customers()
-  void models.warmup(customers.map((c) => c.name))
+  void models.warmup(customers.map((c) => c.name)).then(async (st) => {
+    // Vectores canónicos listos antes de la primera deduplicación: ~50 ms por cliente
+    // con el modelo caliente, y se cachean en userData/embeddings.json.
+    if (st.embed.state !== 'ready') return
+    try {
+      const { cache, embedded } = await buildCanonical(models.requireModel('embed'), customers, await store.getVectors())
+      if (embedded > 0) await store.setVectors(cache)
+    } catch (e) {
+      console.error('[precalculo de vectores]', e)
+    }
+  })
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

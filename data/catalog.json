@@ -1,0 +1,148 @@
+{
+  "_aviso": "Catálogo cerrado del dominio. Los índices de modalities/brands/statuses/confidence son los del esquema compacto medido: no reordenar. customers es la unión de data/seed-philips.json y data/seed-panama.json; en tiempo de ejecución la app lo recalcula desde el almacén.",
+  "modalities": [
+    "MR",
+    "CT",
+    "Ultrasound",
+    "X-Ray",
+    "Patient Monitoring",
+    "Image Guided Therapy",
+    "Other"
+  ],
+  "brands": [
+    "NovaMed",
+    "Aurelia Health",
+    "BluePeak Medical",
+    "Orion Imaging",
+    "HelixCare",
+    "Zenith MedTech"
+  ],
+  "statuses": [
+    "Confirmed",
+    "Reported",
+    "Estimated",
+    "Unknown"
+  ],
+  "confidence": [
+    "High",
+    "Medium",
+    "Low"
+  ],
+  "customers": [
+    {
+      "name": "Centro Diagnostico DemoCare Caribbean",
+      "city": "Santo Domingo",
+      "country": "Dominican Republic"
+    },
+    {
+      "name": "Centro Diagnóstico DemoCare Coclé",
+      "city": "Penonomé",
+      "country": "Panama"
+    },
+    {
+      "name": "Centro Médico DemoCare San Miguelito",
+      "city": "San Miguelito",
+      "country": "Panama"
+    },
+    {
+      "name": "Centro Medico DemoCare Valley",
+      "city": "Mexico City",
+      "country": "Mexico"
+    },
+    {
+      "name": "Clinica DemoCare Andes",
+      "city": "Santiago",
+      "country": "Chile"
+    },
+    {
+      "name": "Clinica DemoCare Central",
+      "city": "Bogota",
+      "country": "Colombia"
+    },
+    {
+      "name": "Clinica DemoCare Light",
+      "city": "Campinas",
+      "country": "Brazil"
+    },
+    {
+      "name": "Clínica DemoCare San Francisco",
+      "city": "Ciudad de Panamá",
+      "country": "Panama"
+    },
+    {
+      "name": "Clínica DemoCare Veraguas",
+      "city": "Santiago",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare Atlántico",
+      "city": "Colón",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare Azuero",
+      "city": "Chitré",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare Bella Vista",
+      "city": "Ciudad de Panamá",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare Chiriquí",
+      "city": "David",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare del Istmo",
+      "city": "Arraiján",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare Green",
+      "city": "San Jose",
+      "country": "Costa Rica"
+    },
+    {
+      "name": "Hospital DemoCare Horizon",
+      "city": "Sao Paulo",
+      "country": "Brazil"
+    },
+    {
+      "name": "Hospital DemoCare Metro North",
+      "city": "Quito",
+      "country": "Ecuador"
+    },
+    {
+      "name": "Hospital DemoCare North",
+      "city": "Monterrey",
+      "country": "Mexico"
+    },
+    {
+      "name": "Hospital DemoCare Pacific",
+      "city": "Panama City",
+      "country": "Panama"
+    },
+    {
+      "name": "Hospital DemoCare Park",
+      "city": "Buenos Aires",
+      "country": "Argentina"
+    },
+    {
+      "name": "Hospital DemoCare Pines",
+      "city": "Medellin",
+      "country": "Colombia"
+    },
+    {
+      "name": "Instituto DemoCare Lima",
+      "city": "Lima",
+      "country": "Peru"
+    },
+    {
+      "name": "Policlínica DemoCare Chorrera",
+      "city": "La Chorrera",
+      "country": "Panama"
+    }
+  ]
+}

@@ -43,6 +43,10 @@ Cambiar una decisión exige una entrada nueva que la reemplace, no editar la vie
 
 **D19 · `node_modules` nunca se copia entre máquinas, se instala con `npm ci`.** La copia con robocopy desde el SSD de Diego dejó 24,645 archivos de 34,695 sin ningún error visible (`/R:1 /W:1 /NFL` se salta lo que falla al leer). Síntomas: `tsc` no encontraba `electron-vite` con la carpeta presente, y el worker de QVAC moría al arrancar por falta de `llm-splitter` reportando un "timeout" engañoso. Regla: tras cualquier copia, comparar conteo recursivo de archivos; ante duda, `npm ci`. Aplica también a la laptop de Diego cuando baje el repo: `npm ci`, nunca copiar `node_modules`.
 
+**D20 · País se guarda en inglés canónico; ciudad como la dijo el usuario; la interfaz traduce el país.** Al unir semillas, Philips traía "Panama" y la nuestra "Panamá": dos países en el tablero para el mismo lugar. Regla: `country` sigue la ortografía de Philips (Panama, Brazil, Mexico, Peru, Dominican Republic, ...), coherente con D10. `city` es texto libre y `inferCountry` la compara sin acentos ni mayúsculas. El renderer muestra el país con etiqueta en español vía un mapa pequeño. Se normalizó `data/seed-panama.json` y se regeneró `data/catalog.json`.
+
+**D21 · El workbook de Philips se carga tal cual, con sus inconsistencias señaladas, no corregidas.** La fila 3 (Horizon) dice cantidad 3 marcada "Aggregate row" y la fila 4 añade 1 más: el tablero suma 4 resonadores donde el texto dice tres. Se conserva porque es su dato declarado; el aviso queda en `_avisos` de `data/seed-philips.json` y va a "Limitaciones" del README.
+
 ## Pendientes de decisión
 
 - Voz vive o muere (18:00 hoy, Anexo G del blueprint).

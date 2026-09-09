@@ -29,7 +29,16 @@ const store = createStore({ userDataDir, seedDir: resolve('data') })
 console.log('--- almacén ---')
 const obs = await store.list()
 const customers = await store.customers()
-check(obs.length >= 10, `semilla cargada: ${obs.length} observaciones, ${customers.length} clientes`)
+check(obs.length === 23, `semilla cargada: ${obs.length} observaciones (esperadas 23 = 13 Philips + 10 Panamá)`)
+check(customers.length === 23, `clientes únicos: ${customers.length} (esperados 23)`)
+check(obs.filter((o) => o.id.startsWith('ph-')).length === 13, 'las 13 observaciones de Philips están')
+const phEquip = obs.filter((o) => o.id.startsWith('ph-')).flatMap((o) => o.equipment)
+check(phEquip.length === 20, `las 20 filas de equipo de Philips están (obtuvo ${phEquip.length})`)
+check(phEquip.every((e) => e.installYearEstimate !== null), 'año de instalación derivado en todas las filas de Philips')
+check((await store.inferCountry('Quito')) === 'Ecuador', 'inferCountry("Quito") = Ecuador')
+check((await store.inferCountry('Ciudad de Panamá')) === 'Panama', 'inferCountry("Ciudad de Panamá") = Panama (país en inglés canónico, D20)')
+check((await store.inferCountry('panama city')) === 'Panama', 'inferCountry es insensible a mayúsculas y acentos')
+check((await store.inferCountry('Narnia')) === null, 'inferCountry de ciudad desconocida = null')
 
 console.log('\n--- modelos ---')
 let t = Date.now()
@@ -75,6 +84,14 @@ if (failures.length === 0) {
   const d2 = await rankCandidates(requireModel('embed'), 'Hospital Nuevo Sol', 'Colón', canonical)
   console.log(`  "Hospital Nuevo Sol" → ${d2.suggestion ?? 'NUEVO'} (${d2.candidates[0]?.score.toFixed(3)}) · ${d2.reason}`)
   check(d2.suggestion === null || d2.candidates[0].score < 0.85, 'nombre desconocido no se fuerza a un cliente existente')
+
+  // El caso trampa del dataset: dos clientes distintos con nombres casi iguales.
+  const d3 = await rankCandidates(requireModel('embed'), 'DemoCare Metro North', 'Quito', canonical)
+  console.log(`  "DemoCare Metro North" + Quito → ${d3.suggestion} (${d3.candidates[0]?.score.toFixed(3)} vs ${d3.candidates[1]?.score.toFixed(3)}) · ${d3.reason}`)
+  check(d3.suggestion === 'Hospital DemoCare Metro North', 'CRÍTICO: Metro North en Quito resuelve a Metro North')
+  const d4 = await rankCandidates(requireModel('embed'), 'DemoCare North', 'Monterrey', canonical)
+  console.log(`  "DemoCare North" + Monterrey → ${d4.suggestion} (${d4.candidates[0]?.score.toFixed(3)} vs ${d4.candidates[1]?.score.toFixed(3)}) · ${d4.reason}`)
+  check(d4.suggestion === 'Hospital DemoCare North', 'CRÍTICO: North en Monterrey resuelve a North, no a Metro North')
 }
 
 await unloadAll()
