@@ -1,0 +1,96 @@
+{
+  "model": "GEMMA4_2B_MULTIMODAL_Q4_K_M",
+  "temp": 0,
+  "results": [
+    {
+      "case": 1,
+      "identical": true,
+      "correct": 3,
+      "repeats": 3,
+      "first": {
+        "facility": "Hospital Alpha",
+        "city": "Sao Paulo",
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 3,
+            "approx_age_years": null,
+            "confidence": "high"
+          },
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "approx_age_years": null,
+            "confidence": "high"
+          },
+          {
+            "modality": "Ultrasound",
+            "quantity": 4,
+            "approx_age_years": null,
+            "confidence": "high"
+          }
+        ]
+      },
+      "errs": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "case": 2,
+      "identical": true,
+      "correct": 3,
+      "repeats": 3,
+      "first": {
+        "facility": "Clinica Bellavista",
+        "city": "Panama City",
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 1,
+            "approx_age_years": null,
+            "confidence": "high"
+          },
+          {
+            "modality": "Ultrasound",
+            "quantity": 2,
+            "approx_age_years": null,
+            "confidence": "high"
+          }
+        ]
+      },
+      "errs": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "case": 3,
+      "identical": true,
+      "correct": 3,
+      "repeats": 3,
+      "first": {
+        "facility": "Hospital Norte",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "Monitoring",
+            "quantity": 15,
+            "approx_age_years": null,
+            "confidence": "high"
+          }
+        ]
+      },
+      "errs": [
+        [],
+        [],
+        []
+      ]
+    }
+  ]
+}

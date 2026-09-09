@@ -1,0 +1,432 @@
+{
+  "model": "GEMMA4_2B_MULTIMODAL_Q4_K_M",
+  "lang": "es",
+  "schema": "v2",
+  "passed": 7,
+  "total": 10,
+  "evidence": "17/17",
+  "avg_ms": 20639,
+  "results": [
+    {
+      "n": 1,
+      "note": "Estoy en el Hospital DemoCare Pacific en Panama. Tienen dos resonadores y un tomografo.",
+      "ms": 19435,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare Pacific",
+        "city": "Panama",
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "Tienen dos resonadores"
+          },
+          {
+            "modality": "CT",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "y un tomografo"
+          }
+        ],
+        "missing_fields": []
+      }
+    },
+    {
+      "n": 2,
+      "note": "En el Hospital DemoCare Horizon vi tres resonadores. Dos se ven viejos y uno se ve mucho mas nuevo.",
+      "ms": 24201,
+      "ok": false,
+      "errs": [
+        "MR=4 esperado 3"
+      ],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare Horizon",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 3,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "old",
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "vi tres resonadores",
+            "notes": null
+          },
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "new",
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "uno se ve mucho mas nuevo",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years",
+          "city",
+          "country"
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "note": "La Clinica DemoCare Light tiene dos tomografos, ambos Orion Imaging, de unos once anos.",
+      "ms": 17765,
+      "ok": true,
+      "errs": [],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "Clinica DemoCare Light",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": "Orion Imaging",
+            "model": null,
+            "approx_age_years": 11,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "La Clinica DemoCare Light tiene dos tomografos, ambos Orion Imaging, de unos once anos.",
+            "notes": null
+          }
+        ],
+        "missing_fields": []
+      }
+    },
+    {
+      "n": 4,
+      "note": "El Centro Medico DemoCare Valley tiene un resonador y dos tomografos. No se las marcas.",
+      "ms": 21290,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Centro Medico DemoCare Valley",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "tiene un resonador",
+            "notes": null
+          },
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "y dos tomografos",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model"
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "note": "El Hospital DemoCare North tiene unos seis ecografos, casi todos nuevos.",
+      "ms": 16853,
+      "ok": false,
+      "errs": [
+        "no marco la cantidad como estimada"
+      ],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare North",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "Ultrasound",
+            "quantity": 6,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "new",
+            "confidence": "High",
+            "status": "Confirmed",
+            "evidence": "El Hospital DemoCare North tiene unos seis ecografos, casi todos nuevos."
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model"
+        ]
+      }
+    },
+    {
+      "n": 6,
+      "note": "La Clinica DemoCare Andes tiene un tomografo muy viejo y dos resonadores del mismo fabricante.",
+      "ms": 23252,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Clinica DemoCare Andes",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "very old",
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "tiene un tomografo muy viejo",
+            "notes": null
+          },
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "dos resonadores del mismo fabricante",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years",
+          "city",
+          "country"
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "note": "El Hospital DemoCare Park tiene un resonador, quizas de diez anos, mas tres tomografos.",
+      "ms": 22085,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare Park",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": 10,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "tiene un resonador, quizas de diez anos",
+            "notes": null
+          },
+          {
+            "modality": "CT",
+            "quantity": 3,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "mas tres tomografos",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model"
+        ]
+      }
+    },
+    {
+      "n": 8,
+      "note": "La Clinica DemoCare Central tiene muchos ecografos, quizas ocho, todos Aurelia Health.",
+      "ms": 15039,
+      "ok": true,
+      "errs": [],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "Clinica DemoCare Central",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "Ultrasound",
+            "quantity": 8,
+            "quantity_is_estimate": true,
+            "brand": "Aurelia Health",
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "tiene muchos ecografos, quizas ocho",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "model"
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "note": "El Instituto DemoCare Lima tiene dos tomografos viejos y un resonador instalado hace poco.",
+      "ms": 22872,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Instituto DemoCare Lima",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "very old",
+            "confidence": "Medium",
+            "status": "Reported",
+            "evidence": "tiene dos tomografos viejos",
+            "notes": null
+          },
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Reported",
+            "evidence": "un resonador instalado hace poco",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years"
+        ]
+      }
+    },
+    {
+      "n": 10,
+      "note": "El Hospital DemoCare Metro North tiene dos resonadores. Se que la marca es Aurelia Health pero no el modelo.",
+      "ms": 23595,
+      "ok": false,
+      "errs": [
+        "MR=4 esperado 2"
+      ],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare Metro North",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": "Aurelia Health",
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "High",
+            "status": "Confirmed",
+            "evidence": "tiene dos resonadores"
+          },
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": "Aurelia Health",
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "High",
+            "status": "Confirmed",
+            "evidence": "Se que la marca es Aurelia Health pero no el modelo."
+          }
+        ],
+        "missing_fields": [
+          "model"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-09-09T15:23:09.169Z",
+  "model_constant": "HEALTHCARE_1_7B_MEDICAL_Q4_K_M",
+  "hardware": "HP ProBook 450 G10 / Intel i7-1355U / 16GB RAM / Intel UHD iGPU / Windows 11 / Vulkan 1.4.313",
+  "constrained_decoding": "json_schema -> GBNF (llama.cpp)",
+  "model_load_ms": 333070,
+  "runs": [
+    {
+      "case_index": 0,
+      "input": "I visited Hospital Alpha in Sao Paulo today. They have three MR systems, two CT systems and four ultrasound systems. Two of the MR systems appear to be around 8 to 10 years old. One of the CTs looks fairly new but I could not check the model.",
+      "ttft_ms": 4561,
+      "total_ms": 75253,
+      "output_tokens": 910,
+      "decode_tokens_per_sec": 12.87,
+      "json_valid": false,
+      "output": "{\n  \"facility\": \"Hospital Alpha\",\n  \"city\": \"Sao Paulo\",\n  \"country\": \"Brazil\",\n  \"equipment\": [\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 3,\n      \"approx_age_years\": \"8-10\",\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 2,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 4,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"MR\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"high\" },\n\n    {\n      \"modality\": \"CT\",\n      \"quantity\": 1,\n      \"approx_age_years\": null,\n      \"confidence\": \"low\" },\n\n    {\n      \"modality\": \"Ultrasound\",\n      \"quantity\": "
+    },
+    {
+      "case_index": 1,
+      "input": "Quick note from Clinica Bellavista here in Panama City. Saw one CT, pretty old, maybe twelve years. Also two ultrasounds, no idea how old.",
+      "ttft_ms": 441,
+      "total_ms": 9673,
+      "output_tokens": 113,
+      "decode_tokens_per_sec": 12.24,
+      "json_valid": true,
+      "output": {
+        "facility": "Clinica Bellavista",
+        "city": "Panama City",
+        "country": "Panama",
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 1,
+            "approx_age_years": null,
+            "confidence": "low"
+          },
+          {
+            "modality": "Ultrasound",
+            "quantity": 2,
+            "approx_age_years": null,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "case_index": 2,
+      "input": "Was at Hospital Norte. They showed me the monitoring floor, about fifteen patient monitors. Did not see any imaging equipment.",
+      "ttft_ms": 404,
+      "total_ms": 8708,
+      "output_tokens": 77,
+      "decode_tokens_per_sec": 9.27,
+      "json_valid": true,
+      "output": {
+        "facility": "Hospital Norte",
+        "city": "N/A",
+        "country": "N/A",
+        "equipment": [
+          {
+            "modality": "Monitoring",
+            "quantity": 15,
+            "approx_age_years": null,
+            "confidence": "low"
+          }
+        ]
+      }
+    }
+  ]
+}

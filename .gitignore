@@ -1,0 +1,6 @@
+node_modules/
+.qvac/
+*.gguf
+bench/*.log
+.env
+audio/

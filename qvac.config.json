@@ -1,0 +1,6 @@
+{
+  "loggerLevel": "error",
+  "loggerConsoleOutput": false,
+  "httpDownloadConcurrency": 3,
+  "httpConnectionTimeoutMs": 30000
+}

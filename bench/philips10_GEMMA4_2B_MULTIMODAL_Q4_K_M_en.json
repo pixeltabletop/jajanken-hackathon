@@ -1,0 +1,409 @@
+{
+  "model": "GEMMA4_2B_MULTIMODAL_Q4_K_M",
+  "lang": "en",
+  "schema": "v2",
+  "passed": 9,
+  "total": 10,
+  "evidence": "15/15",
+  "avg_ms": 32948,
+  "results": [
+    {
+      "n": 1,
+      "note": "I am at Hospital DemoCare Pacific in Panama. They have two MR systems and one CT.",
+      "ms": 89275,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare Pacific",
+        "city": "Panama",
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "They have two MR systems"
+          },
+          {
+            "modality": "CT",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "and one CT"
+          }
+        ],
+        "missing_fields": []
+      }
+    },
+    {
+      "n": 2,
+      "note": "At Hospital DemoCare Horizon I saw three MR systems. Two seem old and one looks much newer.",
+      "ms": 24641,
+      "ok": false,
+      "errs": [
+        "solo 1 filas, esperaba >=2"
+      ],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "Hospital DemoCare Horizon",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 3,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "old",
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "I saw three MR systems. Two seem old and one looks much newer.",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years",
+          "city"
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "note": "Clinica DemoCare Light has two CT scanners, both Orion Imaging, around eleven years old.",
+      "ms": 13992,
+      "ok": true,
+      "errs": [],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "Clinica DemoCare Light",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": "Orion Imaging",
+            "model": null,
+            "approx_age_years": 11,
+            "age_qualitative": null,
+            "confidence": "High",
+            "status": "Confirmed",
+            "evidence": "Clinica DemoCare Light has two CT scanners, both Orion Imaging, around eleven years old.",
+            "notes": null
+          }
+        ],
+        "missing_fields": []
+      }
+    },
+    {
+      "n": 4,
+      "note": "Centro Medico DemoCare Valley has one MR and two CTs. I do not know the brands.",
+      "ms": 19719,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Centro Medico DemoCare Valley",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "has one MR",
+            "notes": null
+          },
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "and two CTs",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand"
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "note": "Hospital DemoCare North has about six ultrasound units, mostly new.",
+      "ms": 15052,
+      "ok": true,
+      "errs": [],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "DemoCare North",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "Ultrasound",
+            "quantity": 6,
+            "quantity_is_estimate": true,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "new",
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "about six ultrasound units, mostly new",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years",
+          "city",
+          "country"
+        ]
+      }
+    },
+    {
+      "n": 6,
+      "note": "Clinica DemoCare Andes has one very old CT and two MR systems from the same manufacturer.",
+      "ms": 26232,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Clinica DemoCare Andes",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "very old",
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "one very old CT",
+            "notes": null
+          },
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "two MR systems from the same manufacturer",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years"
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "note": "Hospital DemoCare Park has one MR, maybe ten years old, plus three CT scanners.",
+      "ms": 38613,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "DemoCare Park",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": true,
+            "brand": null,
+            "model": null,
+            "approx_age_years": 10,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "one MR, maybe ten years old",
+            "notes": null
+          },
+          {
+            "modality": "CT",
+            "quantity": 3,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "three CT scanners",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model"
+        ]
+      }
+    },
+    {
+      "n": 8,
+      "note": "Clinica DemoCare Central has many ultrasound systems, maybe eight, all Aurelia Health.",
+      "ms": 34965,
+      "ok": true,
+      "errs": [],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "Clinica DemoCare Central",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "Ultrasound",
+            "quantity": 8,
+            "quantity_is_estimate": true,
+            "brand": "Aurelia Health",
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Estimated",
+            "evidence": "many ultrasound systems, maybe eight",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "model",
+          "approx_age_years",
+          "city",
+          "country"
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "note": "Instituto DemoCare Lima has two old CTs and one recently installed MR.",
+      "ms": 40312,
+      "ok": true,
+      "errs": [],
+      "evidence": "2/2",
+      "badQuotes": [],
+      "output": {
+        "facility": "Instituto DemoCare Lima",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "CT",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": "old",
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "two old CTs",
+            "notes": null
+          },
+          {
+            "modality": "MR",
+            "quantity": 1,
+            "quantity_is_estimate": false,
+            "brand": null,
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "Medium",
+            "status": "Confirmed",
+            "evidence": "one recently installed MR",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "brand",
+          "model",
+          "approx_age_years",
+          "city",
+          "country"
+        ]
+      }
+    },
+    {
+      "n": 10,
+      "note": "Hospital DemoCare Metro North has two MR systems. I know the brand is Aurelia Health but not the model.",
+      "ms": 26676,
+      "ok": true,
+      "errs": [],
+      "evidence": "1/1",
+      "badQuotes": [],
+      "output": {
+        "facility": "DemoCare Metro North",
+        "city": null,
+        "country": null,
+        "equipment": [
+          {
+            "modality": "MR",
+            "quantity": 2,
+            "quantity_is_estimate": false,
+            "brand": "Aurelia Health",
+            "model": null,
+            "approx_age_years": null,
+            "age_qualitative": null,
+            "confidence": "High",
+            "status": "Confirmed",
+            "evidence": "Hospital DemoCare Metro North has two MR systems",
+            "notes": null
+          }
+        ],
+        "missing_fields": [
+          "model"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "model": "WHISPER_SPANISH_TINY_Q8_0",
+  "audio": "Windows SAPI es-MX, 16kHz mono, voz sintetica",
+  "avg_wer_pct": 106.5,
+  "facility_ok": "0/10",
+  "numbers_ok": "2/19",
+  "avg_ms": 2014,
+  "rows": [
+    {
+      "n": 1,
+      "ref": "Estoy en el Hospital DemoCare Pacific en Panama. Tienen dos resonadores y un tomografo.",
+      "hyp": "This is in hospital for any pacific person. They have two resonators and one tomography.",
+      "wer": 92.9,
+      "facility_ok": false,
+      "numbers": "0/2",
+      "ms": 3337
+    },
+    {
+      "n": 2,
+      "ref": "En el Hospital DemoCare Horizon vi tres resonadores. Dos se ven viejos y uno se ve mucho mas nuevo.",
+      "hyp": "In the hospital, the car goes down and goes down. There are two of them. Two are old and one is old. There are new things.",
+      "wer": 131.6,
+      "facility_ok": false,
+      "numbers": "0/3",
+      "ms": 4104
+    },
+    {
+      "n": 3,
+      "ref": "La Clinica DemoCare Light tiene dos tomografos, ambos Orion Imaging, de unos once anios.",
+      "hyp": "The Clinic Democary Light has two photographs, Ambosorio Nimiging, from a few years.",
+      "wer": 92.9,
+      "facility_ok": false,
+      "numbers": "0/2",
+      "ms": 3184
+    },
+    {
+      "n": 4,
+      "ref": "El Centro Medico DemoCare Valley tiene un resonador y dos tomografos. No se las marcas.",
+      "hyp": "The medical center of Mokareba leitiene un resonador y dos tomógrafos. No se las marcas.",
+      "wer": 40,
+      "facility_ok": false,
+      "numbers": "2/2",
+      "ms": 2182
+    },
+    {
+      "n": 5,
+      "ref": "El Hospital DemoCare North tiene unos seis ecografos, casi todos nuevos.",
+      "hyp": "In the hospital of Moccar-En-Org, it has a 6-speed record, almost all new.",
+      "wer": 136.4,
+      "facility_ok": false,
+      "numbers": "0/1",
+      "ms": 2030
+    },
+    {
+      "n": 6,
+      "ref": "La Clinica DemoCare Andes tiene un tomografo muy viejo y dos resonadores del mismo fabricante.",
+      "hyp": "The clinic who have been able to find a photographer, very old and less resonators of the same fabricants.",
+      "wer": 126.7,
+      "facility_ok": false,
+      "numbers": "0/2",
+      "ms": 1078
+    },
+    {
+      "n": 7,
+      "ref": "El Hospital DemoCare Park tiene un resonador, quizas de diez anios, mas tres tomografos.",
+      "hyp": "In the hospital of Mokare Park, there is a resonador, who knows more than three tomohrafos.",
+      "wer": 100,
+      "facility_ok": false,
+      "numbers": "0/3",
+      "ms": 769
+    },
+    {
+      "n": 8,
+      "ref": "La Clinica DemoCare Central tiene muchos ecografos, quizas ocho, todos Aurelia Health.",
+      "hyp": "The clinic that takes care of central blood pressure is many degrees, maybe 8, all of Australia and Alberta.",
+      "wer": 150,
+      "facility_ok": false,
+      "numbers": "0/1",
+      "ms": 1167
+    },
+    {
+      "n": 9,
+      "ref": "El Instituto DemoCare Lima tiene dos tomografos viejos y un resonador instalado hace poco.",
+      "hyp": "The Institute of Vocalism has two cinematography, several and one resonator installed a little.",
+      "wer": 100,
+      "facility_ok": false,
+      "numbers": "0/2",
+      "ms": 1195
+    },
+    {
+      "n": 10,
+      "ref": "El Hospital DemoCare Metro North tiene dos resonadores. Se que la marca es Aurelia Health pero no el modelo.",
+      "hyp": "The hospital takes two resonators, which is the largest one-way facility.",
+      "wer": 94.7,
+      "facility_ok": false,
+      "numbers": "0/1",
+      "ms": 1095
+    }
+  ]
+}

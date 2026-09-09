@@ -1,0 +1,100 @@
+{
+  "model": "WHISPER_BASE_Q8_0",
+  "audio": "Windows SAPI es-MX, 16kHz mono, voz sintetica",
+  "avg_wer_pct": 17,
+  "facility_ok": "9/10",
+  "numbers_ok": "12/19",
+  "avg_ms": 1388,
+  "rows": [
+    {
+      "n": 1,
+      "ref": "Estoy en el Hospital DemoCare Pacific en Panama. Tienen dos resonadores y un tomografo.",
+      "hyp": "Estoy en el hospital DemoCare Pacific en Panamá. Tienen dos resonadores y un tomógrafo.",
+      "wer": 0,
+      "facility_ok": true,
+      "numbers": "2/2",
+      "ms": 1479
+    },
+    {
+      "n": 2,
+      "ref": "En el Hospital DemoCare Horizon vi tres resonadores. Dos se ven viejos y uno se ve mucho mas nuevo.",
+      "hyp": "En el hospital DemoCare Geraís en vitres resonadores. 12 Benviejos y 1 se ve mucho más nuevo.",
+      "wer": 42.1,
+      "facility_ok": false,
+      "numbers": "0/3",
+      "ms": 1446
+    },
+    {
+      "n": 3,
+      "ref": "La Clinica DemoCare Light tiene dos tomografos, ambos Orion Imaging, de unos once anios.",
+      "hyp": "La Clinique DemoCare Light tiene dos tomografos, Amvosorio Nimiging, de 1-11 años.",
+      "wer": 50,
+      "facility_ok": true,
+      "numbers": "1/2",
+      "ms": 1399
+    },
+    {
+      "n": 4,
+      "ref": "El Centro Medico DemoCare Valley tiene un resonador y dos tomografos. No se las marcas.",
+      "hyp": "El Centro Medico DemoCare Valley tiene un resonador y dos tomografos. No se las marcas.",
+      "wer": 0,
+      "facility_ok": true,
+      "numbers": "2/2",
+      "ms": 1337
+    },
+    {
+      "n": 5,
+      "ref": "El Hospital DemoCare North tiene unos seis ecografos, casi todos nuevos.",
+      "hyp": "El hospital DemoCare North tiene unos seis ecográficos, casi todos nuevos.",
+      "wer": 9.1,
+      "facility_ok": true,
+      "numbers": "1/1",
+      "ms": 1293
+    },
+    {
+      "n": 6,
+      "ref": "La Clinica DemoCare Andes tiene un tomografo muy viejo y dos resonadores del mismo fabricante.",
+      "hyp": "La clínique DemoCare Andes tiene un tomógrafo muy viejo y dos resonadores del mismo fabricante.",
+      "wer": 6.7,
+      "facility_ok": true,
+      "numbers": "2/2",
+      "ms": 1515
+    },
+    {
+      "n": 7,
+      "ref": "El Hospital DemoCare Park tiene un resonador, quizas de diez anios, mas tres tomografos.",
+      "hyp": "El hospital DemoCare Park tiene un resonador, quizás de 10 años, más 3 tomografos.",
+      "wer": 21.4,
+      "facility_ok": true,
+      "numbers": "1/3",
+      "ms": 1399
+    },
+    {
+      "n": 8,
+      "ref": "La Clinica DemoCare Central tiene muchos ecografos, quizas ocho, todos Aurelia Health.",
+      "hyp": "La Clinique DemoCare Central tiene muchos ecógrafos, quizás 8, todos Aurelia e Health.",
+      "wer": 25,
+      "facility_ok": true,
+      "numbers": "0/1",
+      "ms": 1325
+    },
+    {
+      "n": 9,
+      "ref": "El Instituto DemoCare Lima tiene dos tomografos viejos y un resonador instalado hace poco.",
+      "hyp": "El Instituto DemoCare Lima tiene dos tomógrafos viejos y un resonador instalado hace poco.",
+      "wer": 0,
+      "facility_ok": true,
+      "numbers": "2/2",
+      "ms": 1323
+    },
+    {
+      "n": 10,
+      "ref": "El Hospital DemoCare Metro North tiene dos resonadores. Se que la marca es Aurelia Health pero no el modelo.",
+      "hyp": "El hospital DemoCare Metro North tiene dos resonadores. Sé que la marca es Aurelia e alperonó el modelo.",
+      "wer": 15.8,
+      "facility_ok": true,
+      "numbers": "1/1",
+      "ms": 1366
+    }
+  ]
+}
