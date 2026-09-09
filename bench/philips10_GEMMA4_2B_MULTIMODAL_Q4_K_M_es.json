@@ -5,12 +5,12 @@
   "passed": 7,
   "total": 10,
   "evidence": "17/17",
-  "avg_ms": 20639,
+  "avg_ms": 19199,
   "results": [
     {
       "n": 1,
       "note": "Estoy en el Hospital DemoCare Pacific en Panama. Tienen dos resonadores y un tomografo.",
-      "ms": 19435,
+      "ms": 19613,
       "ok": true,
       "errs": [],
       "evidence": "2/2",
@@ -51,7 +51,7 @@
     {
       "n": 2,
       "note": "En el Hospital DemoCare Horizon vi tres resonadores. Dos se ven viejos y uno se ve mucho mas nuevo.",
-      "ms": 24201,
+      "ms": 20898,
       "ok": false,
       "errs": [
         "MR=4 esperado 3"
@@ -102,7 +102,7 @@
     {
       "n": 3,
       "note": "La Clinica DemoCare Light tiene dos tomografos, ambos Orion Imaging, de unos once anos.",
-      "ms": 17765,
+      "ms": 14297,
       "ok": true,
       "errs": [],
       "evidence": "1/1",
@@ -132,7 +132,7 @@
     {
       "n": 4,
       "note": "El Centro Medico DemoCare Valley tiene un resonador y dos tomografos. No se las marcas.",
-      "ms": 21290,
+      "ms": 20241,
       "ok": true,
       "errs": [],
       "evidence": "2/2",
@@ -178,7 +178,7 @@
     {
       "n": 5,
       "note": "El Hospital DemoCare North tiene unos seis ecografos, casi todos nuevos.",
-      "ms": 16853,
+      "ms": 14321,
       "ok": false,
       "errs": [
         "no marco la cantidad como estimada"
@@ -212,7 +212,7 @@
     {
       "n": 6,
       "note": "La Clinica DemoCare Andes tiene un tomografo muy viejo y dos resonadores del mismo fabricante.",
-      "ms": 23252,
+      "ms": 22241,
       "ok": true,
       "errs": [],
       "evidence": "2/2",
@@ -261,7 +261,7 @@
     {
       "n": 7,
       "note": "El Hospital DemoCare Park tiene un resonador, quizas de diez anos, mas tres tomografos.",
-      "ms": 22085,
+      "ms": 21479,
       "ok": true,
       "errs": [],
       "evidence": "2/2",
@@ -307,7 +307,7 @@
     {
       "n": 8,
       "note": "La Clinica DemoCare Central tiene muchos ecografos, quizas ocho, todos Aurelia Health.",
-      "ms": 15039,
+      "ms": 14180,
       "ok": true,
       "errs": [],
       "evidence": "1/1",
@@ -339,7 +339,7 @@
     {
       "n": 9,
       "note": "El Instituto DemoCare Lima tiene dos tomografos viejos y un resonador instalado hace poco.",
-      "ms": 22872,
+      "ms": 23630,
       "ok": true,
       "errs": [],
       "evidence": "2/2",
@@ -386,7 +386,7 @@
     {
       "n": 10,
       "note": "El Hospital DemoCare Metro North tiene dos resonadores. Se que la marca es Aurelia Health pero no el modelo.",
-      "ms": 23595,
+      "ms": 21086,
       "ok": false,
       "errs": [
         "MR=4 esperado 2"

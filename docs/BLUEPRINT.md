@@ -450,7 +450,7 @@ Cada bloque tiene dueño, entregable y verificación. Un bloque no se da por cer
 
 ### Bloque 0 · Descalificación · mié 15:00–16:00 · Josué + Diego
 Sin esto, nada de lo demás cuenta.
-1. Diego cambia el repo `pixeltabletop/jajanken-hackathon` a acceso para el jurado (público, o privado con los revisores como colaboradores cuando la organización diga quiénes son; **preguntarlo en el mismo mensaje del punto 3**). Decisión por defecto si no responden: público el jueves 20:00.
+1. **Cerrado, lo lleva Diego.** El acceso del repo `pixeltabletop/jajanken-hackathon` para el jurado queda a cargo de Diego. No es tarea de Josué ni del agente constructor.
 2. Josué sube `~/personal/jajanken` al repo como rama `motor`, con `git remote add origin`. Diego sube `Proyecto/` como rama `app`. Se crea `main` vacío con README.
 3. Josué escribe a la organización: confirmación de inscripción del equipo Jajanken en Track 01, regla de un track por equipo frente al texto de Track 05, y a quién dar acceso al repo.
 4. README inicial en `main` con la sección **"Bases preexistentes"** escrita: FieldLens v1 de Diego Laverde y banco de mediciones de Josué Carrillo, ambos del 9 de septiembre, ambos del equipo. Aunque sea del propio equipo, se declara.
@@ -777,13 +777,9 @@ Cada una tumbó una prueba antes de arreglarse. Van en el README como "Notas par
 
 ---
 
-## Anexo D · Instituciones reales de Panamá — SOLO REFERENCIA, NO USAR EN DATOS
+## Anexo D · Datos de Panamá: solo sitios ficticios
 
-Se listan por si el equipo decide cambiar los nombres ficticios. **Recomendación del arquitecto: no hacerlo.** El brief de Philips pide clientes ficticios, y atribuir inventario inventado a una institución real, aunque lleve nota, es exactamente lo que ese guardarraíl prohíbe.
-
-Ciudad de Panamá: Hospital Santo Tomás, Complejo Hospitalario Dr. Arnulfo Arias Madrid, Hospital Punta Pacífica, Hospital Nacional, Hospital Paitilla, Hospital San Fernando. Colón: Hospital Regional Dr. Manuel Amador Guerrero. David: Hospital Regional Rafael Hernández. Santiago: Hospital Dr. Luis "Chicho" Fábrega. Chitré: Hospital Regional Dr. Gustavo Nelson Collado. Penonomé: Hospital Aquilino Tejeira. La Chorrera: Hospital Nicolás Solano.
-
-Los 10 sitios ficticios de `data/seed-panama.json` usan las mismas ciudades con nombres DemoCare inventados. Ese archivo lleva el aviso dentro.
+Decisión cerrada (D12): los 10 sitios de `data/seed-panama.json` son ficticios, con nombres de la convención DemoCare de Philips, ubicados en nueve ciudades reales de Panamá. **No se usa ninguna institución real en ningún dato ni en la interfaz.** El brief de Philips pide clientes ficticios, y atribuir inventario inventado a una institución real, aunque lleve nota, viola ese guardarraíl frente al mismo jurado que lo escribió. El archivo lleva el aviso dentro y la app lo muestra en "Acerca de".
 
 ---
 

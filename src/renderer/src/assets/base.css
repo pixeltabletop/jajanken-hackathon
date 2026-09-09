@@ -1,0 +1,14 @@
+:root {
+  --philips-blue: #0076ce;
+  --philips-deep-blue: #004b93;
+  --philips-sky: #eaf6fd;
+  --ink: #162b3d;
+  --muted: #5b6f7f;
+  --line: #d8e5ed;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: #f5f9fc;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 980px; min-height: 100vh; line-height: 1.45; }
+button, input, select, textarea { font: inherit; }

@@ -5,7 +5,7 @@
 
 import * as sdk from '@qvac/sdk';
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { OBSERVATION_SCHEMA, SYSTEM_EN, SYSTEM_ES } from './schema.js';
+import { OBSERVATION_SCHEMA, SYSTEM_EN, SYSTEM_ES } from '../schema.js';
 
 const MODEL_NAME = process.argv[2] || 'QWEN3_1_7B_INST_Q4';
 const LANG = process.argv[3] || 'en';
@@ -72,7 +72,7 @@ function score(p, t, note) {
   return { errs, evidenceOk, evidenceTotal: quotes.length, badQuotes: bad };
 }
 
-const modelId = await sdk.loadModel({ modelSrc: sdk[MODEL_NAME] });
+const modelId = await sdk.loadModel({ modelSrc: sdk[MODEL_NAME], modelConfig: { ctx_size: 4096 } });
 const SYSTEM = LANG === 'es' ? SYSTEM_ES : SYSTEM_EN;
 console.log(`modelo: ${MODEL_NAME} | idioma: ${LANG} | 10 prompts oficiales de Philips\n`);
 

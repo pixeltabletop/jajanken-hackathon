@@ -13,7 +13,7 @@
 
 import * as sdk from '@qvac/sdk';
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { OBSERVATION_SCHEMA, SYSTEM_ES, MODALITIES, BRANDS, STATUSES, CONFIDENCE } from './schema.js';
+import { OBSERVATION_SCHEMA, SYSTEM_ES, MODALITIES, BRANDS, STATUSES, CONFIDENCE } from '../schema.js';
 
 const MODEL_NAME = process.argv[2] || 'GEMMA4_2B_MULTIMODAL_Q4_K_M';
 

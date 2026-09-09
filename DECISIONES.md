@@ -27,7 +27,13 @@ Cambiar una decisión exige una entrada nueva que la reemplace, no editar la vie
 
 **D11 · Sin mapa geográfico.** Decisión de Josué. Tablero = stats + tabla por equipo + tres gráficos de barras.
 
-**D12 · Datos de Panamá: 10 sitios ficticios DemoCare en ciudades reales.** Josué pidió instituciones reales con casos hipotéticos; el arquitecto recomendó ficticios porque el brief de Philips pide clientes ficticios y atribuir inventario inventado a una institución real viola ese guardarraíl aunque lleve nota. Lista de reales en blueprint Anexo D por si se cambia. Evidencia: `data/seed-panama.json`, 23/23 citas validadas.
+**D12 · Datos de Panamá: 10 sitios ficticios DemoCare en ciudades reales. Ninguna institución real.** Josué pidió primero instituciones reales con casos hipotéticos; el arquitecto recomendó ficticios porque el brief de Philips pide clientes ficticios. Josué lo confirmó el 9 de sep 15:30 y la lista de instituciones reales se eliminó del blueprint. Evidencia: `data/seed-panama.json`, 23/23 citas validadas.
+
+**D16 · El acceso del repositorio para el jurado lo gestiona Diego.** Cerrado el 9 de sep 15:30 por Josué. Sale de la lista del constructor.
+
+**D17 · Repo final = proyecto Electron de Diego como raíz.** `Proyecto/` se copia al repo de Josué (sin `dist/` ni `out/`), el banco pasa a `bench/`, `schema.js` queda en raíz para el banco, la app usa `src/shared/`. `package.json` de Diego manda, con `@qvac/sdk` subido a 0.19.0 y `name: fieldlens`.
+
+**D18 · Motor en TypeScript con especificadores `.ts` explícitos.** Node 24 quita tipos al vuelo y así `scripts/smoke-engine.mjs` importa los módulos reales sin compilar. Requiere `allowImportingTsExtensions: true` en `tsconfig.node.json` y `tsconfig.web.json` (compatible porque el typecheck es `--noEmit` y el bundle lo hace esbuild). Sintaxis solo borrable: sin `enum`, sin propiedades de parámetro, `import type` para tipos.
 
 **D13 · Captura de audio con Web Audio API a WAV en el renderer.** Elimina `ffmpeg`, que v1 invoca del PATH sin empaquetar y muere en máquina limpia.
 
@@ -37,6 +43,5 @@ Cambiar una decisión exige una entrada nueva que la reemplace, no editar la vie
 
 ## Pendientes de decisión
 
-- Repo público o privado con revisores (Bloque 0, depende de respuesta de la organización; default público jueves 20:00).
 - Voz vive o muere (18:00 hoy, Anexo G del blueprint).
 - Pregunta en español se conecta o no (Bloque 5, puerta 7/10).

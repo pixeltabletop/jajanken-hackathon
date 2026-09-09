@@ -1,6 +1,14 @@
-node_modules/
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
+
+# motor / mediciones
 .qvac/
 *.gguf
-bench/*.log
-.env
 audio/
+bench/*.log
+.smoke-userdata/
+

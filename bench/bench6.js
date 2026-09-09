@@ -7,7 +7,7 @@
 
 import * as sdk from '@qvac/sdk';
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { OBSERVATION_SCHEMA, SYSTEM_EN, SYSTEM_ES } from './schema.js';
+import { OBSERVATION_SCHEMA, SYSTEM_EN, SYSTEM_ES } from '../schema.js';
 
 const MODE = process.argv[2] || 'traducido';
 const MODEL_NAME = process.argv[3] || 'QWEN3_1_7B_INST_Q4';
