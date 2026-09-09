@@ -39,9 +39,22 @@ async function track<T>(key: ModelKey, loader: () => Promise<T>): Promise<T> {
     status[key] = { state: 'ready', ms: Date.now() - t0 }
     return result
   } catch (e) {
-    status[key] = { state: 'error', error: e instanceof Error ? e.message : String(e) }
+    status[key] = { state: 'error', error: describeLoadError(e) }
     throw e
   }
+}
+
+// El SDK reporta "RPC initialization timed out" aunque el worker haya muerto al
+// instante. La causa real viene en cause.stderrTail. Sin esto se pierde una hora.
+function describeLoadError(e: unknown): string {
+  const msg = e instanceof Error ? e.message : String(e)
+  const cause = (e as { cause?: { message?: string; stderrTail?: string; exitCode?: number } })?.cause
+  if (!cause) return msg
+  const tail = (cause.stderrTail ?? '').split(/\r?\n/).find((l) => l.trim()) ?? ''
+  const parts = [msg]
+  if (cause.exitCode != null) parts.push(`worker exit ${cause.exitCode}`)
+  if (tail) parts.push(tail.slice(0, 300))
+  return parts.join(' · ')
 }
 
 export async function loadGemma(onProgress?: Progress): Promise<string> {
