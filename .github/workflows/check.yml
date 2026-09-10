@@ -20,7 +20,11 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Windows a propósito, no Linux: es la plataforma que la entrega declara y
+    # para la que se construye el instalador, y varias comprobaciones importan
+    # el SDK de QVAC, que trae binarios por plataforma. Correrlas donde la
+    # entrega no se usa probaria menos, no mas.
+    runs-on: windows-latest
     env:
       ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
     steps:

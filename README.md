@@ -168,7 +168,7 @@ extrae, y hay que hacerlo a mano con `Expand-Archive`.
 ## Cómo reproducir la verificación
 
 ```bash
-npm run check                        # tipos + tokens + contraste + sin red + troceo de audio
+npm run check                        # las siete puertas, sin modelos y sin abrir la app
 npm run smoke                        # el motor completo, sin Electron
 npm run smoke:semaforo               # el estado de los modelos no miente
 npm run bench:all                    # reproduce el banco de mediciones
@@ -189,7 +189,8 @@ MAM_DEBUG_PORT=9333 node scripts/e2e-4b.mjs
 ```
 
 `npm run check` corre en cualquier máquina y no necesita ni la aplicación ni los
-modelos: es lo mismo que corre CI en cada push.
+modelos: es lo mismo que corre CI en cada push, en Windows, que es la plataforma
+para la que se construye el instalador.
 
 ### Todos los comandos
 
@@ -197,12 +198,14 @@ modelos: es lo mismo que corre CI en cada push.
 |---|---|---|
 | `npm run dev` | Electron en desarrollo, con recarga del renderer | no |
 | `npm run build:win` | Instalador NSIS en `dist/` | sí |
-| `npm run check` | Tipos, tokens, contraste declarado, sin red y troceo de audio | no |
+| `npm run check` | Las siete puertas: tipos, tokens, contraste declarado, sin red, troceo de audio, locks de QVAC y los casos de las auditorías | no |
 | `npm run typecheck` | Solo los tipos, de los dos proyectos | no |
 | `npm run check:contrast` | Los pares de color declarados, en los dos temas | con `--md`, `docs/contraste.md` |
 | `npm run check:tokens` | Que toda variable de color usada exista de verdad | no |
 | `npm run check:sin-red` | Ninguna salida a la red en el código empaquetado | no |
 | `npm run check:troceo` | Que una nota larga se corte bien antes de ir al motor, sin cargar modelos | no |
+| `npm run check:locks` | Que un lock huérfano de QVAC se retire y uno vivo no, sin arrancar el worker | no |
+| `npm run check:auditoria` | Los casos exactos de las dos auditorías externas, sobre las funciones puras | no |
 | `npm run lint` / `npm run format` | Estilo de código | `format` sí |
 | `npm run smoke` | Carga los tres modelos y corre el ciclo, sin Electron | no |
 | `npm run smoke:semaforo` | Mata el motor y comprueba que el estado lo refleja | no |

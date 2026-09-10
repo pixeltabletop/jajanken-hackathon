@@ -404,13 +404,64 @@ por apuntar a una ruta donde el workbook nunca estuvo. Se queda: no cuesta nada 
 es la red que impide que el documento del cliente viaje dentro del instalador si
 alguien lo deja caer ahí.
 
+**D78 · El arranque con poca memoria ya no miente ni se queda mudo (cierra H8).** Tres
+frentes, y ninguno se pudo probar de punta a punta porque hace falta la máquina
+apretada y los 3,9 GB de modelos; lo que sí se probó va abajo.
+
+1. **El lock huérfano.** Tras un cierre abrupto quedaban `~/.qvac/.worker.lock` y
+   `.cache.lock` apuntando a un PID muerto, y en el siguiente arranque la
+   aplicación esperaba para siempre sin decir nada. Ahora `warmup()` los revisa
+   antes del primer `loadModel` y solo borra el que el sistema confirma muerto
+   con `process.kill(pid, 0)` y `ESRCH`. Un lock vivo, uno de otro usuario
+   (`EPERM`), uno ilegible, uno sin PID y el del propio proceso NO se tocan: ante
+   la duda, se conserva. Comprobado sin motor con `npm run check:locks`, siete
+   casos.
+
+2. **El timeout de RPC no es prueba de muerte.** El tope de 240 s vence del lado
+   del cliente, pero el worker puede terminar después: en la corrida del auditor
+   los tres modelos salieron en `error` mientras `bare` ocupaba 4.925 MB con todo
+   cargado. Ahora, ante `RPC_INIT_TIMEOUT` (código 50204 del SDK), se le vuelve a
+   preguntar al worker, se busca la instancia cargada con la configuración que se
+   pidió, y se adopta **solo** después de confirmarla con `getLoadedModelInfo`. Si
+   no se puede confirmar, sí es error, pero con un mensaje que dice que pudo ser
+   lentitud por falta de memoria y no un fallo del modelo.
+
+3. **Que no se quede mudo.** Con los tres modelos en `error` la aplicación se
+   quedaba en la pantalla de acceso, donde no vive el semáforo, así que no había
+   ni un mensaje. Ahora esa pantalla muestra los tres puntos, cuántos modelos hay
+   listos y el error si lo hay. Reutiliza `dots`, `qbar-error` y los tokens que ya
+   existían: ni un color nuevo. Medido sobre la hoja de estilos real, el aviso de
+   error da **6,96:1** en el tema blanco y **8,83:1** en el negro, y sin error
+   **14,51:1**.
+
+Lo construyó Codex a partir de un encargo cerrado; la auditoría, la medición de
+contraste y la comprobación de que la superficie del SDK existe de verdad
+(`SDK_CLIENT_ERROR_CODES.RPC_INIT_TIMEOUT`, `getModelInfo`, `loadedInstances`)
+son de este lado.
+
+**D79 · Los hallazgos auditados quedan congelados en una comprobación.** Arreglar
+un fallo sin dejar cómo se comprueba es dejarlo volver. `npm run check:auditoria`
+reproduce los casos EXACTOS que reportaron los dos auditores, sobre las funciones
+puras y sin cargar un solo modelo: las catorce formas de pedir un desglose, el
+filtro `MR` que el modelo se inventaba, la nota de los tomógrafos Siemens que
+salía con marca NovaMed en confianza Alta, la frase con dos veces los dos puntos,
+la corrección idéntica a sí misma, que el fondo del botón de ayuda no vuelva a la
+transición, que las dos cadenas que el medidor inyecta compilen, que el puerto de
+depuración siga siendo movible y que el candado de npm no se desincronice otra
+vez del manifiesto. Con esto la puerta `npm run check` pasa de cuatro etapas a
+siete.
+
+**D80 · La integración continua corre en Windows, no en Linux.** Es la plataforma
+que la entrega declara y para la que se construye el instalador, y varias
+comprobaciones importan el SDK de QVAC, que trae binarios por plataforma.
+Correrlas donde la entrega no se usa probaría menos, no más.
+
 ## Pendientes de decisión
 
 - **La rama predeterminada del repositorio** (D68). `main` ya está publicado; lo que falta es cambiar la predeterminada a `main`, o adelantar `prueba-de-acceso`. Sin eso, el enlace sigue recibiendo con el README viejo.
 - **El enlace del video en el README.** Sigue como "pendiente de publicar".
 - **Instalación en un perfil de Windows limpio.** El instalador está construido y verificado en esta máquina; en una limpia, no.
 - **Confirmar con Philips la semilla derivada.** El repositorio es público y `data/seed-philips.json` se deriva de su workbook. El brief y el workbook salieron (D54, D60) y `NOTICE.md` lo declara, pero conviene tener la respuesta por escrito.
-- **El arranque con poca memoria** (H8 de la auditoría de la aplicación, sin arreglar). Con menos de ~2 GB libres el RPC agota sus 240 s, los tres modelos se pintan en `error` y el semáforo desaparece, cuando el worker en realidad solo tardaba. Y tras un cierre abrupto quedan `~/.qvac/.worker.lock` y `.cache.lock` apuntando a un PID muerto, y la aplicación se queda esperando sin decir nada. Pide detectar el lock huérfano y volver a preguntar por el worker antes de declararlo muerto.
 - **Rendimiento en máquina cargada** (H7). La extracción midió 29,4 s contra los 14-23 s declarados, con 4,3 GB libres de 15,6 GB. Es lo que ya dice la D67: la memoria libre manda. Para grabar el video hay que cerrar todo antes.
 - Voz vive o muere (Anexo G del blueprint), con el audio real de Diego.
 - Pieza de logo con movimiento real y cadencia constante, si Diego quiere animación en el arranque (D43).
