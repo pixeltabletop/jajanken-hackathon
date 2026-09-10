@@ -26,7 +26,13 @@
   all: unset; cursor: help; width: 15px; height: 15px; border-radius: 50%;
   background: var(--sky); color: var(--primary-deep);
   font-size: 10px; font-weight: 700; line-height: 15px; text-align: center;
-  transition: background .2s var(--ease), transform .2s var(--ease);
+  /* El fondo NO se anima. Al pasar el raton este boton se da la vuelta: fondo
+     claro con texto oscuro pasa a fondo oscuro con texto claro. Con el fondo en
+     transicion y el color sin ella, durante 200 ms se veia el texto nuevo sobre
+     el fondo viejo, y el "?" desaparecia justo al ir a pulsarlo. Animar tambien
+     el color no arregla nada: a mitad del cruce los dos tonos se encuentran en
+     el medio y el contraste cae igual. Se cambian los dos a la vez, y ya. */
+  transition: transform .2s var(--ease);
 }
 .helptip-btn:hover, .helptip-btn:focus-visible { background: var(--primary); color: var(--surface); transform: scale(1.15); }
 .helptip-box {

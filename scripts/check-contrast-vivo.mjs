@@ -1,6 +1,6 @@
 // Contraste medido sobre la app EN EJECUCIÓN, elemento por elemento.
 //
-//   1. npm run dev -- -- --remote-debugging-port=9222
+//   1. npm run dev -- -- --remote-debugging-port=9222   (o el de MAM_DEBUG_PORT)
 //   2. node scripts/check-contrast-vivo.mjs
 //
 // Por qué existe además de check-contrast.mjs: aquel mide los pares que yo
@@ -15,7 +15,11 @@
 
 import { writeFileSync, mkdirSync } from 'node:fs'
 
-const PORT = 9222
+// El puerto de depuracion se puede mover: en una maquina donde el 9222 este
+// ocupado por otro programa (el widget de Lenovo Vantage, por ejemplo) este
+// script no encuentra la ventana y falla entero. MAM_DEBUG_PORT lo cambia,
+// aqui y en el arranque de la app.
+const PORT = Number(process.env.MAM_DEBUG_PORT ?? 9222)
 mkdirSync('bench', { recursive: true })
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -23,12 +27,12 @@ async function findPage() {
   for (let i = 0; i < 40; i++) {
     try {
       const t = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const p = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
+      const p = t.find((x) => x.type === 'page' && /^https?:\/\/(localhost|127\.0\.0\.1)[:/]|MAM/i.test(`${x.url} ${x.title}`))
       if (p) return p
     } catch { /* aún no */ }
     await sleep(1000)
   }
-  throw new Error('No encontré la ventana de MAM en el puerto 9222')
+  throw new Error(`No encontré la ventana de MAM en el puerto ${PORT}`)
 }
 
 const page = await findPage()
@@ -87,9 +91,17 @@ const AUDITOR = `(() => {
     }
     return partes.join(' > ')
   }
+  // Un elemento a mitad de una animacion o de una transicion no es un estado:
+  // es un fotograma de paso. Medirlo ahi da falsos positivos que tapan los
+  // fallos de verdad. El resaltado de evidencia arranca en 'background:
+  // transparent' y a los 20 ms mide 1,07:1 contra el fondo del contenedor;
+  // asentado mide 14,33:1. Lo mismo vale para lo que se esta yendo de pantalla.
+  const enMovimiento = (el) => el.getAnimations().some((a) => a.playState === 'running')
+  const saliendo = (el) => !!el.closest('.saliendo, [data-saliendo], .cerrando')
   const out = []
   for (const el of document.querySelectorAll('body *')) {
     if (!tieneTexto(el) || !visible(el)) continue
+    if (enMovimiento(el) || saliendo(el)) continue
     const s = getComputedStyle(el)
     const fg = parse(s.color)
     if (!fg) continue
@@ -109,7 +121,24 @@ const AUDITOR = `(() => {
 const results = []
 const problemas = []
 
+/**
+ * Espera a que no quede ninguna animacion ni transicion corriendo.
+ *
+ * `sleep(400)` a ojo no basta: cada pantalla tiene sus propios tiempos y basta
+ * con que una tarde un poco mas para medir un fotograma de paso. Aqui se le
+ * pregunta al navegador. El tope evita colgarse con una animacion infinita,
+ * como el pulso del semaforo.
+ */
+const ESPERAR_QUIETO = `(async () => {
+  const corriendo = document.getAnimations().filter((a) => a.playState === 'running')
+  const fin = Promise.all(corriendo.map((a) => a.finished.catch(() => undefined)))
+  await Promise.race([fin, new Promise((r) => setTimeout(r, 900))])
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+  return document.getAnimations().filter((a) => a.playState === 'running').length
+})()`
+
 async function auditar(etiqueta) {
+  await js(ESPERAR_QUIETO)
   const filas = await js(AUDITOR)
   const malas = filas.filter((f) => !f.ok)
   results.push({ estado: etiqueta, medidos: filas.length, fallos: malas.length, malas })
