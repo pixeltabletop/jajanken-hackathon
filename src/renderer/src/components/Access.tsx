@@ -11,6 +11,7 @@
 // escribir a mano en dos sitios distintos.
 
 import { useState, type JSX } from 'react'
+import type { ModelKey, ModelStatus } from '../../../shared/types.ts'
 import { LogoMark } from './LogoMotion.tsx'
 
 interface Props {
@@ -18,11 +19,16 @@ interface Props {
   initialName: string
   onEnter: (name: string) => void
   observations: number
+  status: ModelStatus | null
 }
 
-export function Access({ initialName, onEnter, observations }: Props): JSX.Element {
+const CLAVES: ModelKey[] = ['whisper', 'embed', 'gemma']
+
+export function Access({ initialName, onEnter, observations, status }: Props): JSX.Element {
   const [name, setName] = useState(initialName)
   const limpio = name.trim()
+  const listos = CLAVES.filter((key) => status?.[key].state === 'ready').length
+  const errores = [...new Set(CLAVES.map((key) => status?.[key].error).filter((e): e is string => !!e))]
 
   function submit(e: React.FormEvent): void {
     e.preventDefault()
@@ -35,6 +41,16 @@ export function Access({ initialName, onEnter, observations }: Props): JSX.Eleme
         <LogoMark size="mark" label="MAM" />
         <h1 id="acc-h">MAM</h1>
         <p className="access-sub">Inteligencia de base instalada · 100 % local, sin nube</p>
+
+        <div className={`access-engine${errores.length ? ' qbar-error' : ''}`} role={errores.length ? 'alert' : 'status'}>
+          <span className="dots" aria-hidden="true">
+            {CLAVES.map((key) => <span key={key} className={`dot ${status?.[key].state ?? 'idle'}`} />)}
+          </span>
+          <span className="access-engine-copy">
+            <b>{listos === 3 ? 'Motor local listo' : `Motor local · ${listos}/3 modelos listos`}</b>
+            {errores.map((error) => <span key={error}>{error}</span>)}
+          </span>
+        </div>
 
         <label className="access-field" htmlFor="acc-user">
           Tu nombre

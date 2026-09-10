@@ -1,13 +1,84 @@
 // Carga única de los tres modelos con SU configuración medida.
 // Sin Electron: importable desde Node puro para el humo del motor.
 
+import { readFile, unlink } from 'node:fs/promises'
 import os from 'node:os'
+import { join } from 'node:path'
 import * as sdk from '@qvac/sdk'
 import type { ModelKey, ModelStatus } from '../../shared/types.ts'
 import { whisperHint } from './prompts.ts'
 
 // El worker tarda más de 30 s en arrancar en Windows en frío. Sin esto, RPC_INIT_TIMEOUT.
 process.env.QVAC_RPC_INIT_TIMEOUT_MS ??= '240000'
+
+const LOCKS_QVAC = ['.worker.lock', '.cache.lock'] as const
+type EstadoProceso = 'vivo' | 'muerto' | 'desconocido'
+
+/** Extrae solo un PID declarado como tal; cualquier otro numero es ambiguo. */
+export function extraerPidLock(contenido: string): number | null {
+  const valor = /\bpid\b["']?\s*[:=]\s*["']?(\d+)/i.exec(contenido)?.[1]
+  if (!valor) return null
+  const pid = Number(valor)
+  return Number.isSafeInteger(pid) && pid > 0 ? pid : null
+}
+
+/**
+ * Decide sin tocar disco ni procesos. Separarlo permite probar todas las
+ * guardas sin crear o matar procesos de verdad.
+ */
+export function esLockHuerfano(pid: number, propioPid: number, estado: EstadoProceso): boolean {
+  return pid !== propioPid && estado === 'muerto'
+}
+
+function estadoProceso(pid: number): EstadoProceso {
+  try {
+    process.kill(pid, 0)
+    return 'vivo'
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code
+    if (code === 'ESRCH') return 'muerto'
+    // EPERM confirma que el proceso existe, aunque pertenezca a otro usuario.
+    if (code === 'EPERM') return 'vivo'
+    return 'desconocido'
+  }
+}
+
+/**
+ * QVAC espera para siempre ante un lock cuyo dueño ya murió. Solo se retiran
+ * los dos locks conocidos y únicamente cuando el sistema confirma ESRCH.
+ */
+export async function limpiarLocksQvacHuerfanos(
+  directorio = join(os.homedir(), '.qvac'),
+  consultarProceso: (pid: number) => EstadoProceso = estadoProceso,
+  propioPid = process.pid
+): Promise<string[]> {
+  const borrados: string[] = []
+  for (const nombre of LOCKS_QVAC) {
+    const ruta = join(directorio, nombre)
+    let contenido: string
+    try {
+      contenido = await readFile(ruta, 'utf8')
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+        console.warn(`[qvac] no se pudo leer ${ruta}; se conserva el lock`)
+      }
+      continue
+    }
+
+    const pid = extraerPidLock(contenido)
+    if (pid == null || !esLockHuerfano(pid, propioPid, consultarProceso(pid))) continue
+    try {
+      await unlink(ruta)
+      borrados.push(ruta)
+      console.warn(`[qvac] se elimino el lock huerfano ${ruta} (PID ${pid})`)
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+        console.warn(`[qvac] no se pudo eliminar el lock huerfano ${ruta}`)
+      }
+    }
+  }
+  return borrados
+}
 
 const ids: Partial<Record<ModelKey, string>> = {}
 // Cargas en curso. Sin esto, dos llamadas concurrentes al mismo modelo arrancan
@@ -305,7 +376,58 @@ function gbLibres(): number {
 
 type Progress = (p: { percentage: number }) => void
 
-async function track<T>(key: ModelKey, loader: () => Promise<T>): Promise<T> {
+function isRpcInitTimeout(e: unknown): boolean {
+  const code = (e as { code?: number })?.code
+  if (code === sdk.SDK_CLIENT_ERROR_CODES.RPC_INIT_TIMEOUT) return true
+  const msg = e instanceof Error ? e.message : String(e)
+  return /RPC initialization timed out/i.test(msg)
+}
+
+/** La configuración resuelta puede traer defaults; los campos pedidos sí deben coincidir. */
+function incluyeConfig(actual: unknown, pedida: unknown): boolean {
+  if (Array.isArray(pedida)) {
+    return Array.isArray(actual) && pedida.length === actual.length &&
+      pedida.every((valor, i) => incluyeConfig(actual[i], valor))
+  }
+  if (pedida && typeof pedida === 'object') {
+    const entradas = Object.entries(pedida)
+    if (entradas.length === 0) return true
+    if (!actual || typeof actual !== 'object' || Array.isArray(actual)) return false
+    return entradas.every(([clave, valor]) => incluyeConfig((actual as Record<string, unknown>)[clave], valor))
+  }
+  return Object.is(actual, pedida)
+}
+
+/**
+ * El timeout de arranque vence del lado del cliente, pero el worker puede
+ * terminar después. El catálogo conserva el identificador real que `loadModel`
+ * ya no alcanzó a devolver; se adopta solo tras confirmarlo contra el worker.
+ */
+async function adoptarTrasTimeout(key: ModelKey, modelName: string, modelConfig: unknown): Promise<string | null> {
+  if (await latir() !== 'vivo') return null
+  try {
+    const info = await sdk.getModelInfo({ name: modelName })
+    const cargados = (info.loadedInstances ?? []).filter((modelo) => incluyeConfig(modelo.config, modelConfig))
+    const ultimo = cargados.reduce<(typeof cargados)[number] | null>((mejor, actual) =>
+      !mejor || actual.loadedAt > mejor.loadedAt ? actual : mejor, null)
+    if (!ultimo) return null
+    await sdk.getLoadedModelInfo({ modelId: ultimo.registryId })
+    console.warn(`[qvac] ${key} termino de cargar despues del timeout; se adopta ${ultimo.registryId}`)
+    return ultimo.registryId
+  } catch (e) {
+    // Ausente es una respuesta valida. Cualquier otro tropiezo tampoco prueba
+    // que el modelo muriera, pero impide confirmarlo y por eso no se adopta.
+    if (!isStaleModelError(e)) console.warn(`[qvac] no se pudo confirmar ${key} despues del timeout`)
+    return null
+  }
+}
+
+async function track(
+  key: ModelKey,
+  modelName: string,
+  modelConfig: unknown,
+  loader: () => Promise<string>
+): Promise<string> {
   status[key] = { state: 'loading' }
   const t0 = Date.now()
   try {
@@ -313,6 +435,14 @@ async function track<T>(key: ModelKey, loader: () => Promise<T>): Promise<T> {
     status[key] = { state: 'ready', ms: Date.now() - t0 }
     return result
   } catch (e) {
+    if (isRpcInitTimeout(e)) {
+      const adoptado = await adoptarTrasTimeout(key, modelName, modelConfig)
+      if (adoptado) {
+        ids[key] = adoptado
+        status[key] = { state: 'ready', ms: Date.now() - t0 }
+        return adoptado
+      }
+    }
     status[key] = { state: 'error', error: describeLoadError(e) }
     throw e
   }
@@ -322,6 +452,9 @@ async function track<T>(key: ModelKey, loader: () => Promise<T>): Promise<T> {
 // instante. La causa real viene en cause.stderrTail. Sin esto se pierde una hora.
 function describeLoadError(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e)
+  if (isRpcInitTimeout(e)) {
+    return `El motor local no respondio dentro del tiempo de espera. Pudo ser lentitud por falta de memoria; el modelo no se confirmo como cargado. Cierra otras aplicaciones y vuelve a intentarlo. (${msg})`
+  }
   // "Bare worker exited mid-request" es lo que dice el SDK cuando al worker lo
   // mata el sistema por falta de memoria. Traducirlo aqui ahorra el rato que
   // costo la primera vez averiguar que no era un fallo del modelo.
@@ -344,11 +477,12 @@ function describeLoadError(e: unknown): string {
 export async function loadGemma(onProgress?: Progress): Promise<string> {
   if (ids.gemma) return ids.gemma
   if (inflight.gemma) return inflight.gemma
-  inflight.gemma = track('gemma', async () => {
+  const modelConfig = { ctx_size: 4096 }
+  inflight.gemma = track('gemma', sdk.GEMMA4_2B_MULTIMODAL_Q4_K_M.name, modelConfig, async () => {
     ids.gemma = await cargar(() => sdk.loadModel({
       modelSrc: sdk.GEMMA4_2B_MULTIMODAL_Q4_K_M,
       // El default es 1024 y desborda con dictados largos o caché acumulada.
-      modelConfig: { ctx_size: 4096 },
+      modelConfig,
       onProgress
     }))
     return ids.gemma
@@ -359,15 +493,16 @@ export async function loadGemma(onProgress?: Progress): Promise<string> {
 export async function loadWhisper(customerNames: string[], onProgress?: Progress): Promise<string> {
   if (ids.whisper) return ids.whisper
   if (inflight.whisper) return inflight.whisper
-  inflight.whisper = track('whisper', async () => {
+  const modelConfig = {
+    language: 'es', // Sin esto, Whisper autodetecta y TRADUCE al inglés
+    translate: false,
+    no_timestamps: true,
+    initial_prompt: whisperHint(customerNames)
+  }
+  inflight.whisper = track('whisper', sdk.WHISPER_BASE_Q8_0.name, modelConfig, async () => {
     ids.whisper = await cargar(() => sdk.loadModel({
       modelSrc: sdk.WHISPER_BASE_Q8_0,
-      modelConfig: {
-        language: 'es', // Sin esto, Whisper autodetecta y TRADUCE al inglés
-        translate: false,
-        no_timestamps: true,
-        initial_prompt: whisperHint(customerNames)
-      },
+      modelConfig,
       onProgress
     }), true)
     return ids.whisper
@@ -389,7 +524,7 @@ export async function reloadWhisper(customerNames: string[]): Promise<string> {
 export async function loadEmbed(onProgress?: Progress): Promise<string> {
   if (ids.embed) return ids.embed
   if (inflight.embed) return inflight.embed
-  inflight.embed = track('embed', async () => {
+  inflight.embed = track('embed', sdk.EMBEDDINGGEMMA_300M_Q8_0.name, {}, async () => {
     ids.embed = await cargar(() => sdk.loadModel({ modelSrc: sdk.EMBEDDINGGEMMA_300M_Q8_0, onProgress }))
     return ids.embed
   }).finally(() => { inflight.embed = undefined }) as Promise<string>
@@ -423,6 +558,10 @@ export async function loadEmbed(onProgress?: Progress): Promise<string> {
  * entrega.
  */
 export async function warmup(customerNames: string[]): Promise<ModelStatus> {
+  // Va antes del primer loadModel: si el SDK ve un lock huerfano, no llega a
+  // responder y tampoco deja un error util para la interfaz.
+  await limpiarLocksQvacHuerfanos()
+
   const libres = gbLibres()
   if (libres < GB_NECESARIOS) {
     console.warn(`[qvac] quedan ${libres.toFixed(1)} GB libres y los tres modelos necesitan unos ${GB_NECESARIOS} GB; puede que alguno no cargue`)

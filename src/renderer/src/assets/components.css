@@ -606,6 +606,9 @@ button.ghost:active:not(:disabled),
 .access-card .logo { align-self: center; margin-bottom: 10px; }
 .access-card h1 { text-align: center; font-size: 30px; margin: 0; color: var(--primary-deep); }
 .access-sub { text-align: center; margin: 4px 0 20px; font-size: 13px; color: var(--muted); }
+.access-engine { display: flex; align-items: flex-start; gap: 10px; margin: -6px 0 18px; font-size: 12px; line-height: 1.45; }
+.access-engine .dots { flex: 0 0 auto; }
+.access-engine-copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
 .access-field { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 16px; }
 .access-field input {
   width: 100%; margin-top: 5px; padding: 11px 13px; font-size: 15px;

@@ -484,6 +484,7 @@ export default function App(): JSX.Element {
       <Access
         initialName={operator}
         observations={observations.length}
+        status={status}
         onEnter={(n) => {
           onOperator(n)
           setFlash((f) => f + 1)
