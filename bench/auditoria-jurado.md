@@ -77,8 +77,9 @@ inteligencia artificial con revisión humana, y la marca Philips.
 
 La rama predeterminada en GitHub sigue siendo `prueba-de-acceso`, no `main`. Un
 jurado que abra el enlace aterriza en una rama de prueba. Además, `main` local va
-**tres commits por delante** del remoto: la barra lateral, la corrección de la
-declaración de origen y la comprobación de sin red no están publicadas.
+**doce commits por delante** del remoto: el cambio de nombre a MAM, la barra
+lateral, la corrección de la declaración de origen, la comprobación de ausencia
+de red, el guion del video y el arnés de grabación no están publicados.
 
 Son dos acciones de un minuto cada una, y una necesita permiso de administración
 que la cuenta `josweq` no tiene.
