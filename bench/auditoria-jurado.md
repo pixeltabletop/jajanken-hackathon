@@ -1,7 +1,7 @@
-# Eco · Jajanken — auditoría desde la silla del jurado
+# MAM · Medical Asset Management — auditoría desde la silla del jurado
 
-Fecha: 2026-09-10. Entrega: viernes 11 de septiembre, 08:00 hora de Panamá.
-Quedan unas 20 horas.
+Fecha: 2026-09-10, revisada esa misma tarde. Entrega: viernes 11 de
+septiembre, 08:00 hora de Panamá.
 
 Esto no es un resumen del trabajo hecho. Es el proyecto mirado por alguien que
 busca razones para bajarle la nota, con los criterios que el propio reto publicó.
@@ -83,11 +83,22 @@ declaración de origen y la comprobación de sin red no están publicadas.
 Son dos acciones de un minuto cada una, y una necesita permiso de administración
 que la cuenta `josweq` no tiene.
 
-### El video no existe
+### El video: ya no falta todo, falta grabarlo
 
-Es lo primero que revisa el jurado, antes que el código. Sin él, todo lo demás
-se evalúa a ciegas o no se evalúa. El README ya tiene el sitio marcado en la
-primera línea.
+Es lo primero que revisa el jurado, antes que el código. Sigue sin existir el
+archivo, pero ya no se parte de cero:
+
+- **Guion completo** en `docs/GUION-VIDEO.md`: trece planos, 4:58, narración
+  palabra por palabra con el conteo contra la capacidad de cada plano, y una
+  sección de riesgos en vivo. Cada cifra que cita sale de un archivo del
+  repositorio; ninguna inventada.
+- **Coreografía automatizada** en `scripts/grabar-demo.mjs`. `npm run demo:ensayo`
+  recorre y cronometra sin gastar una toma; `npm run demo:grabar` graba la
+  pantalla. Ensayado de punta a punta: **4:58 exactos, los trece planos sin
+  desviación**.
+- **Lo que falta:** memoria libre para grabar, y la narración encima.
+
+El README tiene el sitio del enlace marcado en la primera línea.
 
 ---
 
@@ -111,15 +122,25 @@ Dicho primero, es el diferenciador. Dicho a la defensiva, es una excusa.
 
 ### 2. «Se te murió en tu propia máquina»
 
-Pasó hoy, durante las pruebas. Los tres modelos piden unos 4,2 GB y con la
-memoria apretada el motor local se muere a mitad de carga. El mensaje del SDK
-era mudo: hablaba de un proceso que salió, sin sugerir que el problema fuera la
-memoria.
+Pasó dos veces hoy, durante las pruebas, y de dos formas distintas.
 
-Ya se traduce y dice cuántos gigas quedaban. Pero **el riesgo sigue vivo**: en
-una laptop con el correo, el navegador y una videollamada abiertos, esto vuelve
-a pasar. Si la demo es en vivo, hay que arrancar con la máquina limpia y los
-modelos precargados.
+**Muere.** Los tres modelos piden unos 4,2 GB y con la memoria apretada el motor
+se muere a mitad de carga. El mensaje del SDK era mudo: hablaba de un proceso que
+salió, sin sugerir que el problema fuera la memoria. Ya se traduce y dice cuántos
+gigas quedaban.
+
+**O peor: no muere, se arrastra.** Medido en el ensayo del video:
+
+| Memoria libre | La misma consulta | El video entero |
+|---|---|---|
+| 0,4 GB | 175 s | 7:23, incumple el reto |
+| 1,8 GB | 13,7 s | 4:58 |
+
+Doce veces más lento, sin un solo error y sin ninguna señal en pantalla. Un
+jurado que viera eso concluiría que la aplicación es lenta, y no lo es. **Este es
+el riesgo número uno de la demostración**, por encima de cualquier fallo del
+modelo. La máquina se prepara cerrando todo antes de grabar o presentar, y el
+arnés de grabación se niega a empezar por debajo de 1,5 GB libres.
 
 ### 3. «¿Esto lo probaste o lo escribiste?»
 
@@ -131,9 +152,9 @@ Aquí el expediente es fuerte y conviene enseñarlo sin que lo pidan:
 | Pregunta en español, Anexo F | 10/10 |
 | Intención y agrupación | 5/5 |
 | Consultas de varias condiciones | 5/5 |
-| Interfaz contra la aplicación real | 84/84 |
-| Contraste declarado, dos temas | 124/124 |
-| Contraste sobre la app viva | +9.000 textos, 18 estados, 0 fallos |
+| Interfaz contra la aplicación real | 86/86 |
+| Contraste declarado, dos temas | 150/150 |
+| Contraste sobre la app viva | 32 estados en dos temas, incluidos ratón encima y presionado, 0 fallos |
 | El motor sin interfaz | humo completo OK |
 | El estado de los modelos no miente | 9/9 sin interfaz, 3/3 en vivo |
 
@@ -159,10 +180,17 @@ enseñe como si existieran**.
 
 ## Lo que haría en las próximas horas, en este orden
 
-1. **Subir `main`** al repositorio del jurado. Un minuto.
+1. **Subir `main`** al repositorio del jurado. Van **once commits sin publicar**,
+   incluidos el cambio de nombre a MAM, la barra lateral y la comprobación de
+   ausencia de red. Un minuto.
 2. **Que Diego cambie la rama predeterminada a `main`** y borre
    `prueba-de-acceso`. Necesita permiso de administración.
-3. **Grabar el video.** Es el único punto crítico. Sin él no hay entrega.
+3. **Grabar el video.** Es el único punto crítico. Sin él no hay entrega. El
+   guion y la coreografía ya están; hace falta cerrar aplicaciones para tener
+   memoria y poner la narración encima.
+3b. **Decidir el dictado.** El guion lo deja fuera a propósito y lo justifica en
+   la narración, pero el producto se presenta como «de la voz al dato». O entra
+   un plano corto de dictado, o no se lidera con la voz.
 4. **Poner el enlace en la primera línea del README** y comprobarlo en una
    ventana privada, sin sesión iniciada.
 5. **Instalar en un perfil de Windows limpio** y correr el ciclo con el WiFi
@@ -176,8 +204,13 @@ enseñe como si existieran**.
 
 ## Lo que no pude verificar
 
-- **Que un juez pueda instalarlo.** El instalador está construido y verificado
-  arrancando, pero en esta máquina, no en un perfil limpio.
+- **Que un juez pueda instalarlo.** El instalador `MAM-1.0.0-setup.exe` (595 MB)
+  está construido y verificado **arrancando desde el ejecutable empaquetado**:
+  los tres modelos cargan, una extracción real tarda 14,7 s, devuelve el sitio
+  correcto con su cita y no inventa el equipo que la nota negaba, y no hace una
+  sola petición fuera del equipo. Lo que sigue sin probarse es un **perfil de
+  Windows limpio**, que es lo único que demuestra que otra persona puede
+  instalarlo.
 - **Que el nombre de ningún cliente inventado coincida por casualidad con una
   institución real.** Se usa la convención DemoCare y las ciudades son reales a
   propósito, pero no hay forma de probar la ausencia desde aquí.
