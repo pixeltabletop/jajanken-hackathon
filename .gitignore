@@ -1,17 +1,21 @@
-# Dependencias y salidas de construcción
+# Dependencias y salidas de construcción. Las rutas propias del proyecto van
+# ancladas con barra inicial: sin ella, la regla vale para CUALQUIER carpeta con
+# ese nombre en cualquier nivel del árbol.
 node_modules
-out
-dist/
+/out
+/dist/
 
 # Modelos y cachés de QVAC
 *.gguf
 .qvac/
 .smoke-userdata/
 
-# Registros y audio de pruebas
+# Registros y audio de pruebas. `/audio/` es la carpeta de clips de la raíz:
+# sin la barra, esta regla dejó fuera del repositorio `src/renderer/src/audio/`,
+# donde vive el grabador del renderer, y el proyecto no compilaba al clonarlo.
 *.log*
 bench/*.log
-audio/
+/audio/
 
 # Documentos del reto que son de Philips, no nuestros: se usan para trabajar y
 # derivar la semilla, pero no se redistribuyen dentro de nuestra entrega.

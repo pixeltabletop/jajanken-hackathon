@@ -1,0 +1,38 @@
+# La puerta que faltaba.
+#
+# `npm run check` ya existía y hace exactamente lo que hacía falta: tipos,
+# tokens de tema, contraste declarado, ausencia de salidas a red y troceo de
+# audio. Lo que no existía era alguien que lo corriera FUERA de la máquina donde
+# se desarrolla. Por eso una regla de `.gitignore` sin anclar dejó el grabador
+# del renderer fuera del repositorio: en local todo compilaba, y el repositorio
+# publicado no.
+#
+# Se instala con `--ignore-scripts` a propósito: el postinstall de
+# electron-builder se baja el binario de Electron (136 MB) y aquí no hace falta,
+# porque estas comprobaciones no arrancan la aplicación.
+
+name: check
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci --ignore-scripts
+
+      - name: Comprobaciones del repositorio
+        run: npm run check
