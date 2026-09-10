@@ -26,8 +26,8 @@ Todo lo demás —motor QVAC modular, almacén, deduplicación, modo Seguimiento
 reportes, temas, verificación automatizada— se escribió durante el reto, y el
 historial de `git log` lo refleja commit por commit.
 
-Dependencias de terceros: Electron, React, Recharts, Zod, xlsx y el SDK de QVAC
-de Tether. Ninguna otra.
+Dependencias de producción: Electron, React, Zod y el SDK de QVAC de Tether.
+Cuatro, y ninguna más. Los gráficos se dibujan sin librería.
 
 ---
 
@@ -144,6 +144,7 @@ Evidencia cruda en `bench/*.json`, capturas en `bench/e2e/`.
 | Los tres modelos, en paralelo | 49 a 61 s |
 | Interpretar una nota | 14 a 23 s |
 | Interpretar una pregunta | 11 a 22 s |
+| Instalador | 594 MB · 3,0 GB instalado |
 | Deduplicar | 0,1 a 0,5 s |
 | Guardar | menos de 0,1 s |
 

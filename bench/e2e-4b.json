@@ -26,12 +26,12 @@
     {
       "ok": true,
       "label": "Esc antes del segundo 5 no salta el arranque",
-      "detail": "2.1 s desde la recarga"
+      "detail": "1.7 s desde la recarga"
     },
     {
       "ok": true,
       "label": "el arranque dura al menos 5 segundos",
-      "detail": "6.6 s"
+      "detail": "5.9 s"
     },
     {
       "ok": true,
@@ -41,7 +41,7 @@
     {
       "ok": true,
       "label": "aparece la pantalla de acceso",
-      "detail": "5 ms tras el arranque"
+      "detail": "3 ms tras el arranque"
     },
     {
       "ok": true,
@@ -116,7 +116,7 @@
     {
       "ok": true,
       "label": "el nombre del acceso llega al selector",
-      "detail": "Entraste como Auditoría 80430. Todo lo que registres queda a"
+      "detail": "Entraste como Auditoría 97551. Todo lo que registres queda a"
     },
     {
       "ok": true,
@@ -241,12 +241,12 @@
     {
       "ok": true,
       "label": "la frase redactada responde con cifras",
-      "detail": "Con país: Panamá: 54 equipos registrados en 13 sitios, sobre 13 observaciones. Por estatus: Confirmado 10, Rep"
+      "detail": "Con país: Panamá: 54 equipos registrados en 13 sitios, sobre 13 observaciones. Por estatus: Confirmado 8, Repo"
     },
     {
       "ok": true,
       "label": "los números del desglose suman el total de equipos",
-      "detail": "10+32+12+0 = 54 · KPI 54"
+      "detail": "8+34+12+0 = 54 · KPI 54"
     },
     {
       "ok": true,
@@ -361,7 +361,7 @@
     {
       "ok": true,
       "label": "el PDF de la consulta se genera",
-      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-11-41.pdf"
+      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-11-59.pdf"
     },
     {
       "ok": true,
@@ -405,20 +405,20 @@
     }
   ],
   "summary": {
-    "stamp": "80430",
-    "site": "Policlínica DemoCare Prueba 80430",
-    "splashMs": 6592,
+    "stamp": "97551",
+    "site": "Policlínica DemoCare Prueba 97551",
+    "splashMs": 5856,
     "doorsHome": [
       "Registrar equipos",
       "Seguimiento y reportes"
     ],
-    "extractMs": 20654,
-    "gemmaReadyMs": 5,
-    "queryMs": 16600,
+    "extractMs": 16113,
+    "gemmaReadyMs": 3,
+    "queryMs": 15934,
     "breakdown": {
       "desglose": [
-        10,
-        32,
+        8,
+        34,
         12,
         0
       ],
@@ -430,7 +430,7 @@
       "confianza: Media o Baja",
       "texto: \"San Francisco\""
     ],
-    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-11-41.pdf",
+    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-11-59.pdf",
     "tema_negro": {
       "fondo": "rgb(20, 22, 25)",
       "texto": "rgb(244, 246, 248)"

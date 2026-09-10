@@ -468,6 +468,9 @@ video.logo { mix-blend-mode: multiply; }
   font-size: 12px; color: var(--ink);
 }
 .bar-btn:hover { background: var(--surface-hover); }
+/* Las del tablero de Registrar solo informan: no se pulsan. */
+.bar-btn.estatico { cursor: default; }
+.bar-btn.estatico:hover { background: transparent; }
 .bar-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 /* La selección nunca se comunica solo con color: borde de 2 px, marca y negrita. */
 .bar-btn.on { border-color: var(--primary); background: var(--sky); color: var(--on-sky); }

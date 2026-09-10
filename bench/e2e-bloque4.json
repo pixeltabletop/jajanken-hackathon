@@ -1,8 +1,8 @@
 {
   "note": "Estoy en la Clínica DemoCare Costa del Este, en Ciudad de Panamá. Vi dos resonadores Zenith MedTech de unos cinco años y tres ecógrafos, la marca no la vi.",
   "steps": {
-    "modelsReadyMs": 598,
-    "extractMs": 14944,
+    "modelsReadyMs": 1,
+    "extractMs": 13632,
     "rows": 1,
     "marks": 1,
     "invalid": 0,
@@ -21,7 +21,7 @@
       "hasMR": true,
       "hasUS": false
     },
-    "saveMs": 554,
+    "saveMs": 250,
     "rowsBefore": 45,
     "rowsAfter": 46,
     "statsBefore": [

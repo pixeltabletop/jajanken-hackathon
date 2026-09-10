@@ -145,9 +145,15 @@ O sea que el archivo no contiene una animación: contiene una imagen fija que pa
 
 **Pendiente que no puedo cerrar yo:** el remoto del repositorio, la instalación en un perfil de Windows limpio, y la decisión del interruptor de la voz con el audio real de Diego.
 
+**D58 · Fuera Recharts y fuera xlsx de producción.** Recharts eran 9 MB en el paquete y unos 400 KB del bundle para pintar tres gráficos de barras; se sustituyeron por las mismas barras que ya usaba el modo Seguimiento, que además llevan descripción accesible. `xlsx` (7,2 MB) solo lo usa `scripts/convert-philips-seed.mjs`, que es una herramienta de desarrollo, así que pasa a `devDependencies` y deja de viajar en el instalador. Resultado medido: bundle del renderer de **1.549 KB a 718 KB**, instalador de **602 a 594 MB**, y las dependencias de producción bajan de seis a cuatro. Verificado arrancando el empaquetado después, y con la verificación completa: 80/80, ciclo OK, contraste 98/98 y sin fallos en vivo.
+
+**D59 · Acceso de escritura al repositorio del jurado, verificado.** Se probó con una rama huérfana mínima que no publicaba el código; el push funcionó con la identidad `josweq`. **Efecto lateral que hay que cerrar:** GitHub tomó esa rama de prueba como predeterminada del repositorio vacío y ahora se niega a borrarla mientras lo sea. Se resuelve solo al subir `main`, o borrándola desde la interfaz de GitHub. La rama local ya se llama `main`.
+
+**D60 · Licencia y limpieza del repositorio.** Se añadió `LICENSE` (MIT) declarando además lo que NO cubre: Electron, el SDK de QVAC, los modelos Apache-2.0 y la marca Philips. Salieron del control de versiones el brief y el workbook de Philips, `docs/briefing.html` (artefacto muerto que además cargaba tipografías de Google por red) y `resources/seed-observations.json`.
+
 ## Pendientes de decisión
 
-- **Remoto del repositorio.** Sin él, todo vive en una laptop. Mientras tanto hay respaldo en OneDrive (D56).
+- **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.
 - **Instalación en un perfil de Windows limpio.** El instalador está construido y verificado en esta máquina; en una limpia, no.
 - Voz vive o muere (Anexo G del blueprint), con el audio real de Diego.
 - Pieza de logo con movimiento real y cadencia constante, si Diego quiere animación en el arranque (D43).

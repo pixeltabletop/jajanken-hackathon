@@ -10,7 +10,7 @@
     },
     {
       "estado": "blanco · inicio y registro",
-      "medidos": 51,
+      "medidos": 53,
       "fallos": 0,
       "malas": []
     },
@@ -22,73 +22,73 @@
     },
     {
       "estado": "blanco · base abierta y selector de columnas",
-      "medidos": 649,
+      "medidos": 667,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · seguimiento",
-      "medidos": 564,
+      "medidos": 574,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · guía de cómo pedirlo",
-      "medidos": 597,
+      "medidos": 607,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · gráfico con una barra elegida",
-      "medidos": 122,
+      "medidos": 121,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · nota abierta con la evidencia",
-      "medidos": 568,
+      "medidos": 579,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · inicio y registro",
-      "medidos": 52,
+      "medidos": 51,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · menú de opciones abierto",
-      "medidos": 55,
+      "medidos": 54,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · base abierta y selector de columnas",
-      "medidos": 649,
+      "medidos": 667,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · seguimiento",
-      "medidos": 564,
+      "medidos": 574,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · guía de cómo pedirlo",
-      "medidos": 597,
+      "medidos": 607,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · gráfico con una barra elegida",
-      "medidos": 122,
+      "medidos": 121,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · nota abierta con la evidencia",
-      "medidos": 568,
+      "medidos": 579,
       "fallos": 0,
       "malas": []
     }
