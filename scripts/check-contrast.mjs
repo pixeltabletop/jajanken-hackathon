@@ -3,12 +3,10 @@
 // queda por debajo de su umbral.
 //
 //   node scripts/check-contrast.mjs            imprime la tabla y el veredicto
-//   node scripts/check-contrast.mjs --md       escribe docs/contraste.md
 //
 // Existe para que un ajuste de última hora no rompa la legibilidad en silencio.
 // Umbrales: 4.5 texto normal · 3.0 texto grande y bordes/rellenos de estado.
 
-import { writeFileSync } from 'node:fs'
 import { THEMES } from '../src/renderer/src/assets/themes.ts'
 
 const AA = 4.5
@@ -161,49 +159,6 @@ for (const theme of THEMES) {
   }
 }
 
-if (process.argv.includes('--md')) {
-  const out = [
-    '# Contraste medido',
-    '',
-    'Generado por `node scripts/check-contrast.mjs --md`. No se edita a mano.',
-    '',
-    'Cada par se mide con la fórmula de luminancia relativa de WCAG 2.1.',
-    'Umbral 4.5:1 para texto normal, 3:1 para texto grande y para el borde o',
-    'relleno que comunica un estado. La rejilla y las líneas divisorias son',
-    'decorativas y solo se vigila que no desaparezcan (1.2:1).',
-    '',
-    `Última corrida: ${new Date().toISOString().slice(0, 10)} · ${rows.length - failed.length}/${rows.length} pares pasan.`,
-    ''
-  ]
-  for (const theme of THEMES) {
-    out.push(`## ${theme.label}`, '', '| Elemento | Estado | Fondo | Texto | Ratio | Umbral | Veredicto |', '|---|---|---|---|---|---|---|')
-    for (const r of rows.filter((x) => x.themeId === theme.id)) {
-      out.push(`| ${r.element} | ${r.state} | \`${r.bg}\` | \`${r.fg}\` | ${r.r.toFixed(2)}:1 | ${r.min} | ${r.ok ? 'pasa' : 'FALLA'} |`)
-    }
-    out.push('')
-  }
-  out.push(
-    '## Lo que estaba fallando antes del Bloque 4B',
-    '',
-    '| Elemento | Antes | Ratio antes | Ahora | Ratio ahora |',
-    '|---|---|---|---|---|',
-    '| Anillo de foco sobre blanco | `#caecff` sobre `#ffffff` | 1.16:1 | `#0076ce` sobre `#ffffff` | 4.68:1 |',
-    '| Anillo de foco sobre azul cielo | `#caecff` sobre `#eaf6fd` | 1.09:1 | `#0076ce` sobre `#eaf6fd` | 4.44:1 |',
-    '| Borde de campo de formulario | `#aec7d7` sobre `#ffffff` | 1.75:1 | `#6e8ca1` sobre `#ffffff` | 3.54:1 |',
-    '| Badge de confianza media | `#8a5a0c` sobre `#f5e8d2` | 4.42:1 | `#7a4f0a` sobre `#f7ebd6` | 5.44:1 |',
-    '| Badge de confianza baja | `#9e362b` sobre `#f5e1de` | 4.46:1 | `#9e362b` sobre `#f8e4e1` | 4.58:1 |',
-    '| Borde del resaltado de evidencia | `#e0bd3c` sobre `#ffe98a` | 1.42:1 | `#a37d00` sobre `#ffe98a` | 3.15:1 |',
-    '',
-    'El resaltado de evidencia es el diferenciador del producto, así que su par',
-    'amarillo/tinta es idéntico en los tres temas: el `<mark>` lleva su propio',
-    'fondo, y lo que cambia por tema es el fondo que tiene alrededor. Lo que se',
-    'mide contra ese fondo es el borde de 2 px del resaltado, que pasa 3:1 en los',
-    'tres. Así el resaltado nunca depende solo del color.',
-    ''
-  )
-  writeFileSync('docs/contraste.md', out.join('\n'))
-  console.log('\ndocs/contraste.md escrito')
-}
 
 console.log(`\n${failed.length ? `CONTRASTE: ${failed.length} pares por debajo del umbral` : 'CONTRASTE OK'} · ${rows.length - failed.length}/${rows.length}`)
 process.exit(failed.length ? 1 : 0)

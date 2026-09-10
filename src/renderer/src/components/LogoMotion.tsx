@@ -1,7 +1,7 @@
 // La marca de la aplicación: una pieza animada por tema, en tres tamaños.
 //
 // SEGUNDA ENTREGA DE LAS PIEZAS (2026-09-10). Las primeras no servían y está
-// medido en `bench/logo-variantes.json`: cadencia rota (`avg_frame_rate=0/0`),
+// medido: cadencia rota (`avg_frame_rate=0/0`),
 // dos variantes en negro puro, y la única visible resultó ser una imagen fija
 // que se encendía 1.73 s y se apagaba 1.6 s. Las nuevas se midieron igual antes
 // de montarlas y pasan las tres comprobaciones:

@@ -1,21 +1,242 @@
 # MAM · Medical Asset Management
 
-Entrega del equipo **Jajanken**.
+Entrega del equipo **Jajanken** para el **Track 01 de Philips** (Customer
+Installed Base Intelligence) del ISD Summit 2026.
 
-Inteligencia de base instalada con IA **100 % local**. De la voz al dato, sin nube.
-
-Para el **Track 01 de Philips** (Customer Installed Base Intelligence) del ISD
-Summit 2026.
+Inteligencia de base instalada con IA **100 % local**. De la voz al dato, sin
+nube.
 
 **▶ Video de demostración (5 min):** _pendiente de publicar._ El enlace va aquí,
 en la primera línea, y abre sin pedir credenciales.
 
-> **Aviso:** MAM · Medical Asset Management · prototipo del equipo Jajanken para el reto Philips · Hackathon ISD
-> Summit 2026 · **No es un producto oficial de Philips.** Todos los clientes,
-> marcas, modelos e inventarios son **inventados**, con la convención DemoCare.
-> Las ciudades sí son ciudades reales de Panamá, porque el filtro geográfico
-> tiene que probarse contra un mapa que existe; **ninguna institución real
-> aparece en los datos ni en la interfaz** (D12).
+> **Aviso.** Prototipo para el reto Philips del Hackathon ISD Summit 2026. **No
+> es un producto oficial de Philips.** Todos los clientes, marcas, modelos e
+> inventarios son **inventados**, con la convención DemoCare. Las ciudades sí son
+> ciudades reales de Panamá, porque el filtro geográfico tiene que probarse
+> contra un mapa que existe; **ninguna institución real aparece en los datos ni
+> en la interfaz.**
+
+---
+
+## Qué problema resuelve
+
+La base instalada de un fabricante de equipo médico vive en la cabeza y en la
+libreta del técnico de campo. Después de cada visita alguien tiene que pasar esas
+notas a un sistema, y ese paso es donde el dato se pierde, se demora o se
+inventa.
+
+MAM cierra ese hueco en la propia laptop del técnico. Vuelve de un hospital,
+**dicta o escribe** lo que vio, y la aplicación lo convierte en registros
+estructurados de la base instalada. Después, cualquiera **pregunta en español**
+por lo ya registrado y obtiene cifras calculadas sobre esos registros, no
+generadas por un modelo.
+
+**El diferenciador:** cada dato extraído lleva **la cita textual de la nota que
+lo justifica**, validada como subcadena antes de guardarse. Un modelo pequeño
+falla en silencio y con buena letra; aquí el fallo queda a la vista. Si la cita
+no aparece en la nota, o si la marca no se dice en ella, la fila baja a confianza
+Baja y se marca en pantalla.
+
+Dos puertas al abrir: **Registrar equipos** y **Seguimiento y reportes**.
+
+---
+
+## Instalación
+
+**Descarga el instalador de la última versión publicada, en la pestaña
+[Releases](../../releases) de este repositorio:** `MAM-1.0.0-setup.exe`.
+
+Es un instalador NSIS de Windows. No hace falta Node, ni Python, ni Docker, ni
+instalar nada más: el ejecutable trae dentro la aplicación, el motor de
+inferencia y sus dependencias.
+
+1. Ejecuta `MAM-1.0.0-setup.exe` y sigue el asistente.
+2. Abre **MAM** desde el acceso directo.
+3. **La primera vez descarga los modelos** (unos 3,9 GB) y lo muestra con una
+   barra de progreso. Tarda según la conexión. **Solo ocurre una vez.**
+4. A partir de ahí, ni el arranque ni el uso vuelven a tocar la red.
+
+El arranque de marca dura 5 segundos y no espera a los modelos: escribir y dictar
+funcionan desde el primer segundo, transcribir a los ~24 s e interpretar cuando
+el modelo de extracción termina de cargar. Cada pantalla dice qué puede hacer y
+qué todavía no.
+
+### Requisitos mínimos
+
+Medido en un HP ProBook 450 G10 con Windows 11. Todas las cifras de este
+documento salen de esa máquina.
+
+| Requisito | Mínimo | Recomendado |
+|---|---|---|
+| Sistema | Windows 10 u 11, 64 bits | Windows 11, 64 bits |
+| Memoria RAM | 8 GB, con **4,2 GB libres** al arrancar | 16 GB |
+| Disco | 7,5 GB libres: 3,0 GB la aplicación, 3,9 GB los modelos, 0,6 GB el instalador | 10 GB |
+| Procesador | x64 moderno. Corre en CPU, no exige tarjeta gráfica | — |
+| Red | Solo en el primer arranque, para bajar los modelos | — |
+| Micrófono | Solo si se va a dictar. Escribir la nota funciona igual | — |
+
+La aplicación comprueba la memoria libre antes de cargar y avisa si no alcanza.
+Por debajo del mínimo no falla con un error claro: se vuelve mucho más lenta, así
+que conviene cerrar lo demás antes de la primera prueba.
+
+### Instalación sin internet
+
+Los pesos viven en `%USERPROFILE%\.qvac`, dentro de `models/` y con el índice en
+`registry-corestore/`. Para una máquina sin red, se copia esa carpeta completa
+desde otra donde la aplicación ya haya arrancado una vez. Con la carpeta en su
+sitio, arranca sin tocar la red ni una vez.
+
+---
+
+## Cómo funciona
+
+De la voz al dato, en cuatro pasos, todos en la misma máquina:
+
+1. **Dictado.** El micrófono se captura a WAV PCM de 16 bits y 16 kHz, y se
+   transcribe con Whisper. Una nota larga se **trocea por silencios** antes de
+   entrar al motor, porque el modelo devuelve un fragmento por llamada.
+2. **Corrección del vocabulario.** El dictado deforma lo que no conoce
+   ("rayosex" por "rayos X"). Se corrige después, contra un catálogo cerrado y
+   con distancia de edición, y **cada cambio se le muestra al usuario**.
+3. **Extracción.** Un modelo pequeño devuelve un esquema compacto forzado por
+   gramática: modalidad, cantidad, marca, edad, estado, confianza y **la cita
+   textual**. El código resuelve los índices contra el catálogo y valida la
+   evidencia. El modelo no elige la categoría: devuelve el texto, y el código lo
+   resuelve.
+4. **Consulta.** La pregunta en español se traduce a un plan de filtros y
+   agrupación. **Ni una cifra la calcula el modelo**: las cuentas las hace código
+   determinista sobre los registros guardados, y la frase de respuesta se arma
+   por plantilla.
+
+Entre 3 y 4 está la **deduplicación**: los nombres de sitio se comparan por
+similitud de embeddings con desempate por ciudad, para que "Metro North" en Quito
+no se confunda con "North" en Monterrey.
+
+### Con qué herramientas
+
+Toda la inferencia corre dentro del proceso principal de Electron con el **SDK de
+QVAC** de Tether. Las únicas llamadas de inferencia del repositorio son
+`sdk.loadModel`, `sdk.completion`, `sdk.embed`, `sdk.transcribe` y
+`sdk.unloadModel`, todas dentro de `src/main/qvac/`. No hay otra librería de
+inferencia en las dependencias, no se usa la API de voz del navegador y no existe
+ni una llamada HTTP en el código de la aplicación.
+
+| Uso | Modelo | Configuración |
+|---|---|---|
+| Extracción | `GEMMA4_2B_MULTIMODAL_Q4_K_M` (3,4 GB) | `ctx_size: 4096`, `temp: 0`, `seed: 42`, `top_k: 1`, `json_schema`, sin caché de contexto |
+| Voz a texto | `WHISPER_BASE_Q8_0` (150 MB) | `language: 'es'`, `translate: false`, `no_timestamps: true`, `initial_prompt` con el catálogo de clientes y marcas |
+| Deduplicación | `EMBEDDINGGEMMA_300M_Q8_0` (330 MB) | Ranking por similitud con desempate por ciudad, **nunca** umbral fijo |
+
+Cambiar cualquiera de estos parámetros invalida las cifras de abajo.
+
+La interfaz es Electron y React, sin librería de componentes: los gráficos, la
+barra lateral y los iconos se dibujan a mano.
+
+### Qué es local y qué no
+
+**La única salida al exterior** es `shell.openExternal('mailto:…')`, que abre el
+cliente de correo del usuario cuando este pulsa "Preparar correo". La aplicación
+no envía nada por su cuenta y no habla con ningún servidor.
+
+**Los pesos** (unos 3,9 GB) los provisiona el SDK de QVAC. En una máquina nueva,
+la primera puesta en marcha los descarga por HTTP, o se instalan desde USB con el
+procedimiento de arriba. Una vez en disco, ni el arranque ni el uso vuelven a
+tocar la red.
+
+Nada de lo que el usuario escribe, dicta o guarda sale del equipo en ningún
+momento, ni siquiera la primera vez.
+
+---
+
+## Tiempos reales, arranque en frío
+
+| Proceso | Medido |
+|---|---|
+| Arranque del motor local | ~20 s, lo paga el primer modelo que cargue |
+| Los tres modelos, en paralelo | 49 a 61 s |
+| Interpretar una nota | 14 a 23 s |
+| Interpretar una pregunta | 11 a 22 s |
+| Deduplicar | 0,1 a 0,5 s |
+| Guardar | menos de 0,1 s |
+| Instalador | 595 MB · 3,0 GB instalado |
+
+Con la máquina apretada de memoria estos tiempos se degradan mucho, y sin ningún
+error en pantalla. Es el motivo del mínimo de 4,2 GB libres.
+
+---
+
+## Construir desde el código fuente
+
+No hace falta para probar la aplicación: para eso está el instalador. Si aun así
+quieres compilarla:
+
+```bash
+npm ci
+npm run dev        # Electron en desarrollo
+npm run build:win  # instalador NSIS en dist/
+```
+
+Probado con **Node 24.16.0** y **npm 11.15.0** en Windows 11.
+
+> **Aviso conocido.** Con Node 24 en Windows, la postinstalación de Electron
+> descarga su zip pero **no lo extrae**, y `npm run dev` falla con "Electron
+> uninstall". Hay que extraer a mano el binario desde la caché de Electron
+> (`%LOCALAPPDATA%\electron\Cache`) hacia `node_modules/electron/dist/`, y dejar
+> `node_modules/electron/path.txt` con el contenido `electron.exe`. Es un
+> problema del instalador de Electron, no del proyecto, y **no afecta al
+> instalador ya construido**.
+
+`node_modules` **nunca** se copia entre máquinas: se instala con `npm ci`.
+
+### Verificación
+
+```bash
+npm run check   # tipos, tokens de tema, contraste, sin red, troceo, locks y reglas
+npm run smoke   # el motor completo con los tres modelos, sin Electron
+```
+
+`npm run check` no necesita ni la aplicación ni los modelos, y es lo mismo que
+corre la integración continua en cada push, en Windows. `npm run smoke` sí carga
+los 3,9 GB.
+
+| Comando | Qué comprueba |
+|---|---|
+| `npm run check:tokens` | Que toda variable de color usada exista de verdad |
+| `npm run check:contrast` | Los pares de color declarados, en los dos temas |
+| `npm run check:sin-red` | Ninguna salida a la red en el código que se empaqueta |
+| `npm run check:troceo` | Que una nota larga se corte bien antes de ir al motor |
+| `npm run check:locks` | Que un bloqueo huérfano del motor se retire y uno vivo no |
+| `npm run check:reglas` | Las reglas de producto: qué entiende la consulta y qué no afirma la extracción sin evidencia |
+| `npm run smoke:semaforo` | Que el estado de los modelos no mienta cuando el motor muere |
+
+`check:sin-red` es la que sostiene la afirmación central: recorre `src/main`,
+`src/shared` y `src/preload`, que es donde vive la inferencia, y falla si aparece
+`fetch`, un socket, una dirección externa u otro proveedor de IA. Se prueba a sí
+misma: metiéndole un `fetch` a propósito, falla y lo nombra.
+
+---
+
+## Limitaciones conocidas
+
+- **La extracción acierta 8 de 10.** No se esconde: cada fila lleva su cita y la
+  interfaz permite corregir antes de guardar.
+- **El tipo de respuesta de una consulta falla a veces.** Lo corrige una regla
+  determinista sobre la frase, pero el modelo por sí solo no lo acierta.
+- **El español funciona mejor que el inglés** en voz y en extracción. Whisper
+  está fijado a español a propósito: sin fijarlo, traducía al inglés.
+- **Edades mixtas dentro de una misma modalidad** siguen siendo el caso difícil.
+- **El workbook de Philips se carga tal cual, con sus inconsistencias.** Su fila
+  3 declara cantidad 3 marcada "Aggregate row" y la fila 4 suma 1 más, así que el
+  tablero muestra 4 donde el texto dice tres. Se conserva porque es su dato
+  declarado, y el aviso viaja dentro de `data/seed-philips.json`.
+- **Sin mapa geográfico:** tabla y gráficos.
+- **El acceso no valida credenciales**, y la pantalla lo dice con esas palabras.
+
+## Trabajo futuro
+
+Búsqueda sobre manuales de servicio con el juego RAG del propio SDK, lectura de
+la placa del equipo por foto con su motor de OCR, dictado en streaming,
+aplicación móvil y sincronización entre técnicos.
 
 ---
 
@@ -25,275 +246,38 @@ en la primera línea, y abre sin pedir credenciales.
 construyó **durante el hackatón**. No se partió de ninguna base preexistente
 propia ni de terceros.
 
-Cómo se hizo, en orden:
-
 1. **Diego Laverde arrancó el proyecto** al abrir el hackatón y construyó una
    primera parte de la aplicación.
 2. **Josué Carrillo construyó su parte** en paralelo: el motor de inferencia
-   sobre el SDK de QVAC, el banco de mediciones y la extracción con esquema
-   forzado.
-3. **Las dos partes se unieron** y sobre esa unión se terminó de levantar la
-   estructura que hoy está montada: modo Seguimiento, deduplicación, temas,
-   verificación automatizada y empaquetado.
+   sobre el SDK de QVAC y la extracción con esquema forzado.
+3. **Las dos partes se unieron** y sobre esa unión se terminó de levantar lo que
+   hoy está montado: modo Seguimiento, deduplicación, temas, verificación
+   automatizada y empaquetado.
 
-El historial de `git log` refleja el trabajo commit por commit, todo dentro de
-la ventana del reto.
+El historial de `git log` refleja el trabajo commit por commit, todo dentro de la
+ventana del reto.
 
 ### Lo que no escribimos nosotros, y va declarado
 
 | Qué | De dónde | Cómo se usa |
 |---|---|---|
 | **SDK de QVAC** (`@qvac/sdk` 0.19.0) | Tether, Apache-2.0 | Toda la inferencia. Es la pieza que el reto pide usar. |
-| **Modelos** `GEMMA4_2B_MULTIMODAL_Q4_K_M`, `WHISPER_BASE_Q8_0`, `EMBEDDINGGEMMA_300M_Q8_0` | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. Son los mismos identificadores de la tabla de modelos y cuantizaciones. |
-| **Electron y React** | Sus proyectos, MIT | El armazón de escritorio y la interfaz. Viven en `devDependencies` porque el empaquetador los incorpora al compilar, que es como funciona una aplicación de Electron. |
-| **Zod** y **@electron-toolkit/utils** | Sus proyectos, MIT | Las dos únicas dependencias de producción además del SDK: validación de esquemas y utilidades de arranque de Electron. |
-| **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Se usó como asistente de programación durante todo el reto, con revisión humana de cada cambio. Las decisiones de diseño y los criterios de aceptación están en `DECISIONES.md`. |
-| **Marca Philips** | Philips | Solo el logotipo en la interfaz, para el contexto del reto. No es un producto oficial de Philips. Ver `NOTICE.md`. |
+| **Modelos** `GEMMA4_2B_MULTIMODAL_Q4_K_M`, `WHISPER_BASE_Q8_0`, `EMBEDDINGGEMMA_300M_Q8_0` | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. |
+| **Electron y React** | Sus proyectos, MIT | El armazón de escritorio y la interfaz. |
+| **Zod** y **@electron-toolkit/utils** | Sus proyectos, MIT | Las dos únicas dependencias de producción además del SDK. |
+| **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Se usó como asistente de programación durante todo el reto, con revisión humana de cada cambio. |
+| **Marca Philips** | Philips | Solo el logotipo en la interfaz, para el contexto del reto. No es un producto oficial de Philips. |
 
 **Andamiaje declarado.** El proyecto se arrancó con el generador de
-`electron-vite`, que aportó la estructura de tres procesos (principal, preload,
-renderer), la configuración de compilación y un ejemplo mínimo. Todo ese ejemplo
-se sustituyó: no queda ni una pantalla ni una función suyas. Lo que sobrevive es
-la disposición de carpetas y `electron.vite.config.ts`. No se usó ninguna otra
-plantilla, tema comprado ni componente de terceros: los gráficos, la barra
-lateral y los iconos se dibujan a mano, sin librería de interfaz.
-
-### Lo que quedó fuera por tiempo, no por diseño
-
-Está identificado y acotado, y es por dónde crece el proyecto:
-
-- **Búsqueda sobre documentos** (manuales de servicio, reportes en PDF) con el
-  juego RAG del propio SDK, que reutiliza el modelo de embeddings ya empaquetado.
-- **Lectura de la placa del equipo por foto** con el motor de OCR del SDK.
-- **Dictado en streaming** con detección de fin de turno, en vez de grabar y
-  transcribir al soltar.
-- **Aplicación móvil.** QVAC corre en Android e iOS, pero exige compilación
-  nativa en teléfono físico, que no cabía en la ventana del reto.
-- **Sincronización entre equipos.** Hoy cada instalación es una isla, que es
-  justo lo que hace posible la promesa de cero red.
-
----
-
-## Qué es
-
-Un técnico de campo vuelve de visitar un hospital, **dicta o escribe** lo que
-vio, y la aplicación lo convierte en registros estructurados de la base
-instalada. Después, cualquiera **pregunta en español** por lo ya registrado y
-obtiene cifras calculadas sobre esos registros.
-
-**El diferenciador:** cada dato extraído lleva **la cita textual de la nota que
-lo justifica**, validada como subcadena antes de guardarse. Un modelo pequeño
-falla en silencio y con buena letra; aquí el fallo es auditable en vez de
-invisible. Si la cita no aparece en la nota, la fila baja a confianza Baja y se
-marca en pantalla.
-
-Dos puertas al abrir: **Registrar equipos** y **Seguimiento y reportes**.
-
----
-
-## Inferencia: qué es local y qué no
-
-**Toda la inferencia corre en esta computadora**, dentro del proceso principal de
-Electron, con el SDK de QVAC de Tether. Verificable en el código: las únicas
-llamadas de inferencia del repositorio son `sdk.loadModel`, `sdk.completion`,
-`sdk.embed`, `sdk.transcribe` y `sdk.unloadModel`, todas dentro de
-`src/main/qvac/`. No hay ninguna otra librería de inferencia en las dependencias,
-no se usa la API de voz del navegador y no existe ni una llamada HTTP en el
-código de la aplicación.
-
-**La única salida al exterior** es `shell.openExternal('mailto:…')`, que abre el
-cliente de correo del usuario cuando este pulsa "Preparar correo". La aplicación
-no envía nada por su cuenta y no habla con ningún servidor.
-
-**Matiz honesto sobre los modelos:** los pesos (unos 3,9 GB) los provisiona el
-SDK de QVAC. En una máquina nueva, la **primera** puesta en marcha los descarga
-por HTTP, o se instalan desde USB con el procedimiento offline. Una vez en disco,
-**ni el arranque ni el uso vuelven a tocar la red**.
-
-Esto se comprueba en dos mitades, porque ninguna sola alcanza:
-
-| Qué se comprueba | Cómo | Alcance real |
-|---|---|---|
-| Que la interfaz no pide nada fuera | `node scripts/e2e-4b.mjs`, leyendo las peticiones reales del renderer | Solo el renderer. La inferencia no vive ahí. |
-| Que el código empaquetado no puede pedir nada | `npm run check:sin-red`, sobre `src/main`, `src/shared` y `src/preload` | El proceso donde sí vive la inferencia. Falla si aparece `fetch`, un socket, una dirección externa u otro proveedor de IA. |
-
-La segunda existe porque la primera no ve el proceso principal, que es
-justamente el que carga los modelos y ejecuta la inferencia. La comprobación se
-prueba a sí misma: metiéndole un `fetch` a propósito, falla y lo nombra.
-
-Nada de lo que el usuario escribe, dicta o guarda sale del equipo en ningún
-momento, ni siquiera la primera vez.
-
----
-
-## Hardware donde se midió
-
-HP ProBook 450 G10 · Windows 11. Todas las cifras de este README salen de esa
-máquina.
-
-## Modelos, cuantizaciones y configuración exacta
-
-| Uso | Modelo | Configuración medida |
-|---|---|---|
-| Extracción | `GEMMA4_2B_MULTIMODAL_Q4_K_M` (3,4 GB) | `ctx_size: 4096`, `temp: 0`, `seed: 42`, `top_k: 1`, `json_schema`, sin caché de contexto |
-| Voz a texto | `WHISPER_BASE_Q8_0` (150 MB) | `language: 'es'`, `translate: false`, `no_timestamps: true`, `initial_prompt` con el catálogo de clientes y marcas |
-| Deduplicación | `EMBEDDINGGEMMA_300M_Q8_0` (330 MB) | Ranking por similitud con desempate por ciudad. **Nunca umbral** |
-
-Cambiar cualquiera de estos parámetros invalida las cifras de abajo. Está anotado
-como regla no negociable en `docs/BLUEPRINT.md`.
-
-## Instalación
-
-```bash
-npm ci
-npm run dev
-npm run build:win
-```
-
-`node_modules` **nunca** se copia entre máquinas: se instala con `npm ci`. Una
-copia con robocopy dejó 10.000 archivos fuera sin dar un solo error (D19).
-
-**Sin internet.** El SDK de QVAC guarda los pesos en `%USERPROFILE%\.qvac`
-(`~/.qvac` fuera de Windows), dentro de `models/` y con el índice en
-`registry-corestore/`. Para una máquina sin red, se copia esa carpeta completa
-desde una donde la aplicación ya haya arrancado una vez. Los tres archivos que
-hacen falta son el de Gemma, el de Whisper Base y el de EmbeddingGemma; el resto
-de esa carpeta son modelos de las mediciones y se pueden dejar fuera. Con la
-carpeta en su sitio, la aplicación arranca sin tocar la red ni una vez.
-
-Si `npm run dev` dice **"Electron uninstall"**, ver **D22** en `DECISIONES.md`:
-con Node 24 en Windows el postinstall de Electron descarga el zip pero no lo
-extrae, y hay que hacerlo a mano con `Expand-Archive`.
-
-## Cómo reproducir la verificación
-
-```bash
-npm run check                        # las siete puertas, sin modelos y sin abrir la app
-npm run smoke                        # el motor completo, sin Electron
-npm run smoke:semaforo               # el estado de los modelos no miente
-npm run bench:all                    # reproduce el banco de mediciones
-node scripts/e2e-4b.mjs              # 86 comprobaciones contra la app en ejecución
-node scripts/check-contrast-vivo.mjs # contraste real, elemento por elemento
-```
-
-**Solo las dos últimas** necesitan la aplicación abierta con
-`npm run dev -- -- --remote-debugging-port=9222`. Las demás corren solas.
-
-Si el 9222 está ocupado en tu máquina (en una laptop Lenovo lo toma el widget de
-Vantage, y entonces los scripts no encuentran la ventana), levanta la aplicación
-en otro puerto y dilo con la misma variable:
-
-```bash
-npm run dev -- -- --remote-debugging-port=9333
-MAM_DEBUG_PORT=9333 node scripts/e2e-4b.mjs
-```
-
-`npm run check` corre en cualquier máquina y no necesita ni la aplicación ni los
-modelos: es lo mismo que corre CI en cada push, en Windows, que es la plataforma
-para la que se construye el instalador.
-
-### Todos los comandos
-
-| Comando | Qué hace | Escribe archivos |
-|---|---|---|
-| `npm run dev` | Electron en desarrollo, con recarga del renderer | no |
-| `npm run build:win` | Instalador NSIS en `dist/` | sí |
-| `npm run check` | Las siete puertas: tipos, tokens, contraste declarado, sin red, troceo de audio, locks de QVAC y los casos de las auditorías | no |
-| `npm run typecheck` | Solo los tipos, de los dos proyectos | no |
-| `npm run check:contrast` | Los pares de color declarados, en los dos temas | con `--md`, `docs/contraste.md` |
-| `npm run check:tokens` | Que toda variable de color usada exista de verdad | no |
-| `npm run check:sin-red` | Ninguna salida a la red en el código empaquetado | no |
-| `npm run check:troceo` | Que una nota larga se corte bien antes de ir al motor, sin cargar modelos | no |
-| `npm run check:locks` | Que un lock huérfano de QVAC se retire y uno vivo no, sin arrancar el worker | no |
-| `npm run check:auditoria` | Los casos exactos de las dos auditorías externas, sobre las funciones puras | no |
-| `npm run lint` / `npm run format` | Estilo de código | `format` sí |
-| `npm run smoke` | Carga los tres modelos y corre el ciclo, sin Electron | no |
-| `npm run smoke:semaforo` | Mata el motor y comprueba que el estado lo refleja | no |
-| `npm run smoke:semaforo:vivo` | Lo mismo, con la aplicación abierta | no |
-| `npm run bench:extract` · `:asr` · `:embed` · `:query` · `:all` | El banco de mediciones, por partes o entero | sí, `bench/*.json` |
-| `npm run e2e:4b` | Las 86 comprobaciones de interfaz | sí, `bench/e2e-4b.json` y capturas |
-| `npm run qvac:doctor` | Diagnóstico del SDK y del hardware | no |
-| `npm run build:mac` · `:linux` · `:unpack` | Empaquetados que **no** se han probado | sí |
-
-`build:mac` y `build:linux` vienen del andamiaje y se dejan por si sirven: la
-entrega es Windows y es lo único verificado.
-
-## Resultados medidos
-
-| Qué | Resultado |
-|---|---|
-| Extracción, 10 casos oficiales de Philips en español | 8/10 |
-| Citas textuales válidas | 100 % en todas las corridas |
-| Pregunta en español, Anexo F del blueprint | 10/10 |
-| Pregunta en español, intención y agrupación | 5/5 |
-| Pregunta en español, consultas de varias condiciones | 5/5 |
-| Voz: hospitales reconocidos con vocabulario sembrado | 9/10 |
-| Contraste WCAG | 150/150 pares declarados · más de 9.000 textos medidos sobre la app viva en 32 estados, incluidos los de raton encima y presionado, 0 fallos |
-| Verificación de la interfaz contra la app real | 86/86 |
-
-Evidencia cruda en `bench/*.json`, capturas en `bench/e2e/`.
-
-## Tiempos reales, arranque en frío
-
-| Proceso | Medido |
-|---|---|
-| Arranque del worker de QVAC | ~20 s, lo paga el primer modelo que cargue |
-| Los tres modelos, en paralelo | 49 a 61 s |
-| Interpretar una nota | 14 a 23 s |
-| Interpretar una pregunta | 11 a 22 s |
-| Instalador | 595 MB · 3,0 GB instalado |
-| Deduplicar | 0,1 a 0,5 s |
-| Guardar | menos de 0,1 s |
-
-El arranque de marca dura 5 segundos fijos y **no espera a los modelos**:
-escribir y dictar funcionan desde el primer segundo, transcribir a los ~24 s e
-interpretar cuando el modelo de extracción termina de cargar. Cada pantalla dice
-qué puede hacer y qué todavía no.
-
-## Limitaciones conocidas
-
-- **La extracción acierta 8 de 10.** No se esconde: cada fila lleva su cita y la
-  interfaz permite corregir antes de guardar.
-- **El tipo de respuesta de una consulta falla a veces.** "Qué marcas hay en X"
-  se resolvía como lista; ahora lo corrige una regla determinista sobre la frase,
-  pero el modelo por sí solo no lo acierta.
-- **El español funciona mejor que el inglés** en voz y en extracción. Whisper
-  está fijado a español a propósito: sin fijarlo, traducía al inglés.
-- **Edades mixtas dentro de una misma modalidad** siguen siendo el caso difícil.
-- **El workbook de Philips se carga tal cual, con sus inconsistencias.** Su fila
-  3 declara cantidad 3 marcada "Aggregate row" y la fila 4 suma 1 más, así que el
-  tablero muestra 4 donde el texto dice tres. Se conserva porque es su dato
-  declarado, y el aviso viaja dentro de `data/seed-philips.json`.
-- **Sin mapa geográfico.** Decisión tomada (D11): tabla y gráficos.
-- **El acceso no valida credenciales**, y la pantalla lo dice con esas palabras.
-
-## Trabajo futuro
-
-Móvil vía Expo, foto de la etiqueta con Gemma multimodal, sincronización entre
-técnicos, y el mapa geográfico que el brief plantea como una de las salidas
-posibles.
+`electron-vite`, que aportó la estructura de tres procesos y la configuración de
+compilación. Su ejemplo mínimo se sustituyó entero: no queda ni una pantalla ni
+una función suyas. No se usó ninguna otra plantilla, tema comprado ni componente
+de terceros.
 
 ## Licencias
 
-Código propio bajo MIT (`LICENSE`, texto canónico en inglés para que GitHub la
-reconozca). Electron y Chromium bajo sus respectivas licencias. Los modelos del
-catálogo de QVAC bajo Apache-2.0.
+Código propio bajo MIT (`LICENSE`). Electron y Chromium bajo sus respectivas
+licencias. Los modelos del catálogo de QVAC bajo Apache-2.0.
 
 **El alcance exacto está en [`NOTICE.md`](NOTICE.md):** qué cubre la licencia
 MIT, qué no cubre, y de dónde salen los datos de demostración.
-
-## Dónde está todo
-
-| Qué | Dónde |
-|---|---|
-| Diseño, documento histórico | `docs/BLUEPRINT.md` (se conserva como registro del arranque; **no es la autoridad**: lo son este README y `DECISIONES.md`) |
-| Decisiones con evidencia | `DECISIONES.md` |
-| Alcance de la licencia y origen de los datos | `NOTICE.md` |
-| Contraste medido por tema | `docs/contraste.md` |
-| Cambios que afectan al guion del video | `docs/GUION-VIDEO-CAMBIOS.md` |
-| Mediciones crudas | `bench/` |
-
-## Panel interno
-
-La pestaña de tiempos por proceso está apagada para el usuario: se enciende con
-**Ctrl+Alt+T** y queda guardada en ese equipo.

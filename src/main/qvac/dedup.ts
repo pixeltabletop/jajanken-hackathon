@@ -1,7 +1,6 @@
 // Resolución de entidades por embeddings. Ranking más desempate por ciudad.
 // NUNCA umbral fijo: "Hospital DemoCare North" y "Hospital DemoCare Metro North"
 // tienen similitud 0.912 y el margen correcto medido fue 0.05. Un umbral los funde.
-// bench/embed_EMBEDDINGGEMMA_300M_Q8_0.json
 
 import * as sdk from '@qvac/sdk'
 import type { Customer, DedupResult } from '../../shared/types.ts'

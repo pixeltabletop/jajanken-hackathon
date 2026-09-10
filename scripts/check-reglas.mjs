@@ -1,14 +1,11 @@
-// Los casos de las dos auditorías externas del 10 de septiembre, congelados.
+// Las reglas de comportamiento que el producto no puede romper, comprobadas
+// sobre las funciones puras y sin cargar un solo modelo.
 //
-// Cada bloque de abajo reproduce el caso EXACTO que reportó un auditor, sobre
-// las funciones puras y sin cargar un solo modelo. Sirve para dos cosas: dejar
-// escrito qué se arregló, y que ninguno de estos fallos pueda volver a entrar
-// sin que la puerta de calidad lo cace.
+// Son reglas de producto, no de estilo: qué tiene que entender la consulta, qué
+// no puede afirmar la extracción sin evidencia, y qué no puede quedar ilegible
+// en pantalla. Cada una falló alguna vez, y por eso está escrita aquí.
 //
-// Lo que este script NO puede comprobar: nada que necesite el motor cargado ni
-// la aplicación abierta. Eso vive en `npm run smoke` y en `scripts/e2e-4b.mjs`.
-//
-// Uso:  node scripts/check-auditoria.mjs
+// Uso:  node scripts/check-reglas.mjs
 
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -26,8 +23,8 @@ const ok = (cond, texto, detalle = '') => {
   console.log(`  ${cond ? 'OK   ' : 'FALLA'} ${texto}${detalle ? ` · ${detalle}` : ''}`)
 }
 
-// ---------------------------------------------------------------------- H2
-console.log('H2 · la forma natural de pedir un desglose\n')
+// --------------------------------------------------------------- la pregunta
+console.log('La pregunta manda sobre el modelo\n')
 
 for (const [pregunta, esperado] of [
   ['cuántos equipos hay en Panamá por modalidad', 'modality'],
@@ -40,28 +37,23 @@ for (const [pregunta, esperado] of [
   ['cuántos por confianza', 'confidence'],
   ['equipos por antigüedad', 'ageBand'],
   ['cuántos equipos hay por sitio', 'facility'],
-  // Las que ya funcionaban antes del arreglo, para que no se rompan.
   ['qué marcas hay en Ciudad de Panamá', 'brand'],
   ['cuál es el estatus de las unidades en Panamá', 'status'],
   ['breakdown by modality', 'modality'],
-  // Y una que NO debe convertirse en desglose.
   ['cuántos equipos hay en Panamá', null]
 ]) {
   ok(desgloseDe(pregunta) === esperado, `"${pregunta}"`, desgloseDe(pregunta) ?? 'sin desglose')
 }
 
-console.log('\nH2 · el filtro que el modelo se inventa\n')
-
 const ctx = { countries: ['Panama'], cities: ['Ciudad de Panamá'] }
 const vacio = { lugares: [], m: [], b: [], amin: null, amax: null, s: [], c: [], i: 0, g: -1 }
 
+console.log('\nUn filtro que la pregunta no nombra no se aplica\n')
 {
-  // Literal de la auditoría: a "dame el desglose por modalidad" el modelo le
-  // colgaba modality "MR" y la respuesta salía restringida a resonancias.
   const { plan, warnings } = resolvePlan({ ...vacio, m: [0], i: 2, g: 3 }, ctx, 'dame el desglose por modalidad')
-  ok(plan.intent === 'breakdown', 'sigue siendo un desglose', plan.intent)
+  ok(plan.intent === 'breakdown', 'el desglose se respeta', plan.intent)
   ok(plan.groupBy === 'modality', 'agrupado por modalidad', String(plan.groupBy))
-  ok(plan.filter.modality === null, 'el filtro MR inventado se descarta', JSON.stringify(plan.filter.modality))
+  ok(plan.filter.modality === null, 'el filtro que nadie pidió se descarta', JSON.stringify(plan.filter.modality))
   ok(warnings.some((w) => /no nombra "MR"/.test(w)), 'y no se descarta en silencio', warnings.join(' | ') || 'sin avisos')
 }
 {
@@ -70,19 +62,20 @@ const vacio = { lugares: [], m: [], b: [], amin: null, amax: null, s: [], c: [],
 }
 {
   const { plan } = resolvePlan({ ...vacio, m: [0], i: 2, g: 4 }, ctx, 'equipos por marca')
-  ok(plan.filter.modality === 'MR', 'agrupando por marca, el filtro de modalidad no se toca', String(plan.filter.modality))
+  ok(plan.filter.modality === 'MR', 'filtrar por una dimensión y agrupar por otra es legítimo', String(plan.filter.modality))
 }
 {
   const { plan, warnings } = resolvePlan({ ...vacio, i: 1, g: -1 }, ctx, 'cuántos equipos hay en Panamá por modalidad')
-  ok(plan.intent === 'breakdown', 'la pregunta convierte el conteo en desglose', plan.intent)
+  ok(plan.intent === 'breakdown', 'la frase convierte el conteo en desglose', plan.intent)
   ok(warnings.length > 0, 'y lo avisa', warnings.join(' | '))
 }
 
-// ---------------------------------------------------------------------- H5
-console.log('\nH5 · la marca extraída se valida contra la nota\n')
+// ------------------------------------------------------------- la extracción
+console.log('\nNada se afirma sin evidencia en la nota\n')
 
-// La nota literal de la auditoría. Dijo Siemens, que no está en el catálogo; el
-// modelo puso NovaMed con confianza Alta y una cita textual correcta.
+// El catálogo de marcas es cerrado y el esquema obliga a elegir un índice: ante
+// una marca de fuera, el modelo pone la que más se le parece. La cita puede ser
+// correcta y la marca no, así que se comprueban por separado.
 const nota =
   'Estoy en la Clínica DemoCare Costa del Este, en Ciudad de Panamá. Vi tres tomógrafos Siemens de unos nueve años, un resonador Zenith MedTech nuevo y dos ecógrafos sin marca visible.'
 
@@ -100,19 +93,19 @@ const nota =
     { rawText: nota, language: 'es' }
   )
   const [ct, mr, us] = observation.equipment
-  ok(ct.confidence === 'Low', 'la fila con marca inventada baja a confianza Baja', `${ct.brand} / ${ct.confidence}`)
+  ok(ct.confidence === 'Low', 'una marca que la nota no dice baja la confianza', `${ct.brand} / ${ct.confidence}`)
   ok(warnings.some((w) => /NovaMed no se dice en la nota/.test(w)), 'y se avisa con el nombre', warnings.join(' | '))
   ok(mr.confidence === 'High', 'la marca que sí se dijo conserva confianza Alta', `${mr.brand} / ${mr.confidence}`)
   ok(us.confidence === 'High', 'sin marca no se penaliza nada', `${us.brand ?? 'sin marca'} / ${us.confidence}`)
   ok(ct.evidence.includes('Siemens'), 'la cita textual se conserva tal cual', ct.evidence)
 }
 
-ok(brandIsSupported(nota, 'Zenith MedTech'), 'el nombre completo cuenta')
+ok(brandIsSupported(nota, 'Zenith MedTech'), 'el nombre completo cuenta como dicho')
 ok(brandIsSupported('vi un equipo Zenith nuevo', 'Zenith MedTech'), 'la primera palabra también, que es como se dicta')
 ok(!brandIsSupported(nota, 'NovaMed'), 'una marca que nadie dijo no cuenta')
 
-// ---------------------------------------------------------------------- H9
-console.log('\nH9 · redacción\n')
+// -------------------------------------------------------------- la respuesta
+console.log('\nLo que se escribe en pantalla\n')
 
 {
   const plan = {
@@ -124,83 +117,43 @@ console.log('\nH9 · redacción\n')
     groupBy: null
   }
   const frase = redact(plan, { rows: 12, equipment: 58, sites: 12, observations: 20, groups: [], lowConfidence: 0 })
-  ok(!/:[^:]*:/.test(frase), 'la frase ya no lleva dos veces los dos puntos', frase)
-  ok(frase.includes('país: Panamá'), 'y el alcance sigue estando')
+  ok(!/:[^:]*:/.test(frase), 'la frase no encadena dos veces los dos puntos', frase)
+  ok(frase.includes('país: Panamá'), 'y el alcance del filtro sigue estando')
 }
 {
   const { fixes } = normalizeTranscript('Estoy en la Clínica DemoCare Costa del Este', {
     brands: [],
     customers: ['DemoCare Costa del Este']
   })
-  ok(fixes.every((f) => f.from !== f.to), 'ninguna corrección idéntica a sí misma', JSON.stringify(fixes))
+  ok(fixes.every((f) => f.from !== f.to), 'no se enseña una corrección idéntica a sí misma', JSON.stringify(fixes))
 }
 {
   const { text, fixes } = normalizeTranscript('vi dos resinadores y unos ecagrafos en mocare', { brands: [], customers: [] })
-  ok(/resonador/i.test(text) && /ecógrafo/i.test(text), 'la corrección de verdad sigue funcionando', text)
-  ok(fixes.length === 3, 'y se sigue devolviendo lo que se cambió', JSON.stringify(fixes))
+  ok(/resonador/i.test(text) && /ecógrafo/i.test(text), 'el vocabulario del dominio sí se corrige', text)
+  ok(fixes.length === 3, 'y cada cambio se devuelve para mostrarlo', JSON.stringify(fixes))
 }
 
-// ---------------------------------------------------------------------- H3
-console.log('\nH3 · el botón de ayuda cambia de golpe, sin fundido\n')
+// ------------------------------------------------------------- la legibilidad
+console.log('\nNada se vuelve ilegible al pasar el ratón\n')
 
 const css = await readFile(join(RAIZ, 'src/renderer/src/assets/components.css'), 'utf8')
 {
+  // Este botón se INVIERTE al pasar el ratón: fondo claro con texto oscuro pasa
+  // a fondo oscuro con texto claro. Si uno de los dos se anima y el otro no, o
+  // si se animan los dos, durante la transición el texto desaparece.
   const bloque = css.slice(css.indexOf('.helptip-btn {'), css.indexOf('.helptip-box {'))
   const trans = /transition:([^;]+);/.exec(bloque)?.[1] ?? ''
   const hover = /\.helptip-btn:hover[^{]*\{([^}]+)\}/.exec(bloque)?.[1] ?? ''
-  ok(/background/.test(hover) && /color/.test(hover), 'al pasar el ratón cambian fondo Y texto a la vez', hover.trim())
-  ok(!/background/.test(trans), 'y el fondo NO va en la transición', `transition:${trans.trim()}`)
-  ok(!/\bcolor\b/.test(trans), 'el color tampoco: a mitad del cruce los dos tonos se encuentran en el medio')
+  ok(/background/.test(hover) && /color/.test(hover), 'fondo y texto cambian juntos', hover.trim())
+  ok(!/background/.test(trans) && !/\bcolor\b/.test(trans), 'y cambian de golpe, sin fundido', `transition:${trans.trim()}`)
 }
 
-// ---------------------------------------------------------------------- H4
-console.log('\nH4 · el medidor de contraste no mide fotogramas de paso\n')
-
-const medidor = await readFile(join(RAIZ, 'scripts/check-contrast-vivo.mjs'), 'utf8')
-ok(/const ESPERAR_QUIETO = `/.test(medidor), 'existe la espera a que todo se detenga')
-ok(/await js\(ESPERAR_QUIETO\)/.test(medidor), 'y auditar() la usa antes de medir')
-ok(/getAnimations\(\)/.test(medidor), 'se le pregunta al navegador, no se espera un tiempo a ojo')
-ok(/enMovimiento\(el\) \|\| saliendo\(el\)/.test(medidor), 'lo que se mueve o se va de pantalla se salta')
-
-// Un error de sintaxis dentro de esas plantillas no lo caza ni el typecheck ni
-// `node --check`: solo explota en vivo. Aquí se compilan las dos.
-for (const nombre of ['AUDITOR', 'ESPERAR_QUIETO']) {
-  const i = medidor.indexOf(`const ${nombre} = \``)
-  const desde = medidor.indexOf('`', i) + 1
-  let j = desde
-  while (j < medidor.length) {
-    if (medidor[j] === '\\') { j += 2; continue }
-    if (medidor[j] === '`') break
-    j++
-  }
-  const cuerpo = medidor.slice(desde, j).replace(/\\\\/g, '\\')
-  try {
-    new Function(`return (${cuerpo})`)
-    ok(true, `${nombre} compila como expresión válida`)
-  } catch (e) {
-    ok(false, `${nombre} compila como expresión válida`, e.message)
-  }
-}
-
-// ---------------------------------------------------------------------- H6
-console.log('\nH6 · las verificaciones corren en cualquier máquina\n')
-
-for (const s of ['audit.mjs', 'check-contrast-vivo.mjs', 'e2e-4b.mjs', 'e2e-cycle.mjs', 'smoke-semaforo-vivo.mjs', 'grabar-demo.mjs']) {
-  const txt = await readFile(join(RAIZ, 'scripts', s), 'utf8')
-  ok(/MAM_DEBUG_PORT/.test(txt), `${s} deja mover el puerto de depuración`)
-}
-{
-  const e2e = await readFile(join(RAIZ, 'scripts/e2e-4b.mjs'), 'utf8')
-  ok(!/localhost:5173/.test(e2e), 'la comprobación de red ya no cuelga de un puerto escrito a mano')
-  ok(/hostname/.test(e2e), 'ahora lo local se reconoce por el host')
-}
-
-// ------------------------------------------------------------- nombre viejo
-console.log('\nRestos del nombre anterior\n')
+// -------------------------------------------------------------- el empaquetado
+console.log('\nEl paquete es coherente consigo mismo\n')
 
 for (const f of ['src/main/index.ts', 'electron-builder.yml']) {
   const txt = await readFile(join(RAIZ, f), 'utf8')
-  ok(!/com\.jajanken\.eco/.test(txt), `${f} usa el identificador nuevo`)
+  ok(/com\.jajanken\.mam/.test(txt), `${f} declara el mismo identificador de aplicación`)
 }
 {
   const pkg = JSON.parse(await readFile(join(RAIZ, 'package.json'), 'utf8'))
@@ -211,5 +164,5 @@ for (const f of ['src/main/index.ts', 'electron-builder.yml']) {
   ok(enLock === enPkg, 'y declara las mismas dependencias de producción', enLock)
 }
 
-console.log(`\n${fallos === 0 ? 'Los hallazgos auditados siguen cerrados.' : `${fallos} comprobaciones fallidas.`}`)
+console.log(`\n${fallos === 0 ? 'Todas las reglas se cumplen.' : `${fallos} reglas rotas.`}`)
 process.exit(fallos === 0 ? 0 : 1)

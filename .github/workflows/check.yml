@@ -1,15 +1,11 @@
-# La puerta que faltaba.
-#
-# `npm run check` ya existía y hace exactamente lo que hacía falta: tipos,
-# tokens de tema, contraste declarado, ausencia de salidas a red y troceo de
-# audio. Lo que no existía era alguien que lo corriera FUERA de la máquina donde
-# se desarrolla. Por eso una regla de `.gitignore` sin anclar dejó el grabador
-# del renderer fuera del repositorio: en local todo compilaba, y el repositorio
-# publicado no.
+# Corre `npm run check` en una máquina limpia en cada push: tipos, tokens de
+# tema, contraste, ausencia de salidas a red, troceo de audio, locks del motor
+# y las reglas de producto. Que compile en el equipo de quien lo escribió no
+# prueba que compile en el de quien lo descarga.
 #
 # Se instala con `--ignore-scripts` a propósito: el postinstall de
-# electron-builder se baja el binario de Electron (136 MB) y aquí no hace falta,
-# porque estas comprobaciones no arrancan la aplicación.
+# electron-builder se baja el binario de Electron y aquí no hace falta, porque
+# estas comprobaciones no arrancan la aplicación.
 
 name: check
 

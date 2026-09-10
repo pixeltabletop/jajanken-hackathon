@@ -1,12 +1,12 @@
-// System prompts. Verbatim de las mediciones en bench/. Cambiar una palabra
-// obliga a correr `npm run bench:extract` y anotar el resultado en DECISIONES.md.
+// System prompts, tal cual se midieron. Cambiar una palabra cambia la calidad
+// de la extraccion: no se tocan sin volver a medir.
 
 import { BRANDS, CONFIDENCE, MODALITIES, STATUSES } from '../../shared/catalog.ts'
 
 const idx = (arr: readonly string[]): string => arr.map((v, i) => `${i}=${v}`).join(' ')
 
 // Medido: 8/10 casos oficiales de Philips en español, 14/14 citas textuales,
-// 12.0 s por nota con Gemma 2B y ctx 4096. bench/compacto10_GEMMA4_2B_MULTIMODAL_Q4_K_M_es.json
+// 12.0 s por nota con Gemma 2B y ctx 4096.
 export const PROMPT_EXTRACT_ES = `Extraes equipo medico de una nota de campo. Responde solo el JSON compacto.
 Claves: f sitio, ci ciudad, eq equipos. Por equipo: m modalidad, q cantidad, e cantidad estimada,
 b marca, a edad en anios, c confianza, s estado, ev evidencia.
@@ -26,7 +26,7 @@ Reglas:
 Sinonimos: resonancia/resonador/MRI=0, tomografo/scanner/CT=1, ecografo/ultrasonido=2, monitores de paciente=4.`
 
 // Vocabulario que se siembra en Whisper. Llevó los nombres propios de 1/10 a 9/10
-// con el mismo modelo. bench/asr_WHISPER_BASE_Q8_0_es+prompt.json
+// con el mismo modelo.
 export function whisperHint(customerNames: string[], brands: readonly string[] = BRANDS): string {
   const hospitals = customerNames.length ? customerNames.join(', ') : 'ninguno registrado'
   return `Nota de campo de un tecnico de equipo medico. Hospitales: ${hospitals}. Marcas: ${brands.join(', ')}.`

@@ -63,7 +63,7 @@ if (failures.length === 0) {
   check(r.ms < 25000, `tiempo < 25 s (${r.ms} ms)`)
 
   console.log('\n--- transcripción ---')
-  const wav = ['audio/es_01.wav', 'bench/audio/es_01.wav'].find((p) => existsSync(p))
+  const wav = ['audio/es_01.wav'].find((p) => existsSync(p))
   if (wav) {
     const tr = await transcribeFile(requireModel('whisper'), wav)
     console.log(`${tr.ms} ms · "${tr.text}"`)

@@ -1,5 +1,5 @@
 // Extracción con esquema compacto forzado por gramática, resuelto contra el catálogo
-// y validado antes de tocar el estado. Portado de bench/bench7.js, que es la evidencia.
+// y validado antes de tocar el estado.
 
 import * as sdk from '@qvac/sdk'
 import { z } from 'zod'
