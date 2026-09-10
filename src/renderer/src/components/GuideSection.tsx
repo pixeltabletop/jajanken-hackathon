@@ -1,5 +1,6 @@
-import { useState, type JSX } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { GLOSSARY } from '../../../shared/glossary.ts'
+import { internalPanelOn, toggleInternalPanel } from '../lib/flags.ts'
 import { TIMING_HINT, TIMING_LABEL, fmt, type TimingKey, type TimingTable } from '../../../shared/timings.ts'
 
 const GLOSSARY_ORDER: Array<keyof typeof GLOSSARY> = [
@@ -13,21 +14,36 @@ const TIMING_ORDER: TimingKey[] = ['load:all', 'load:gemma', 'load:whisper', 'lo
 export function GuideSection({ timings }: { timings: TimingTable }): JSX.Element {
   const [tab, setTab] = useState<'glosario' | 'tiempos'>('glosario')
   const [open, setOpen] = useState(false)
+  // Los tiempos son un panel interno, no parte del producto. Ctrl+Alt+T.
+  const [internal, setInternal] = useState(internalPanelOn)
   const measured = TIMING_ORDER.filter((k) => timings[k])
+
+  useEffect(() => {
+    const key = (e: KeyboardEvent): void => {
+      if (e.ctrlKey && e.altKey && (e.key === 't' || e.key === 'T')) {
+        e.preventDefault()
+        const next = toggleInternalPanel()
+        setInternal(next)
+        if (!next) setTab('glosario')
+      }
+    }
+    window.addEventListener('keydown', key)
+    return () => window.removeEventListener('keydown', key)
+  }, [])
 
   return (
     <section className="guide-section" aria-labelledby="guide-h">
       <div className="filters">
-        <h2 id="guide-h">Guía y tiempos</h2>
+        <h2 id="guide-h">Guía{internal && ' y tiempos'}</h2>
         <button type="button" className="ghost small" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-          {open ? 'Ocultar' : 'Abrir la guía'}
+          {open ? 'Ocultar' : 'Abrir la guía de campos'}
         </button>
       </div>
 
       {!open && (
         <p className="empty">
-          Qué significa cada campo y cuánto tarda cada proceso en esta computadora.
-          {measured.length > 0 && timings.extract && <> Interpretar una nota lleva de media <b>{fmt(timings.extract.avgMs)}</b>.</>}
+          Qué significa cada campo del registro y qué se espera que contenga.
+          {internal && measured.length > 0 && <> Panel interno de tiempos activo.</>}
         </p>
       )}
 
@@ -35,7 +51,9 @@ export function GuideSection({ timings }: { timings: TimingTable }): JSX.Element
         <>
           <div className="tabs" role="tablist">
             <button type="button" role="tab" aria-selected={tab === 'glosario'} className={tab === 'glosario' ? 'on' : ''} onClick={() => setTab('glosario')}>Qué significa cada campo</button>
-            <button type="button" role="tab" aria-selected={tab === 'tiempos'} className={tab === 'tiempos' ? 'on' : ''} onClick={() => setTab('tiempos')}>Cuánto tarda cada proceso</button>
+            {internal && (
+              <button type="button" role="tab" aria-selected={tab === 'tiempos'} className={tab === 'tiempos' ? 'on' : ''} onClick={() => setTab('tiempos')}>Cuánto tarda cada proceso · interno</button>
+            )}
           </div>
 
           {tab === 'glosario' && (

@@ -64,7 +64,11 @@ export function registerIpc(store: Store): void {
   ipcMain.handle('audio:transcribe', safe<[{ wav: Uint8Array | ArrayBuffer }], TranscribeResult>('TRANSCRIBE', async ({ wav }) => {
     const bytes = wav instanceof Uint8Array ? wav : new Uint8Array(wav)
     const customers = (await store.customers()).map((c) => c.name)
-    const r = await transcribeWav(models.requireModel('whisper'), bytes, { brands: BRANDS, customers })
+    // El dictado se puede empezar desde que abre la app. Si el audio llega antes
+    // de que Whisper termine de cargar, se espera aquí en vez de fallar: grabar
+    // no necesita ningún modelo, y transcribir solo necesita este.
+    const whisper = await models.whisperReady(customers)
+    const r = await transcribeWav(whisper, bytes, { brands: BRANDS, customers })
     await store.recordTiming('transcribe', r.ms)
     return r
   }))

@@ -9,6 +9,10 @@ import { whisperHint } from './prompts.ts'
 process.env.QVAC_RPC_INIT_TIMEOUT_MS ??= '240000'
 
 const ids: Partial<Record<ModelKey, string>> = {}
+// Cargas en curso. Sin esto, dos llamadas concurrentes al mismo modelo arrancan
+// dos cargas: el dictado que llega antes de que termine el calentamiento
+// duplicaría 150 MB de Whisper, o peor, 3.4 GB de Gemma.
+const inflight: Partial<Record<ModelKey, Promise<string>>> = {}
 const status: ModelStatus = {
   gemma: { state: 'idle' },
   whisper: { state: 'idle' },
@@ -59,7 +63,8 @@ function describeLoadError(e: unknown): string {
 
 export async function loadGemma(onProgress?: Progress): Promise<string> {
   if (ids.gemma) return ids.gemma
-  return track('gemma', async () => {
+  if (inflight.gemma) return inflight.gemma
+  inflight.gemma = track('gemma', async () => {
     ids.gemma = await sdk.loadModel({
       modelSrc: sdk.GEMMA4_2B_MULTIMODAL_Q4_K_M,
       // El default es 1024 y desborda con dictados largos o caché acumulada.
@@ -67,12 +72,14 @@ export async function loadGemma(onProgress?: Progress): Promise<string> {
       onProgress
     })
     return ids.gemma
-  })
+  }).finally(() => { inflight.gemma = undefined }) as Promise<string>
+  return inflight.gemma
 }
 
 export async function loadWhisper(customerNames: string[], onProgress?: Progress): Promise<string> {
   if (ids.whisper) return ids.whisper
-  return track('whisper', async () => {
+  if (inflight.whisper) return inflight.whisper
+  inflight.whisper = track('whisper', async () => {
     ids.whisper = await sdk.loadModel({
       modelSrc: sdk.WHISPER_BASE_Q8_0,
       modelConfig: {
@@ -84,7 +91,8 @@ export async function loadWhisper(customerNames: string[], onProgress?: Progress
       onProgress
     })
     return ids.whisper
-  })
+  }).finally(() => { inflight.whisper = undefined }) as Promise<string>
+  return inflight.whisper
 }
 
 /** Whisper lleva el catálogo de clientes en su prompt. Si cambian, se recarga. */
@@ -100,16 +108,48 @@ export async function reloadWhisper(customerNames: string[]): Promise<string> {
 
 export async function loadEmbed(onProgress?: Progress): Promise<string> {
   if (ids.embed) return ids.embed
-  return track('embed', async () => {
+  if (inflight.embed) return inflight.embed
+  inflight.embed = track('embed', async () => {
     ids.embed = await sdk.loadModel({ modelSrc: sdk.EMBEDDINGGEMMA_300M_Q8_0, onProgress })
     return ids.embed
-  })
+  }).finally(() => { inflight.embed = undefined }) as Promise<string>
+  return inflight.embed
 }
 
-/** Carga los tres en paralelo. No lanza: cada fallo queda en status[key]. */
+/**
+ * Calienta los tres modelos EN PARALELO. No lanza: cada fallo queda en status.
+ *
+ * Medido el 2026-09-09 en la HP ProBook 450 G10, con la tabla de tiempos limpia
+ * y el reloj interno del proceso principal:
+ *
+ * | Orden                           | Voz    | Dedup  | Extracción | Total  |
+ * |---------------------------------|--------|--------|------------|--------|
+ * | Los tres en paralelo            | 23.6 s | 29.0 s | 61.3 s     | 61.3 s |
+ * | Whisper primero, luego los otros| 24.3 s |  4.7 s | 30.1 s     | 54.4 s |
+ * | Paralelo, promedio de 4 corridas| 19.2 s | 23.9 s | 48.8 s     | 48.8 s |
+ *
+ * Conclusión: el orden no mueve la aguja, las dos formas caen alrededor del
+ * minuto y la diferencia entre corridas es mayor que la diferencia entre
+ * órdenes. El suelo son unos 20 s de arranque del worker de QVAC, que paga
+ * entero el primer modelo que se cargue sea cual sea, más la lectura de los
+ * 3.4 GB de Gemma. Cargar Whisper solo y primero NO lo hizo llegar antes
+ * (24.3 s frente a 23.6 s), así que serializar solo añadía a Gemma detrás.
+ *
+ * Lo que sí bajó la espera real no fue el orden, sino dejar de esperar: el
+ * arranque de marca dura 5 s fijos, escribir funciona desde el primer segundo,
+ * dictar también (transcribir espera a Whisper si hace falta) e interpretar
+ * avisa de que Gemma sigue cargando. Cambiar el modelo o la cuantización sí
+ * bajaría el minuto, pero invalidaría el 8/10 medido (D03) a 36 horas de la
+ * entrega.
+ */
 export async function warmup(customerNames: string[]): Promise<ModelStatus> {
   await Promise.allSettled([loadGemma(), loadWhisper(customerNames), loadEmbed()])
   return getModelStatus()
+}
+
+/** Espera a que Whisper esté listo, cargándolo si hiciera falta. */
+export async function whisperReady(customerNames: string[]): Promise<string> {
+  return loadWhisper(customerNames)
 }
 
 export async function unloadAll(): Promise<void> {

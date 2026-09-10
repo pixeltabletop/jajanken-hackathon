@@ -22,7 +22,6 @@ import {
 } from '../../../shared/query-engine.ts'
 import type { TimingTable } from '../../../shared/timings.ts'
 import type { Observation, QueryFilter } from '../../../shared/types.ts'
-import type { ThemeId } from '../assets/themes.ts'
 import { call } from '../lib/api.ts'
 import { DataTable } from './DataTable.tsx'
 import { ExportBar } from './ExportBar.tsx'
@@ -40,13 +39,12 @@ interface Props {
   timings: TimingTable
   operator: string
   onOperator: (v: string) => void
-  theme: ThemeId
 }
 
 type Tab = 'result' | 'charts'
 
 export function FollowUpMode({
-  observations, columns, onColumns, modelsReady, timings, operator, onOperator, theme
+  observations, columns, onColumns, modelsReady, timings, operator, onOperator
 }: Props): JSX.Element {
   const [question, setQuestion] = useState('')
   const [asked, setAsked] = useState<string | null>(null)
@@ -141,7 +139,7 @@ export function FollowUpMode({
 
       <QueryBar
         value={question} onValue={setQuestion} onAsk={onAsk}
-        busy={busy} ready={modelsReady} ms={ms} error={error} timings={timings} theme={theme}
+        busy={busy} ready={modelsReady} ms={ms} error={error} timings={timings}
       />
 
       <InterpretChip

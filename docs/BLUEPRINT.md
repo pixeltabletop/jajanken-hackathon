@@ -345,10 +345,16 @@ Mismos `generationParams`. Prompt en `prompts.ts` con los índices del catálogo
 
 ### Arranque, y luego dos puertas
 La aplicación abre con el **arranque de marca**: el logo animado al centro,
-mínimo 5 segundos, con el pie legal obligatorio visible y el texto de lo que de
-verdad está pasando ("Cargando Gemma 2B · local · sin red"). Se salta con Esc o
-un clic **solo después** del mínimo, y a los 15 segundos aparece "Continuar de
-todos modos". En la primera ejecución sigue el paso de elección de tema.
+**5 segundos exactos**, con el pie legal obligatorio visible y el texto de lo que
+de verdad está pasando ("Cargando Gemma 2B · local · sin red"). Sale en fundido,
+no de golpe. Se salta con Esc o un clic. **No espera a los modelos** (D38): antes
+lo hacía y el usuario miraba una pantalla quieta hasta 57 s. En la primera
+ejecución sigue el paso de elección de tema.
+
+Qué se puede hacer y desde cuándo (D39): escribir y dictar desde el primer
+segundo; transcribir a los ~24 s, y si el audio llega antes se espera en vez de
+fallar; interpretar una nota y preguntar en español a los ~50–60 s, que es lo que
+tarda Gemma. Cada modo lo dice en pantalla en vez de deshabilitar en silencio.
 
 Después se aterriza en el **selector de dos puertas**, no en el tablero:
 
@@ -457,12 +463,15 @@ mano.** Si aparece uno, sube al registro. Esa es la condición para que cambiar 
 tema no sea una cacería por todo el código. Recharts pinta atributos SVG, que no
 aceptan `var()`, así que pide los colores al registro con `useThemeTokens()`.
 
-### Tres temas
+### Dos temas
 | Tema | Fondo | Para qué |
 |---|---|---|
 | Blanco clásico (por defecto) | `#f5f9fc` | El de v1, el único validado en pantalla desde el principio |
-| Azul oscuro | `#012c53` | Salas con poca luz |
-| Negro | `#000000` | Máximo contraste |
+| Negro | `#000000` | Máximo contraste, salas con poca luz |
+
+Son dos a propósito (D36). El tema es un factor estético y no puede costarle
+rendimiento a la aplicación ni multiplicar lo que hay que medir en cada cambio
+de color.
 
 Se eligen en un paso corto la primera vez, y después desde el `Header` cuando se
 quiera, aplicándose al instante y sin reiniciar. Se guarda en `settings.json` de
@@ -474,7 +483,7 @@ línea, primario, primario profundo, cielo, alerta, los tres pares de confianza 
 el fondo del resaltado de evidencia.
 
 ### El contraste se mide, no se opina
-`npm run check:contrast` recorre 48 pares por tema, 144 en total, con la fórmula
+`npm run check:contrast` recorre 48 pares por tema, 96 en total, con la fórmula
 de luminancia relativa de WCAG 2.1, y **sale con código distinto de cero** si
 alguno queda bajo su umbral: 4.5:1 texto normal, 3:1 texto grande y el borde o
 relleno que comunica un estado. Está enganchado a `npm run check`. La tabla
@@ -507,27 +516,28 @@ h1 36px/700, h2 19px/700, cuerpo 14px, etiquetas 12px/700, tabla 13px.
 - Badges: `border-radius: 3px`, `font-size: 11px`, mayúsculas, `letter-spacing: .06em`.
 - Densidad: la actual de v1. Es una herramienta de trabajo, no una landing.
 
-### Logo animado
-Tres variantes del mismo bucle de 30 s viven en
-`src/renderer/src/assets/logo/`, **empaquetadas con la app**: nunca se cargan de
-la red, porque la aplicación corre sin internet y ese es el argumento central del
-producto. `LogoMotion.tsx` las sirve en tres tamaños: `splash` a pantalla
-completa, `mark` de 96 px e `inline` de 40 px.
+### La marca
 
-**El vídeo solo aparece en el arranque y en los momentos de carga.** En el resto
-de la interfaz va la marca fija (`LogoMark`): el bucle tiene fotogramas donde el
-escudo no está, y a 96 px en el encabezado eso se lee como un parpadeo. Decisión
-de Josué el 2026-09-09 viéndolo en pantalla.
+La marca es `assets/philips-logo.svg`, vectorial, sobre el azul profundo del
+tema, en tres tamaños: 200 px en el arranque, 96 px en el encabezado y 40 px
+acompañando esperas. **No hay vídeo en ninguno** (D43).
 
-En el arranque, el logo ocupa el centro un mínimo de 5 segundos aunque los
-modelos ya estén listos, con el pie legal obligatorio visible: cinco segundos de
-un logo de Philips a pantalla completa es justo el momento donde alguien puede
-confundir el prototipo con un producto de la marca.
+Llegaron tres piezas de 30 s por Drive y se analizaron fotograma a fotograma:
+dos son negro puro o casi, y la tercera resultó ser una imagen fija que se
+enciende 1.73 s y se apaga 1.6 s en corte seco, con la cadencia del archivo rota
+(`avg_frame_rate=0/0`), que era lo que la hacía parpadear en Chromium. No
+contienen animación, y la silueta ni siquiera lleva el escudo Philips real. El
+SVG gana en todo y pesa 3 KB frente a 2.5 MB.
 
-Estado medido de las variantes (D25): la pieza clara se ve; las de azul y negro
-no tienen luminancia en ningún fotograma y esos dos temas usan la marca
-vectorial hasta que lleguen piezas visibles sobre fondo oscuro. Evidencia en
-`bench/logo-variantes.json`.
+El movimiento del arranque lo pone una animación CSS de 0.8 s que controlamos
+nosotros: la marca entra con opacidad y una escala corta, y el nombre y la línea
+de estado la siguen escalonados. Es el único movimiento del logo en toda la
+aplicación, y no puede parecer un fallo.
+
+En el arranque la marca ocupa el centro 5 segundos exactos con el pie legal
+obligatorio visible: cinco segundos de un logo de Philips a pantalla completa es
+justo el momento donde alguien puede confundir el prototipo con un producto de
+la marca.
 
 ### Uso del logo de Philips
 Philips es el patrocinador del track y su brief pide un prototipo para Philips.

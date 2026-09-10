@@ -272,14 +272,20 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
    Ningún color escrito a mano: todo sale de assets/themes.ts.
    ========================================================================= */
 
-/* ---------- logo animado ---------- */
-/* El vídeo es opaco: la caja lleva el mismo fondo que la pieza para que no se
-   vea un recuadro. Los temas cuyo archivo no se ve usan la marca vectorial. */
-.logo { display: block; height: auto; background: var(--logo-bg); border-radius: 6px; }
-.logo-fallback { background: var(--primary-deep); padding: 9px 11px; }
-.logo-splash { margin: 0 auto; }
+/* ---------- marca ---------- */
+/* Vectorial y sobre el azul profundo del tema. No hay vídeo en ningún tamaño:
+   ver la cabecera de LogoMotion.tsx y D43. */
+.logo { display: block; height: auto; background: var(--primary-deep); border-radius: 6px; padding: 9px 11px; }
+.logo-splash { margin: 0 auto; padding: 16px 20px; border-radius: 10px; }
 .logo-mark { flex: none; }
-.logo-inline { flex: none; }
+.logo-inline { flex: none; padding: 5px 7px; border-radius: 4px; }
+/* Entrada del arranque: la marca aparece, no salta. Es el único movimiento del
+   logo en toda la aplicación, y lo controlamos nosotros. */
+.logo-enter { animation: marcaIn .8s cubic-bezier(.16, .84, .44, 1) both; }
+@keyframes marcaIn {
+  from { opacity: 0; transform: scale(.9) translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
 
 /* ---------- arranque ---------- */
 .splash {
@@ -288,11 +294,14 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
   gap: 22px; background: var(--page); cursor: default;
 }
 .splash[role='button'] { cursor: pointer; }
+/* Salida en fundido: el arranque no desaparece de golpe. */
+.splash { transition: opacity .22s var(--ease); }
+.splash.leaving { opacity: 0; pointer-events: none; }
 /* Ópticamente centrado: la marca sube un poco para compensar el texto de abajo. */
 .splash-center { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; transform: translateY(-4%); }
-.splash-name { font-size: 40px; margin: 4px 0 0; color: var(--primary-deep); letter-spacing: -1px; }
+.splash-name { font-size: 40px; margin: 4px 0 0; color: var(--primary-deep); letter-spacing: -1px; animation: marcaIn .8s .12s cubic-bezier(.16, .84, .44, 1) both; }
 .splash-name span { color: var(--muted); font-weight: 400; font-size: 22px; letter-spacing: 0; }
-.splash-line { margin: 0; font-size: 14px; color: var(--ink); min-height: 20px; }
+.splash-line { margin: 0; font-size: 14px; color: var(--ink); min-height: 20px; animation: marcaIn .8s .22s cubic-bezier(.16, .84, .44, 1) both; }
 .splash-hint { margin: 0; font-size: 12.5px; }
 .splash-legal {
   position: absolute; bottom: 0; left: 0; right: 0;
@@ -350,9 +359,12 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
 .theme-thumb-mark { display: block; height: 9px; border-radius: 2px; width: 40%; }
 
 /* ---------- transición entre modos ---------- */
-/* 180 a 220 ms, opacidad más un desplazamiento corto. Reserva en CSS por si el
-   Chromium empaquetado no expone startViewTransition. */
-.mode-enter { animation: modeIn .2s var(--ease) both; }
+/* 180 a 220 ms, opacidad más un desplazamiento corto.
+   La capa que entra SOLO se anima cuando el navegador no tiene transiciones de
+   vista. Si se animan las dos cosas a la vez, el cambio se ve a tirones: el
+   navegador funde la pantalla vieja con la nueva mientras la nueva, además, se
+   desplaza por su cuenta. Una u otra, nunca las dos. */
+.no-vt .mode-enter { animation: modeIn .2s var(--ease) both; }
 @keyframes modeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 ::view-transition-old(root) { animation: vtOut .19s ease-out both; }
 ::view-transition-new(root) { animation: vtIn .21s ease-in both; }
@@ -460,7 +472,8 @@ tr.evidence-row .evidence { margin-bottom: 6px; }
 @media (prefers-reduced-motion: reduce) {
   /* Sin desplazamiento, solo un fundido corto. La regla general de arriba apaga
      toda animación con !important, así que este caso se reactiva a propósito. */
-  .mode-enter { animation: fadeOnly .08s linear both !important; }
+  .mode-enter, .no-vt .mode-enter { animation: fadeOnly .08s linear both !important; }
+  .splash { transition: opacity .08s linear !important; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: fadeOnly .08s linear both !important; }
 }
 @keyframes fadeOnly { from { opacity: 0; } to { opacity: 1; } }
@@ -468,3 +481,5 @@ tr.evidence-row .evidence { margin-bottom: 6px; }
 @media (max-width: 1180px) {
   .doors, .theme-cards { grid-template-columns: 1fr; }
 }
+/* Dos temas, no tres: las miniaturas ocupan la mitad cada una. */
+.theme-cards { grid-template-columns: repeat(2, 1fr); }

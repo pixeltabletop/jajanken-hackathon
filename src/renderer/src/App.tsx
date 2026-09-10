@@ -77,6 +77,7 @@ export default function App(): JSX.Element {
   // La pregunta en español solo necesita a Gemma. Guardar un cliente nuevo
   // recarga Whisper, y eso no tiene por qué bloquear el modo Seguimiento.
   const gemmaReady = status?.gemma.state === 'ready'
+  const whisperReady = status?.whisper.state === 'ready'
 
   const refreshTimings = useCallback(() => {
     if (!hasApi) return
@@ -336,7 +337,6 @@ export default function App(): JSX.Element {
             columns={columns} onColumns={setColumns}
             modelsReady={gemmaReady} timings={timings}
             operator={operator} onOperator={onOperator}
-            theme={theme}
           />
           <GuideSection timings={timings} />
         </div>
@@ -347,7 +347,7 @@ export default function App(): JSX.Element {
             <Capture
               text={text} onText={onText} busy={busy} transcribing={transcribing} recording={recording}
               seconds={seconds} level={level} fixes={fixes}
-              voiceEnabled={VOICE_ENABLED} modelsReady={allReady} timings={timings}
+              voiceEnabled={VOICE_ENABLED} modelsReady={gemmaReady} whisperReady={whisperReady} timings={timings}
               onRecord={onRecord} onStop={onStop} onExtract={onExtract} message={message}
             />
             <Review

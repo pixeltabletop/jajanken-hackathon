@@ -15,7 +15,10 @@ interface Props {
   level: number
   fixes: TranscriptFix[]
   voiceEnabled: boolean
+  /** Gemma lista: es lo único que hace falta para interpretar. */
   modelsReady: boolean
+  /** Whisper listo: es lo único que hace falta para transcribir. */
+  whisperReady: boolean
   timings: TimingTable
   onRecord: () => void
   onStop: () => void
@@ -70,6 +73,9 @@ export function Capture(p: Props): JSX.Element {
 
       <div className="actions">
         {p.voiceEnabled && (
+          /* Dictar no espera a ningún modelo: grabar es solo el micrófono. Si el
+             audio llega antes de que Whisper termine de cargar, el proceso
+             principal espera a que esté y transcribe. */
           <button
             type="button"
             className={p.recording ? 'recording' : ''}
@@ -88,8 +94,14 @@ export function Capture(p: Props): JSX.Element {
         >
           Interpretar con QVAC
         </button>
-        {p.timings.extract && !p.busy && (
+        {p.timings.extract && !p.busy && p.modelsReady && (
           <span className="hint muted">suele tardar {fmt(p.timings.extract.avgMs)}</span>
+        )}
+        {!p.modelsReady && !p.busy && (
+          <span className="hint muted">
+            Puedes dictar y escribir ya. Interpretar espera a que termine de cargar Gemma 2B
+            {p.timings['load:gemma'] && <>, unos {fmt(p.timings['load:gemma'].avgMs)} desde que abre la app</>}.
+          </span>
         )}
       </div>
 

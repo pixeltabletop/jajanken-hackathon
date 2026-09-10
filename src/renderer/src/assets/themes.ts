@@ -1,12 +1,16 @@
-// Registro único de temas. Cada entrada trae sus tokens de color y qué variante
-// del logo animado usa. Ningún componente ni hoja de estilo puede escribir un
+// Registro único de temas. Cada entrada trae sus tokens de color.
+//
+// Son DOS a propósito: claro y oscuro. La variante azul se retiró el 2026-09-09
+// por decisión de Josué. Tres temas no aportaban nada que no aportaran dos, y el
+// tema es un factor estético: no puede costarle rendimiento a la aplicación ni
+// multiplicar por tres lo que hay que medir en cada cambio de color. Ningún componente ni hoja de estilo puede escribir un
 // color a mano: si aparece uno, sube aquí. Esa es la condición para que cambiar
 // de tema no sea una cacería por todo el código.
 //
 // Los valores se miden con scripts/check-contrast.mjs, que importa este archivo.
 // Cambiar un token obliga a correr `npm run check:contrast` antes de commitear.
 
-export type ThemeId = 'blanco' | 'azul' | 'negro'
+export type ThemeId = 'blanco' | 'negro'
 
 /** Nombre de cada token, sin el prefijo `--`. */
 export interface ThemeTokens {
@@ -112,43 +116,6 @@ export const THEMES: Theme[] = [
       barOn: '#004b93',
       barOff: '#6693b6',
       logoBg: '#f4f8fb'
-    }
-  },
-  {
-    id: 'azul',
-    label: 'Azul oscuro',
-    hint: 'Azul profundo de marca. Para salas con poca luz.',
-    tokens: {
-      page: '#012c53',
-      pageTop: '#01223f',
-      surface: '#013a6b',
-      surface2: '#02426f',
-      surfaceHover: '#014e8c',
-      ink: '#f2f8fd',
-      muted: '#b9d6ee',
-      line: '#0b5896',
-      fieldLine: '#5f9fd0',
-      primary: '#63b8f0',
-      primaryDeep: '#a8d8f8',
-      onPrimary: '#012c53',
-      sky: '#023a6b',
-      onSky: '#dcecfa',
-      focus: '#8fd0ff',
-      grid: '#0a4d84',
-      shadowRgb: '0 12 24',
-      ok: '#7fd7ad',
-      okBg: '#0b4736',
-      warn: '#f0c07a',
-      warnBg: '#4d3512',
-      bad: '#f5a79c',
-      badBg: '#5a221b',
-      ...MARK,
-      alert: '#f2c580',
-      alertBg: '#3d2f10',
-      alertInk: '#fbeed3',
-      barOn: '#8fd0ff',
-      barOff: '#6faad8',
-      logoBg: '#020711'
     }
   },
   {

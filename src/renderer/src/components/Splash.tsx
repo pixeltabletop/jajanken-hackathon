@@ -5,16 +5,23 @@
 // Philips a pantalla completa es justo donde alguien puede confundir el
 // prototipo con un producto de la marca.
 
-import { useEffect, useState, type JSX } from 'react'
+import { useCallback, useEffect, useState, type JSX } from 'react'
 import type { ThemeId } from '../assets/themes.ts'
 import { fmt, type TimingTable } from '../../../shared/timings.ts'
 import type { ModelStatus } from '../../../shared/types.ts'
 import { LogoMotion } from './LogoMotion.tsx'
 
-/** Mínimo de marca. No se puede saltar antes. */
+/**
+ * El arranque dura exactamente esto. Es el momento de marca, y se acabó.
+ *
+ * Antes esperaba además a que los tres modelos estuvieran listos, así que el
+ * usuario miraba una pantalla fija hasta 57 s. Ya no: los modelos siguen
+ * cargando detrás, el encabezado dice en qué van y cada modo avisa de lo que
+ * todavía no puede hacer. Dictar funciona desde el primer segundo.
+ */
 export const SPLASH_MIN_MS = 5000
-/** A partir de aquí se ofrece continuar con los modelos aún cargando. */
-const ESCAPE_MS = 15000
+/** Salida en fundido, para que no sea un corte seco. */
+const FADE_MS = 220
 
 interface Props {
   theme: ThemeId
@@ -26,6 +33,7 @@ interface Props {
 
 export function Splash({ theme, status, timings, observations, onDone }: Props): JSX.Element {
   const [elapsed, setElapsed] = useState(0)
+  const [leaving, setLeaving] = useState(false)
   const ready = !!status && status.gemma.state === 'ready' && status.whisper.state === 'ready' && status.embed.state === 'ready'
 
   useEffect(() => {
@@ -36,18 +44,26 @@ export function Splash({ theme, status, timings, observations, onDone }: Props):
 
   const canSkip = elapsed >= SPLASH_MIN_MS
 
-  // Se sale solo cuando se cumplió el mínimo y los modelos están listos.
+  // Salida en fundido: se marca la capa y se cede el paso al terminar.
+  const leave = useCallback(() => {
+    setLeaving((l) => {
+      if (!l) setTimeout(onDone, FADE_MS)
+      return true
+    })
+  }, [onDone])
+
+  // A los 5 s se sale, estén o no listos los modelos.
   useEffect(() => {
-    if (canSkip && ready) onDone()
-  }, [canSkip, ready, onDone])
+    if (canSkip) leave()
+  }, [canSkip, leave])
 
   // Esc o clic, solo después del mínimo.
   useEffect(() => {
     if (!canSkip) return
-    const key = (e: KeyboardEvent): void => { if (e.key === 'Escape') onDone() }
+    const key = (e: KeyboardEvent): void => { if (e.key === 'Escape') leave() }
     window.addEventListener('keydown', key)
     return () => window.removeEventListener('keydown', key)
-  }, [canSkip, onDone])
+  }, [canSkip, leave])
 
   // El texto dice lo que de verdad está pasando, nunca un mensaje genérico.
   const pending = status
@@ -62,11 +78,11 @@ export function Splash({ theme, status, timings, observations, onDone }: Props):
 
   return (
     <div
-      className="splash"
-      onClick={canSkip ? onDone : undefined}
+      className={`splash${leaving ? ' leaving' : ''}`}
+      onClick={canSkip ? leave : undefined}
       role={canSkip ? 'button' : undefined}
       tabIndex={canSkip ? 0 : undefined}
-      onKeyDown={canSkip ? (e) => { if (e.key === 'Enter' || e.key === ' ') onDone() } : undefined}
+      onKeyDown={canSkip ? (e) => { if (e.key === 'Enter' || e.key === ' ') leave() } : undefined}
       aria-label={canSkip ? 'Continuar al inicio' : undefined}
     >
       <div className="splash-center">
@@ -76,9 +92,10 @@ export function Splash({ theme, status, timings, observations, onDone }: Props):
         {timings['load:all'] && !ready && (
           <p className="splash-hint muted">El arranque completo suele tardar {fmt(timings['load:all'].avgMs)}</p>
         )}
-        {canSkip && !ready && <p className="splash-hint muted">Pulsa Esc para continuar</p>}
-        {elapsed >= ESCAPE_MS && !ready && (
-          <button type="button" className="ghost" onClick={onDone}>Continuar de todos modos</button>
+        {!ready && (
+          <p className="splash-hint muted">
+            Puedes empezar a dictar en cuanto entres: los modelos terminan de cargar detrás.
+          </p>
         )}
       </div>
       <footer className="splash-legal">

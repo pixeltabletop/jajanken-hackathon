@@ -6,8 +6,7 @@
 
 import { useEffect, useRef, useState, type JSX } from 'react'
 import { fmt, type TimingTable } from '../../../shared/timings.ts'
-import { LogoMotion } from './LogoMotion.tsx'
-import type { ThemeId } from '../assets/themes.ts'
+import { LogoMark } from './LogoMotion.tsx'
 
 const EXAMPLES = [
   'cuál es el estatus de las unidades en Panamá',
@@ -25,10 +24,9 @@ interface Props {
   ms: number | null
   error: string | null
   timings: TimingTable
-  theme: ThemeId
 }
 
-export function QueryBar({ value, onValue, onAsk, busy, ready, ms, error, timings, theme }: Props): JSX.Element {
+export function QueryBar({ value, onValue, onAsk, busy, ready, ms, error, timings }: Props): JSX.Element {
   const input = useRef<HTMLInputElement>(null)
   const [waited, setWaited] = useState(0)
 
@@ -80,7 +78,7 @@ export function QueryBar({ value, onValue, onAsk, busy, ready, ms, error, timing
 
       {show && (
         <p className="qbar-wait" aria-live="polite">
-          <LogoMotion size="inline" theme={theme} />
+          <LogoMark size="inline" />
           <span>
             Interpretando la pregunta con Gemma 2B · local · sin red
             {timings.query && <> · suele tardar {fmt(timings.query.avgMs)}</>}
@@ -89,7 +87,7 @@ export function QueryBar({ value, onValue, onAsk, busy, ready, ms, error, timing
       )}
       {!ready && !busy && (
         <p className="qbar-wait muted" aria-live="polite">
-          <LogoMotion size="inline" theme={theme} />
+          <LogoMark size="inline" />
           <span>
             Gemma 2B se está cargando · local · sin red. Mientras tanto los filtros de abajo,
             las cifras y los gráficos funcionan igual.

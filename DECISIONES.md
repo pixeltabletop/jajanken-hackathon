@@ -81,8 +81,40 @@ Cambiar una decisión exige una entrada nueva que la reemplace, no editar la vie
 
 **D35 · El HMR de electron-vite solo recarga el renderer.** Cualquier cambio en `src/main/` (IPC, almacén, reportes, motor QVAC) exige cerrar y volver a abrir la app. Costó un PDF que salía sin la frase redactada mientras la pantalla ya mostraba el código nuevo: la verificación estaba midiendo el proceso principal viejo. El aviso está en la cabecera de `scripts/e2e-4b.mjs`.
 
+**D36 · Dos temas, no tres. Se retira Azul oscuro.** Decisión de Josué el 2026-09-09: si una variante no aporta, sobra. Quedan Blanco clásico y Negro, que son los dos que de verdad se ven distintos, y es el mismo orden de recorte que ya traía el documento del bloque. El tema es un factor estético y no puede costarle rendimiento a la aplicación: se borraron también `logo/azul.webm` y `logo/azul.png` para no empaquetar 690 KB muertos. El medidor de contraste pasó de 144 a 96 pares, todos en verde.
+
+**D37 · El vídeo del logo se queda solo en el arranque.** Josué lo vio en pantalla: la versión de 96 px del encabezado parpadeaba, y la de 40 px de las esperas también. El bucle de 30 s tiene fotogramas donde el escudo no está, y a tamaño pequeño eso no se lee como una animación sino como un fallo. El resto de la interfaz usa `LogoMark`, la marca vectorial fija. El vídeo no se recorta ni se reanima: está fuera de alcance.
+
+**D38 · El arranque dura 5 segundos fijos y deja de esperar a los modelos.** Antes se quedaba hasta que los tres estuvieran listos, así que el usuario miraba una pantalla quieta hasta 57 s. Ahora los modelos terminan de cargar detrás, el encabezado dice en qué van y cada modo declara lo que todavía no puede hacer. Es el cambio que de verdad bajó la espera: el minuto sigue existiendo, pero ya no se sufre.
+
+**D39 · Cuándo se puede empezar a dictar: desde el primer segundo.**
+| Acción | Qué necesita | Disponible desde |
+|---|---|---|
+| Escribir la nota | nada | al abrir |
+| Dictar (grabar) | el micrófono | al abrir |
+| Transcribir el dictado | Whisper Base | ~24 s, y si el audio llega antes se espera en vez de fallar |
+| Interpretar la nota | Gemma 2B | ~50 a 60 s |
+| Preguntar en español | Gemma 2B | ~50 a 60 s |
+| Deduplicar y guardar | EmbeddingGemma | ~29 s |
+El botón Dictar ya no espera a nadie: grabar es solo el micrófono. Si el audio llega antes de que Whisper termine, el proceso principal espera a que esté y transcribe (`whisperReady`). Los cargadores memorizan la carga en curso, así que dos llamadas concurrentes no arrancan dos cargas del mismo modelo.
+
+**D40 · El orden de carga no mueve la aguja; se queda en paralelo.** Se midió cargar Whisper primero y solo, para que el dictado sirviera antes. No sirvió: tardó 24.3 s frente a 23.6 s en paralelo, y el total subió. El suelo son ~20 s de arranque del worker de QVAC, que paga entero el primer modelo que se cargue sea cual sea, más la lectura de los 3.4 GB de Gemma. Bajar de ahí exige cambiar el modelo o la cuantización, lo que invalidaría el 8/10 medido de D03 a 36 horas de la entrega. La tabla completa está en el comentario de `warmup()` en `src/main/qvac/models.ts`.
+
+**D41 · El panel de tiempos es interno, no parte del producto.** Josué: ver cuánto tarda cada proceso invita al usuario a evaluar el rendimiento de la aplicación, y quien tiene que hacer eso somos nosotros. La pestaña de tiempos se enciende con **Ctrl+Alt+T** y queda guardada en ese equipo. Apagada, la sección de abajo se llama solo "Guía" y habla de los campos del registro.
+
+**D42 · Una sola animación por cambio de modo.** La capa que entra se animaba a la vez que el propio cruce del navegador, y el cambio se veía a tirones. Ahora `transition.ts` marca el documento con `no-vt` cuando no hay `startViewTransition`, y el desplazamiento de entrada solo se aplica en ese caso. El arranque, además, sale en fundido de 220 ms en vez de desaparecer de golpe.
+
+**D43 · El vídeo del logo se retira del producto. La marca es el SVG.** Josué reportó que en el arranque salía negro y parpadeando, "que parece un fallo". Se analizó el archivo fotograma a fotograma:
+- `philips-logo-30s-loop.webm` (negro): negro puro en los 882 fotogramas.
+- `…-hue-neon.webm` (azul): ningún canal pasa de 16 de 255.
+- `…-light-brand.webm` (blanco): la única que se veía. Traía la cadencia rota, `avg_frame_rate=0/0` con base de tiempo de 1000 fps, y **eso** era lo que hacía que Chromium la reprodujera a tirones. Reconstruida con cadencia constante de 30 fps se ve lo que de verdad contiene: la silueta encendida 1.73 s y apagada 1.6 s, en corte seco, repetido nueve veces. Y dentro del tramo encendido los 51 fotogramas son **idénticos**, cero píxeles de diferencia.
+
+O sea que el archivo no contiene una animación: contiene una imagen fija que parpadea, y además la silueta es un escudo liso, sin el escudo Philips real. El SVG que ya estaba en el repositorio le gana en todo: es vectorial, tiene el escudo de verdad, pesa 3 KB frente a 2.5 MB de los tres vídeos y no tiene nada que pueda parpadear. El movimiento del arranque lo pone ahora una animación CSS de 0.8 s que sí controlamos, escalonada con el nombre y la línea de estado. Se borraron los tres `.webm` y sus PNG del repositorio.
+
+**Para Diego:** si la intención era una pieza animada, la exportación no la contiene. Hace falta un archivo con movimiento real, cadencia constante y luminancia sobre su propio fondo. Mientras tanto el arranque funciona sin él.
+
 ## Pendientes de decisión
 
 - Voz vive o muere (Anexo G del blueprint), con el audio real de Diego.
-- Piezas de logo azul y negro que se vean sobre su fondo (D25).
+- Pieza de logo con movimiento real y cadencia constante, si Diego quiere animación en el arranque (D43).
 - Nombre definitivo de la aplicación.

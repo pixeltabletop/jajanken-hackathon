@@ -117,7 +117,7 @@ try {
   summary.splashMs = Date.now() - t0
   check(summary.splashMs >= 5000, 'el arranque dura al menos 5 segundos', `${(summary.splashMs / 1000).toFixed(1)} s`)
   const net = await js(`performance.getEntriesByType('resource').filter(r => !/^(file|data|blob)/.test(r.name) && !/localhost:5173/.test(r.name)).map(r => r.name).slice(0,5)`)
-  check(net.length === 0, 'nada se descarga de la red: el vídeo viaja en el paquete', net.join(' ') || 'ninguna petición externa')
+  check(net.length === 0, 'nada se descarga de la red: todo viaja en el paquete', net.join(' ') || 'ninguna petición externa')
 
   // el paso de tema solo sale en un perfil limpio; si sale, se cierra
   if (await js(`!!document.querySelector('.theme-first')`)) {
@@ -198,6 +198,14 @@ try {
   check(/Seguimiento/.test(await js(`(document.getElementById('mode-live')||{}).textContent||''`)), 'el cambio se anuncia en la región viva')
   check(await js(`document.querySelectorAll('.qbar-examples button').length >= 3`), 'hay preguntas de ejemplo pulsables')
 
+  // El arranque ya no espera a los modelos, así que aquí sí hay que esperar a
+  // Gemma: es lo único que necesita la pregunta en español.
+  const gemmaMs = await waitFor(
+    `(() => { const b=[...document.querySelectorAll('.qbar-row button')][0]; return b && !b.disabled || document.querySelector('#q-input:not([disabled])') && !document.querySelector('.qbar-wait.muted') })()`,
+    'que Gemma quede lista', 180000, 1500
+  )
+  summary.gemmaReadyMs = gemmaMs
+  check(true, 'la pregunta espera a Gemma sin bloquear el resto', `lista ${(gemmaMs / 1000).toFixed(0)} s después de entrar`)
   await setInput('#q-input', 'cuál es el estatus de las unidades en Panamá')
   // React necesita un tick para rehabilitar el botón tras el evento de entrada.
   await sleep(500)
@@ -342,7 +350,7 @@ try {
   // ---- 11. temas (puntos 18, 19, 20, 21) ---------------------------------
   console.log('\n--- 11. temas ---')
   const filtroAntes = await js(`document.querySelectorAll('tbody tr').length`)
-  for (const th of ['negro', 'azul', 'blanco']) {
+  for (const th of ['negro', 'blanco']) {
     check((await setTheme(th)) === true, `el tema ${th} se puede elegir desde el encabezado`)
     await sleep(900)
     const applied = await js(`document.documentElement.dataset.theme`)

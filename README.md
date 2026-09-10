@@ -17,12 +17,11 @@ La extracción, la transcripción, la deduplicación y la interpretación de la
 pregunta en español corren dentro del proceso principal de Electron con QVAC.
 No hay servidor detrás.
 
-**Todos los recursos viajan dentro del paquete.** El logo animado del arranque
-(`src/renderer/src/assets/logo/*.webm`) se empaqueta con la aplicación y **no se
-descarga en tiempo de ejecución**: Chromium reproduce WebM sin dependencia
-adicional. No se cargan fuentes remotas ni ningún otro recurso de red. La
-verificación del Bloque 4B comprueba, contra la app en ejecución, que no queda
-ni una petición fuera de `localhost`.
+**Todos los recursos viajan dentro del paquete** y **nada se descarga en tiempo
+de ejecución**: la marca es un SVG de 3 KB en `src/renderer/src/assets/`, la
+tipografía es la del sistema y no se carga ninguna fuente remota. La verificación
+del Bloque 4B comprueba, contra la app en ejecución, que no queda ni una petición
+fuera de `localhost`.
 
 El botón de correo abre el cliente de correo del usuario con un `mailto:`; el PDF
 se guarda antes en disco porque un adjunto no viaja por ahí. **La aplicación no
@@ -42,6 +41,28 @@ node scripts/e2e-4b.mjs                   # verificación del Bloque 4B, 60 comp
 
 Si `npm run dev` dice "Electron uninstall", ver **D22** en `DECISIONES.md`: el
 binario se extrae a mano.
+
+## Panel interno
+
+La pestaña de tiempos por proceso está apagada para el usuario: ver cuánto tarda
+cada cosa invita a evaluar el rendimiento de la aplicación, y eso nos toca a
+nosotros. Se enciende con **Ctrl+Alt+T** y queda guardada en ese equipo.
+
+## Arranque, y qué se puede hacer desde cuándo
+
+El arranque de marca dura 5 segundos exactos. Los modelos siguen cargando
+detrás; el encabezado dice en qué van.
+
+| Acción | Disponible desde |
+|---|---|
+| Escribir la nota | al abrir |
+| Dictar | al abrir |
+| Transcribir el dictado | ~24 s (si el audio llega antes, se espera) |
+| Interpretar la nota y preguntar en español | ~50 a 60 s |
+
+Ese minuto son ~20 s de arranque del worker de QVAC más la lectura de los 3.4 GB
+de Gemma. Se midió cargar los modelos en otro orden y no cambia nada; la tabla
+está en el comentario de `warmup()` en `src/main/qvac/models.ts`.
 
 ## Dónde está todo
 

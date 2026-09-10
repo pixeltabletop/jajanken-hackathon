@@ -15,6 +15,16 @@ type DocWithVT = Document & {
   startViewTransition?: (cb: () => void) => { finished: Promise<void>; ready: Promise<void> }
 }
 
+/**
+ * Marca el documento cuando NO hay transiciones de vista. Sin esto, la capa que
+ * entra se animaba a la vez que el propio cruce del navegador y el cambio se
+ * veía a tirones: dos animaciones distintas sobre el mismo contenido.
+ */
+if (typeof document !== 'undefined') {
+  const soportado = typeof (document as DocWithVT).startViewTransition === 'function'
+  document.documentElement.classList.toggle('no-vt', !soportado)
+}
+
 export function reducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }

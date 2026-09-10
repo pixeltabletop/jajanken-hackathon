@@ -7,7 +7,7 @@ Umbral 4.5:1 para texto normal, 3:1 para texto grande y para el borde o
 relleno que comunica un estado. La rejilla y las líneas divisorias son
 decorativas y solo se vigila que no desaparezcan (1.2:1).
 
-Última corrida: 2026-09-10 · 144/144 pares pasan.
+Última corrida: 2026-09-10 · 96/96 pares pasan.
 
 ## Blanco clásico
 
@@ -61,59 +61,6 @@ decorativas y solo se vigila que no desaparezcan (1.2:1).
 | Botón deshabilitado | deshabilitado | `#fbfdff` | `#5b6f7f` | 5.12:1 | 4.5 | pasa |
 | Botón deshabilitado, borde | deshabilitado | `#fbfdff` | `#d8e5ed` | 1.26:1 | 1.2 | pasa |
 | Botón deshabilitado contra uno activo | deshabilitado | `#fbfdff` | `#0076ce` | 4.59:1 | 3 | pasa |
-
-## Azul oscuro
-
-| Elemento | Estado | Fondo | Texto | Ratio | Umbral | Veredicto |
-|---|---|---|---|---|---|---|
-| Texto de página | normal | `#012c53` | `#f2f8fd` | 13.20:1 | 4.5 | pasa |
-| Texto de tarjeta | normal | `#013a6b` | `#f2f8fd` | 10.79:1 | 4.5 | pasa |
-| Texto secundario | normal | `#013a6b` | `#b9d6ee` | 7.65:1 | 4.5 | pasa |
-| Texto secundario sobre página | normal | `#012c53` | `#b9d6ee` | 9.36:1 | 4.5 | pasa |
-| Texto secundario sobre superficie sutil | normal | `#02426f` | `#b9d6ee` | 6.92:1 | 4.5 | pasa |
-| Encabezado de sección | grande | `#013a6b` | `#a8d8f8` | 7.61:1 | 3 | pasa |
-| Encabezado de tabla | normal | `#023a6b` | `#dcecfa` | 9.57:1 | 4.5 | pasa |
-| Etiqueta de filtro activo (chip) | normal | `#023a6b` | `#dcecfa` | 9.57:1 | 4.5 | pasa |
-| Botón principal | normal | `#63b8f0` | `#012c53` | 6.49:1 | 4.5 | pasa |
-| Botón principal | hover | `#a8d8f8` | `#012c53` | 9.31:1 | 4.5 | pasa |
-| Botón principal contra la página | relleno | `#012c53` | `#63b8f0` | 6.49:1 | 3 | pasa |
-| Botón secundario | normal | `#013a6b` | `#a8d8f8` | 7.61:1 | 4.5 | pasa |
-| Borde de campo | relleno | `#013a6b` | `#5f9fd0` | 4.04:1 | 3 | pasa |
-| Anillo de foco | foco | `#013a6b` | `#8fd0ff` | 6.95:1 | 3 | pasa |
-| Anillo de foco sobre página | foco | `#012c53` | `#8fd0ff` | 8.50:1 | 3 | pasa |
-| Anillo de foco sobre selección | foco+elegido | `#023a6b` | `#8fd0ff` | 6.94:1 | 3 | pasa |
-| Fila de tabla | hover | `#014e8c` | `#f2f8fd` | 7.94:1 | 4.5 | pasa |
-| Fila de tabla | elegida | `#023a6b` | `#f2f8fd` | 10.78:1 | 4.5 | pasa |
-| Fila de tabla elegida, texto secundario | elegida | `#023a6b` | `#b9d6ee` | 7.65:1 | 4.5 | pasa |
-| Opción de desplegable | normal | `#013a6b` | `#f2f8fd` | 10.79:1 | 4.5 | pasa |
-| Candidato de duplicado | elegido | `#023a6b` | `#f2f8fd` | 10.78:1 | 4.5 | pasa |
-| Tarjeta del selector | normal | `#013a6b` | `#f2f8fd` | 10.79:1 | 4.5 | pasa |
-| Tarjeta del selector | hover | `#014e8c` | `#f2f8fd` | 7.94:1 | 4.5 | pasa |
-| Tarjeta del selector | elegida | `#023a6b` | `#dcecfa` | 9.57:1 | 4.5 | pasa |
-| Badge de confianza alta | normal | `#0b4736` | `#7fd7ad` | 6.21:1 | 4.5 | pasa |
-| Badge de confianza media | normal | `#4d3512` | `#f0c07a` | 6.83:1 | 4.5 | pasa |
-| Badge de confianza baja | normal | `#5a221b` | `#f5a79c` | 6.48:1 | 4.5 | pasa |
-| Aviso ámbar | normal | `#3d2f10` | `#fbeed3` | 11.33:1 | 4.5 | pasa |
-| Aviso ámbar, borde | relleno | `#3d2f10` | `#f2c580` | 8.11:1 | 3 | pasa |
-| Resaltado de evidencia | resaltado | `#ffe98a` | `#1c1a12` | 14.33:1 | 4.5 | pasa |
-| Borde del resaltado, dentro | relleno | `#ffe98a` | `#a37d00` | 3.15:1 | 3 | pasa |
-| Borde del resaltado sobre el texto de la nota | relleno | `#023a6b` | `#a37d00` | 3.02:1 | 3 | pasa |
-| Borde del resaltado sobre la tarjeta | relleno | `#013a6b` | `#a37d00` | 3.02:1 | 3 | pasa |
-| Barra de gráfico elegida | elegida | `#013a6b` | `#8fd0ff` | 6.95:1 | 3 | pasa |
-| Barra de gráfico atenuada | no elegida | `#013a6b` | `#6faad8` | 4.63:1 | 3 | pasa |
-| Rejilla del gráfico | relleno | `#013a6b` | `#0a4d84` | 1.32:1 | 1.2 | pasa |
-| Línea divisoria | relleno | `#013a6b` | `#0b5896` | 1.57:1 | 1.2 | pasa |
-| Texto deshabilitado | deshabilitado | `#013a6b` | `#b9d6ee` | 7.65:1 | 3 | pasa |
-| Chip de columna elegida | elegida | `#023a6b` | `#dcecfa` | 9.57:1 | 4.5 | pasa |
-| Tarjeta de reporte elegida | elegida | `#023a6b` | `#dcecfa` | 9.57:1 | 4.5 | pasa |
-| Tarjeta de reporte elegida, descripción | elegida | `#023a6b` | `#b9d6ee` | 7.65:1 | 4.5 | pasa |
-| Candidato de duplicado, borde | elegido | `#013a6b` | `#63b8f0` | 5.30:1 | 3 | pasa |
-| Pestaña activa | elegida | `#013a6b` | `#a8d8f8` | 7.61:1 | 3 | pasa |
-| Botón fantasma activado | elegido | `#023a6b` | `#dcecfa` | 9.57:1 | 4.5 | pasa |
-| Fila abierta de la tabla | abierta | `#023a6b` | `#f2f8fd` | 10.78:1 | 4.5 | pasa |
-| Botón deshabilitado | deshabilitado | `#02426f` | `#b9d6ee` | 6.92:1 | 4.5 | pasa |
-| Botón deshabilitado, borde | deshabilitado | `#02426f` | `#0b5896` | 1.42:1 | 1.2 | pasa |
-| Botón deshabilitado contra uno activo | deshabilitado | `#02426f` | `#63b8f0` | 4.80:1 | 3 | pasa |
 
 ## Negro
 
