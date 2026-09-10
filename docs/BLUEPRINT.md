@@ -79,7 +79,6 @@ jajanken-hackathon/
   docs/
     BLUEPRINT.md                   # Este documento
     GUION-VIDEO.md                 # Guion cronometrado, se escribe en el bloque 1
-    briefing.html                  # Puesta al día técnica (ya existe)
   bench/                           # Banco de mediciones. Reproducible con `npm run bench:*`
     *.js                           # Scripts de medición (portados de ~/personal/jajanken)
     *.json                         # Evidencia cruda de cada corrida

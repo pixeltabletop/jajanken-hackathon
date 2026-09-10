@@ -1,15 +1,27 @@
-
-
-# motor / mediciones
-*.gguf
-*.log*
-.DS_Store
-.eslintcache
-.qvac/
-.smoke-userdata/
-audio/
-bench/*.log
-dist
-dist/
+# Dependencias y salidas de construcción
 node_modules
 out
+dist/
+
+# Modelos y cachés de QVAC
+*.gguf
+.qvac/
+.smoke-userdata/
+
+# Registros y audio de pruebas
+*.log*
+bench/*.log
+audio/
+
+# Documentos del reto que son de Philips, no nuestros: se usan para trabajar y
+# derivar la semilla, pero no se redistribuyen dentro de nuestra entrega.
+reference/
+data/Dummy_Installed_Base_Hackathon.xlsx
+
+# Artefactos muertos del arranque del proyecto
+docs/briefing.html
+resources/seed-observations.json
+
+# Sistema y editor
+.DS_Store
+.eslintcache
