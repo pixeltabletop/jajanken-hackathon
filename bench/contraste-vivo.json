@@ -10,85 +10,109 @@
     },
     {
       "estado": "blanco · inicio y registro",
-      "medidos": 51,
+      "medidos": 67,
       "fallos": 0,
       "malas": []
     },
     {
-      "estado": "blanco · menú de opciones abierto",
-      "medidos": 54,
+      "estado": "blanco · menú de sesión abierto",
+      "medidos": 70,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · base abierta y selector de columnas",
-      "medidos": 667,
+      "medidos": 727,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · seguimiento",
-      "medidos": 574,
+      "medidos": 633,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · guía de cómo pedirlo",
-      "medidos": 607,
+      "medidos": 666,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · gráfico con una barra elegida",
-      "medidos": 121,
+      "medidos": 136,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · nota abierta con la evidencia",
-      "medidos": 578,
+      "medidos": 637,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · barra lateral estrecha",
+      "medidos": 622,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · barra con acción encendida y sección actual",
+      "medidos": 670,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · inicio y registro",
-      "medidos": 51,
+      "medidos": 67,
       "fallos": 0,
       "malas": []
     },
     {
-      "estado": "negro · menú de opciones abierto",
-      "medidos": 54,
+      "estado": "negro · menú de sesión abierto",
+      "medidos": 70,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · base abierta y selector de columnas",
-      "medidos": 667,
+      "medidos": 727,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · seguimiento",
-      "medidos": 574,
+      "medidos": 633,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · guía de cómo pedirlo",
-      "medidos": 607,
+      "medidos": 666,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · gráfico con una barra elegida",
-      "medidos": 121,
+      "medidos": 136,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · nota abierta con la evidencia",
-      "medidos": 578,
+      "medidos": 637,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · barra lateral estrecha",
+      "medidos": 622,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · barra con acción encendida y sección actual",
+      "medidos": 670,
       "fallos": 0,
       "malas": []
     }

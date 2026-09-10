@@ -8,24 +8,11 @@
 }
 
 /* ---------- cabecera ---------- */
-header { align-items: flex-start; }
-.brand h1 { margin: 10px 0 2px; }
-.tagline { margin: 0; color: var(--muted); font-size: 13px; }
-.pills { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 640px; }
-.pill {
-  font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 5px 10px; border-radius: 14px;
-  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
-  display: inline-flex; gap: 6px; align-items: center;
-  transition: background .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease);
-}
-.pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .55; }
-.pill.ready { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
-.pill.loading { color: var(--warn); background: var(--warn-bg); border-color: transparent; }
-.pill.error { color: var(--bad); background: var(--bad-bg); border-color: transparent; }
-.pill.loading::before { animation: pulse 1.2s ease-in-out infinite; }
+/* El encabezado de tres zonas se fue con la barra lateral: marca, semaforo y
+   controles viven ahora en la columna izquierda. Lo unico que sobrevive de
+   aqui es la animacion de pulso, que sigue usando el semaforo. */
 @keyframes pulse { 0%, 100% { opacity: .2; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
 .local-badge { display: inline-flex; align-items: center; gap: 2px; }
-.pills-note { flex-basis: 100%; text-align: right; font-size: 12px; }
 
 /* ---------- métricas ---------- */
 .stat-label { display: inline-flex; align-items: center; gap: 2px; }
@@ -360,11 +347,6 @@ video.logo { mix-blend-mode: multiply; }
 .door-sub { font-size: 13.5px; color: var(--ink); line-height: 1.55; }
 .door-go { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--primary); }
 .home-note { margin: 12px 0 0; font-size: 13px; }
-.mode-badge {
-  align-self: center; margin-left: 14px; font-size: 11px; font-weight: 700; letter-spacing: .8px;
-  text-transform: uppercase; color: var(--on-sky); background: var(--sky);
-  border: 1px solid var(--primary); border-radius: 12px; padding: 4px 10px;
-}
 .home-btn { margin: 0; }
 .theme-switch { display: inline-flex; align-items: center; gap: 6px; }
 .theme-switch-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
@@ -680,9 +662,6 @@ button.ghost:active:not(:disabled), .door:active, .rep-kind:active, .theme-card:
 /* =========================================================================
    Encabezado compacto: semáforo al centro, iconos a la derecha
    ========================================================================= */
-header { gap: 18px; }
-.head-centro { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top: 6px; }
-.head-acciones { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 
 /* Semáforo de modelos. */
 .dots {
@@ -695,8 +674,6 @@ header { gap: 18px; }
 .dot.ready { background: var(--ok); border-color: var(--ok); }
 .dot.loading { background: var(--warn); border-color: var(--warn); animation: pulse 1.2s ease-in-out infinite; }
 .dot.error { background: var(--bad); border-color: var(--bad); }
-.dots-label { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--muted); margin-left: 3px; }
-.dots-nota { font-size: 11.5px; }
 
 /* Botones de icono. */
 .icon-btn {
@@ -741,4 +718,181 @@ header { gap: 18px; }
 @media (max-width: 1180px) {
   header { flex-wrap: wrap; }
   .head-centro { order: 3; width: 100%; align-items: flex-start; }
+}
+
+
+/* ============================================================================
+   ARMAZÓN DE DOS COLUMNAS
+   ============================================================================
+   Barra lateral a la izquierda con la navegación y lo global; a la derecha, el
+   área de trabajo con lo que se haya elegido. Es el patrón de las herramientas
+   de hoy, y lo que gana no es estética: la navegación deja de ser una pantalla
+   por la que hay que pasar y pasa a estar siempre a la mano.
+
+   Nada de esto trae colores propios. Todo sale de los tokens del tema, que es
+   lo único que hace que el cambio de tema y la medición de contraste sigan
+   valiendo. Un color escrito a mano aquí rompe las dos cosas a la vez. */
+
+:root { --lat-ancha: 246px; --lat-estrecha: 64px; }
+
+/* El degradado de la cabecera vieja ya no aplica: ahora la franja de arriba
+   vive dentro del área de trabajo y la barra tiene su propio fondo. */
+body { background: var(--page); }
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--lat-ancha) minmax(0, 1fr);
+  min-height: 100vh;
+  transition: grid-template-columns .2s var(--ease);
+}
+.shell.lat-estrecha { grid-template-columns: var(--lat-estrecha) minmax(0, 1fr); }
+@media (prefers-reduced-motion: reduce) { .shell { transition: none; } }
+
+/* `main` global trae ancho máximo y centrado; aquí manda la rejilla. */
+main.workspace {
+  max-width: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; min-width: 0;
+  background: var(--page);
+}
+.workspace-body { width: 100%; max-width: 1240px; margin: 0 auto; padding: 20px 32px 44px; flex: 1 1 auto; }
+main.fuera { max-width: 720px; margin: 0 auto; padding: 60px 32px; }
+
+/* ---------- barra lateral ---------- */
+
+.lateral {
+  position: sticky; top: 0; align-self: start;
+  height: 100vh; overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px 10px 12px;
+  background: var(--page-top);
+  /* Con --line el borde daba 1.28:1 contra el fondo de la barra y no separaba
+     nada: en tema claro la barra y el area de trabajo casi no se distinguen. Se
+     usa el mismo token que los bordes de campo, que ya se mide a 3:1. */
+  border-right: 1px solid var(--field-line);
+}
+.lateral.estrecha { padding-left: 8px; padding-right: 8px; }
+
+.lat-marca { display: flex; align-items: center; gap: 8px; padding: 0 4px 10px; }
+.lat-logo {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: flex; align-items: center; gap: 9px; flex: 1 1 auto; min-width: 0;
+  padding: 4px 6px; border-radius: 8px;
+}
+.lat-logo:hover { background: var(--surface-hover); }
+.lat-logo:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.lat-logo .logo { width: 28px !important; }
+.lat-nombre { font-size: 17px; font-weight: 700; color: var(--primary-deep); letter-spacing: -.3px; }
+.lateral.estrecha .lat-marca { flex-direction: column; gap: 6px; padding-bottom: 8px; }
+.lat-plegar { flex: 0 0 auto; }
+
+.lat-grupo { display: flex; flex-direction: column; gap: 2px; }
+.lat-acciones { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.lat-titulo {
+  margin: 8px 8px 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* Una fila de la barra. Estrecha se vuelve un cuadrado con solo el icono, pero
+   sigue siendo el mismo botón, con el mismo nombre accesible. */
+.lat-item {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; padding: 9px 10px; border-radius: 8px;
+  font-size: 13.5px; color: var(--ink);
+  border: 1px solid transparent;
+  transition: background .16s var(--ease), color .16s var(--ease);
+}
+.lat-item:hover:not(:disabled) { background: var(--surface-hover); }
+.lat-item:focus-visible { outline: 2px solid var(--focus); outline-offset: -1px; }
+.lat-ico { flex: 0 0 auto; display: inline-flex; color: var(--primary-deep); }
+.lat-txt { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Sección actual. El par fondo/texto es el mismo que ya usan los chips y los
+   encabezados de tabla, así que está medido y no inventa colores nuevos. */
+.lat-item.actual { background: var(--sky); color: var(--on-sky); font-weight: 700; border-color: var(--primary); }
+.lat-item.actual .lat-ico { color: var(--on-sky); }
+
+/* Accion encendida: no es "estas aqui", es "esto esta puesto". Tiene que verse
+   DISTINTA de la seccion actual, no parecida: con el mismo relleno azul las dos
+   se confundian y la barra dejaba de decir donde estabas. Aqui va sin relleno,
+   solo el contorno y un punto al final. El punto es la senal que no depende del
+   color, que es lo que pide la seccion de accesibilidad. */
+.lat-item.encendida { border-color: var(--primary); background: transparent; color: var(--ink); font-weight: 400; }
+.lat-item.encendida .lat-ico { color: var(--primary-deep); }
+.lat-item.encendida::after {
+  content: ''; flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--primary); margin-left: auto;
+}
+.lateral.estrecha .lat-item.encendida::after { display: none; }
+/* Estrecha no cabe el punto: el contorno se refuerza para que siga leyendose. */
+.lateral.estrecha .lat-item.encendida { border-width: 2px; }
+
+/* Deshabilitado sin opacidad: a 55 % el texto caía a 1.59:1. */
+.lat-item:disabled { cursor: default; color: var(--muted); background: var(--surface-2); }
+.lat-item:disabled .lat-ico { color: var(--muted); }
+
+.lateral.estrecha .lat-item { justify-content: center; padding: 10px 0; }
+.lateral.estrecha .lat-titulo { display: none; }
+
+/* ---------- pie de la barra ---------- */
+
+.lat-pie {
+  margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.lat-semaforo { display: flex; align-items: center; gap: 9px; padding: 6px 8px; cursor: default; }
+.lat-semaforo .dots { padding: 5px 9px; }
+.lat-semaforo-txt { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lateral.estrecha .lat-semaforo { justify-content: center; padding: 6px 0; }
+
+.lat-usuario { position: relative; }
+.lat-quien { gap: 9px; }
+.lat-avatar {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--primary-deep); color: var(--on-primary);
+  font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
+}
+.lat-nombre-usuario { font-weight: 700; }
+/* El menú de sesión vive abajo del todo: se abre hacia arriba o se sale de la
+   ventana. */
+.lat-menu { top: auto; bottom: calc(100% + 6px); left: 4px; right: auto; min-width: 200px; }
+.lateral.estrecha .lat-menu { left: calc(100% + 6px); bottom: 0; }
+
+/* ---------- franja superior del área de trabajo ---------- */
+
+header.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 32px; margin: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--page-top);
+  position: sticky; top: 0; z-index: 30;
+}
+.topbar-donde { min-width: 0; }
+.topbar-donde h1 { margin: 0; font-size: 21px; letter-spacing: -.3px; }
+.topbar-donde p { margin: 2px 0 0; font-size: 12.5px; }
+.topbar-acciones { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.topbar-cuenta { font-size: 12px; }
+.girando { display: inline-flex; animation: girar .8s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .girando { animation: none; } }
+
+/* ---------- inicio con la marca al centro ---------- */
+
+/* El titulo de la seccion ya esta en la franja superior. Dentro del panel se
+   conserva para lectores de pantalla y navegacion por encabezados, no a la vista. */
+#follow-h { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.home-logo { display: flex; justify-content: center; margin-bottom: 4px; }
+/* Sin recuadro: solo el escudo. Un fondo propio detras del logo se lee como una
+   caja pegada encima de la pagina, y ya se pidio quitarlo una vez. */
+.home-logo .logo { background: none; }
+/* La marca va ARRIBA y al centro, como al abrir algo nuevo. La cabecera del
+   inicio deja de ser una fila y pasa a ser una columna centrada. */
+.home .home-head { flex-direction: column; align-items: center; text-align: center; gap: 2px; }
+.home .home-head h2 { margin-bottom: 2px; }
+
+@media (max-width: 1100px) {
+  .workspace-body { padding: 18px 20px 40px; }
+  header.topbar { padding: 12px 20px; }
 }

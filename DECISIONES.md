@@ -179,6 +179,64 @@ Medido en la app viva matando `bare.exe` con la ventana abierta (`npm run smoke:
 
 El sondeo del renderer con los tres listos baja de 15 s a 6 s, porque con este cambio dejó de ser cosmético: es lo que destapa un worker muerto. Verificado sin regresión: humo del motor OK, 80/80 en vivo, contraste 98/98 y en vivo sin fallos.
 
+**Corrección posterior, medida el mismo día.** La primera versión, al detectar la pérdida, recargaba los tres modelos sola en segundo plano. Con una muerte limpia se veía bien: verde otra vez en 70,9 s. Con la máquina apretada de memoria se vio lo otro: el worker murió por falta de RAM, la detección funcionó, y el recalentado intentó releer los 3,9 GB. Volvió a matar al worker, que disparó otra detección, que disparó otro recalentado. **Los tres modelos acabaron en `error` y la aplicación quedó inservible**, cuando sin recalentar habría bastado con volver a usarla. El recalentado automático se retiró: `withModel` ya recupera lo que hace falta, cuando hace falta, y solo ese modelo.
+
+**Segundo defecto, del mismo sitio.** `forget()` borraba también la carga en curso. Si un modelo se olvidaba mientras se cargaba, la siguiente llamada arrancaba una SEGUNDA carga en paralelo y el SDK respondía `Model with ID "..." is already registered`. Se vio en vivo: Gemma en `error` con ese mensaje, con el modelo cargado y utilizable. Dos arreglos, y los dos con prueba: `forget()` deja en paz la carga en curso, y `cargar()` adopta un modelo que ya estuviera registrado en vez de morir, porque el registro de QVAC sobrevive al proceso. La carrera está reproducida como comprobación permanente en `npm run smoke:semaforo`.
+
+**D62 · Corrección de hecho: no hubo bases preexistentes. Todo se construyó durante el hackatón.** La D55 daba por preexistentes dos bases, FieldLens v1 de Diego y el banco de mediciones de Josué, y el README lo declaraba así. **Es incorrecto y lo corrige Josué**, que es la fuente sobre este hecho. El trabajo lo arrancó Diego Laverde al abrir el hackatón, construyó una primera parte, se unió con la parte que construyó Josué en paralelo, y sobre esa unión se terminó de levantar lo que hoy está montado. Nada es anterior al reto.
+
+El propio historial lo respalda: el primer commit del repositorio es del 9 de septiembre, y el blueprint fecha FieldLens v1 también el 9 de septiembre. Las dos "bases" estaban dentro de la ventana del reto; la frase "escritos en los días previos" del README era el error.
+
+La sección del README pasa a llamarse **Declaración de origen del trabajo** y dice lo que sí hay que declarar según las bases del reto: el SDK de QVAC, los modelos del catálogo, las dependencias, la asistencia de IA con revisión humana, y la marca Philips. Se añade además qué quedó fuera por tiempo y no por diseño, que es lo que el reto pide no prometer de más: búsqueda sobre documentos con RAG, lectura de placa por OCR, dictado en streaming, móvil y sincronización entre equipos.
+
+Riesgo que esto cierra: la regla del reto es que **omitir una base preexistente descalifica**. Declarar una que no existió no descalifica, pero es falso en el entregable que el jurado lee primero, y regala una pregunta incómoda que no tiene por qué existir.
+
+**D63 · La navegación pasa a una barra lateral plegable.** El encabezado de tres zonas gastaba la franja superior entera en marca, semáforo y controles, y para cambiar de puerta había que volver al inicio. Ahora hay dos columnas: a la izquierda una barra con la navegación y todo lo global; a la derecha, solo lo que se haya elegido. Es el patrón de las herramientas de hoy, y lo que gana no es estética: **navegar deja de ser una pantalla por la que hay que pasar**.
+
+Qué vive dónde:
+
+| Zona | Qué lleva |
+|---|---|
+| Barra, arriba | Marca y el control de plegado |
+| Barra, navegación | Inicio y las dos puertas, siempre visibles |
+| Barra, "en esta sección" | Las acciones puntuales del modo actual, no todas |
+| Barra, pie | Semáforo del motor, tema, y la sesión con cambiar de usuario y cerrar sesión |
+| Franja superior | Dónde estás, cuántas observaciones hay y refrescar. Nada más |
+| Inicio | La marca al centro y las dos puertas, como al abrir algo nuevo |
+
+Ancha muestra icono y nombre; estrecha deja el icono, que sigue siendo pulsable y sigue diciendo qué es. **Plegar no cuesta accesibilidad:** el nombre sigue en `aria-label` y en el título emergente. El plegado se recuerda en el navegador, envuelto en `try`/`catch`, porque es una comodidad de cada persona y no un dato que deba viajar.
+
+Cuatro cosas que salieron de mirarlo, no de diseñarlo:
+
+- **La sección actual y una acción encendida se veían iguales.** Las dos con relleno azul; la barra dejaba de decir dónde estabas. La acción encendida pasó a contorno sin relleno más un punto al final, que es una señal que no depende del color.
+- **Registrar y Dictar compartían el icono del micrófono.** En la barra estrecha eran dos iconos idénticos con significados distintos. Registrar pasó a una hoja con un más.
+- **El logo llevaba un recuadro detrás.** Ya se había pedido quitarlo una vez y lo volví a poner. Fuera: solo el escudo.
+- **El borde de la barra daba 1,28:1** contra su propio fondo y no separaba nada. Lo cazó el medidor de contraste, no el ojo. Pasó al token de borde de campo, que ya se mide a 3:1.
+
+**La guarda del borrador tuvo que mudarse.** Antes solo el inicio preguntaba antes de descartar una observación a medio escribir. Con la barra se puede saltar directo de una puerta a la otra, así que la guarda vive ahora en el único sitio por el que se navega, y la verificación lo comprueba en los dos caminos.
+
+Verificado: 84/84 sobre la app viva (cuatro comprobaciones nuevas), contraste declarado 124/124, y contraste vivo sin fallos sobre más de 9.000 textos en 18 estados, incluidos dos nuevos: la barra estrecha y la barra con una acción encendida. Salieron del repositorio `Header.tsx` y `HeaderBits.tsx`, que quedaron huérfanos, y su CSS.
+
+**D64 · Auditoría externa con Codex, y lo que encontró.** Se le pidió a Codex una auditoría de solo lectura de documentación, motor, empaquetado, datos y cumplimiento de las reglas del reto, con el renderer excluido porque se estaba reestructurando en paralelo. Escribió `bench/auditoria-codex.md`. Sus hallazgos se verificaron uno a uno antes de tocar nada; los que resultaron ciertos:
+
+| Severidad | Qué | Qué se hizo |
+|---|---|---|
+| Alta | El README no enlaza el video, que es lo primero que revisa el jurado | Sitio marcado en la primera línea, pendiente del enlace de Diego |
+| Alta | Decía "no se usó ninguna plantilla" y en la línea siguiente admitía el andamiaje de `electron-vite` | Declarado en positivo: qué aportó y qué se sustituyó |
+| Alta | Prometía un instalador de modelos por USB que no está en el repositorio | Sustituido por el procedimiento real, con la ruta de la caché |
+| Media | "Cuatro dependencias de producción" no coincidía con `package.json` | Corregido: Electron y React son de desarrollo porque el empaquetador los incorpora |
+| Media | Afirmaba comprobar que no hay peticiones fuera de `localhost`, pero solo miraba el renderer | Ver abajo |
+| Media | El blueprint seguía diciendo FieldLens, Recharts y otro nombre de instalador | Marcado como documento histórico, con la autoridad en el README |
+| Media | `CLAUDE.md` estaba prometido y no existía | Escrito |
+| Baja | Cifras de contraste desincronizadas entre README y `docs/contraste.md` | Regeneradas: 124/124 |
+| Baja | El README decía que las ubicaciones eran sintéticas; las ciudades son reales | Corregido: lo inventado son clientes e inventario |
+| Baja | `homepage` apuntaba a `electron-vite.org` | Fuera |
+| Baja | `@electron-toolkit/preload` no lo usaba nadie | Fuera de producción |
+| Baja | Tres exports sin consumidor | Fuera |
+| Baja | Veinte comandos sin documentar | Tabla completa en el README |
+
+**El hallazgo que más pesaba, y lo que se hizo con él.** La regla dura del reto es que la inferencia corre en el dispositivo, y saltársela descalifica. La verificación en vivo leía las peticiones del renderer, pero **la inferencia no vive ahí**: vive en el proceso principal, que ninguna herramienta del navegador observa. Se añadió `npm run check:sin-red`, que revisa el código que se empaqueta y falla si aparece `fetch`, un socket, una dirección que no sea local u otro proveedor de IA. Se probó metiéndole un `fetch` a propósito: falla, lo nombra y sale con código 1. Está enganchado a `npm run check`.
+
 ## Pendientes de decisión
 
 - **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.

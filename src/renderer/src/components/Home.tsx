@@ -1,11 +1,17 @@
-// Selector de modo. Dos puertas: registrar lo que se ve en campo, o preguntar
-// por el estatus de lo ya registrado.
+// Pantalla de inicio: el estado vacío del área de trabajo.
 //
-// Las dos tarjetas son <button> reales: alcanzables con Tab, activables con
-// Enter, con foco visible. La accesibilidad no es negociable (sección 6).
+// Con la barra lateral llevando la navegación, esta pantalla dejó de ser un
+// menú obligatorio y pasó a ser lo que se ve mientras no has elegido nada, como
+// al abrir una conversación nueva: la marca al centro, quién eres, y las dos
+// puertas explicadas para quien entra por primera vez.
+//
+// Las dos tarjetas siguen siendo <button> reales: alcanzables con Tab,
+// activables con Enter y con foco visible. La accesibilidad no es negociable.
 
 import { type JSX } from 'react'
 import type { EquipmentHit } from '../../../shared/query-engine.ts'
+import type { ThemeId } from '../assets/themes.ts'
+import { LogoMark } from './LogoMotion.tsx'
 import { Stats } from './Stats.tsx'
 
 interface Props {
@@ -19,6 +25,7 @@ interface Props {
   /** Gemma lista: sin ella se puede entrar igual, pero no preguntar. */
   gemmaReady: boolean
   operator: string
+  theme: ThemeId
 }
 
 const PUERTAS = [
@@ -40,10 +47,13 @@ const PUERTAS = [
   }
 ]
 
-export function Home({ rows, total, onPrepare, onPick, modelsReady, gemmaReady, operator }: Props): JSX.Element {
+export function Home({ rows, total, onPrepare, onPick, modelsReady, gemmaReady, operator, theme }: Props): JSX.Element {
   return (
     <section className="home" aria-labelledby="home-h">
       <div className="home-head">
+        <div className="home-logo">
+          <LogoMark size="splash" theme={theme} label="" />
+        </div>
         <h2 id="home-h">¿Qué vas a hacer?</h2>
         <p className="home-quien muted">
           Entraste como <b>{operator}</b>. Todo lo que registres queda a tu nombre.

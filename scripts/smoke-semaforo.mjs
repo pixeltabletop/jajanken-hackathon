@@ -18,7 +18,7 @@ import { resolve } from 'node:path'
 
 process.env.QVAC_CONFIG_PATH ??= resolve('qvac.config.json')
 
-const { loadEmbed, verifyStatus, getModelStatus } = await import('../src/main/qvac/models.ts')
+const { loadEmbed, verifyStatus, getModelStatus, forget } = await import('../src/main/qvac/models.ts')
 
 const fallos = []
 const check = (ok, etiqueta) => {
@@ -26,7 +26,6 @@ const check = (ok, etiqueta) => {
   if (!ok) fallos.push(etiqueta)
 }
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms))
-const sinClientes = async () => []
 
 // La revisión real está limitada a una cada 5 s para no inundar de RPC el sondeo
 // del renderer. Las rondas con el worker sano tienen que respetar esa ventana o
@@ -49,12 +48,29 @@ const t0 = Date.now()
 await loadEmbed()
 console.log(`   listo en ${((Date.now() - t0) / 1000).toFixed(1)} s\n`)
 
+// --- 0. Olvidar en mitad de una carga no arranca una segunda -----------------
+// Se descubrio en vivo: Gemma quedo en error con "ya registrado" y toda la
+// extraccion caida, con el modelo cargado y utilizable. La causa era olvidar un
+// modelo mientras se cargaba, lo que dejaba la carga en curso huerfana y hacia
+// que la siguiente llamada arrancara otra en paralelo.
+{
+  const p1 = loadEmbed()
+  await dormir(300)
+  forget('embed')
+  const p2 = loadEmbed()
+  const r = await Promise.allSettled([p1, p2])
+  const rechazos = r.filter((x) => x.status === 'rejected')
+  check(rechazos.length === 0, 'olvidar un modelo mientras carga no rompe la carga',
+    rechazos.length ? String(rechazos[0].reason).slice(0, 80) : 'las dos llamadas se enganchan a la misma carga')
+  check(getModelStatus().embed.state === 'ready', 'y el modelo queda listo, no en error')
+}
+
 // --- 1. Worker sano: ni una falsa alarma -------------------------------------
-const sano = await verifyStatus(sinClientes)
+const sano = await verifyStatus()
 check(sano.embed.state === 'ready', 'con el worker sano, el semáforo sigue en verde')
 
 await dormir(VENTANA)
-const sano2 = await verifyStatus(sinClientes)
+const sano2 = await verifyStatus()
 check(sano2.embed.state === 'ready', 'una segunda revisión tampoco lo apaga')
 
 // --- 2. Worker muerto: se detecta sin inferir --------------------------------
@@ -73,7 +89,7 @@ let tras = null
 const tDeteccion = Date.now()
 for (let i = 0; i < 24; i += 1) {
   await dormir(1000)
-  const s = await verifyStatus(sinClientes)
+  const s = await verifyStatus()
   if (s.embed.state !== 'ready') {
     tras = s
     break
@@ -89,18 +105,15 @@ check(
   'tras matar el worker, el semáforo deja de decir verde SIN correr inferencia'
 )
 
-// --- 3. Se recupera solo ------------------------------------------------------
-let recupero = false
-for (let i = 0; i < 40; i += 1) {
-  await dormir(500)
-  const s = getModelStatus()
-  if (s.embed.state === 'loading' || s.embed.state === 'ready') {
-    recupero = true
-    console.log(`   recarga en marcha a los ${((i + 1) * 0.5).toFixed(1)} s: ${s.embed.state}`)
-    break
-  }
-}
-check(recupero, 'los modelos se vuelven a cargar solos, sin que nadie los pida')
+// --- 3. Se recupera al usarlo, no por un temporizador -------------------------
+// NO se recarga solo a proposito: un fallo de un modelo no justifica releer los
+// tres, y con la memoria apretada ese recalentado mataba al worker una y otra
+// vez. Lo que se comprueba es que la siguiente carga funciona.
+const t1 = Date.now()
+const recuperado = await loadEmbed().then(() => true).catch(() => false)
+check(recuperado, 'al volver a pedirlo, el modelo se carga de nuevo',
+  `${((Date.now() - t1) / 1000).toFixed(1)} s`)
+check(getModelStatus().embed.state === 'ready', 'y el semáforo vuelve a verde, ahora de verdad')
 
 console.log(`\n${fallos.length === 0 ? 'SEMÁFORO OK' : `SEMÁFORO CON FALLOS: ${fallos.length}`}`)
 process.exit(fallos.length === 0 ? 0 : 1)

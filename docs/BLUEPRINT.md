@@ -1,5 +1,15 @@
 # FieldLens · Jajanken — Blueprint
 
+> **AVISO · documento histórico.** Este es el blueprint con el que se arrancó, y
+> se conserva tal cual para que se vea de dónde salió cada decisión. Partes de él
+> ya no describen el producto: el nombre pasó de **FieldLens** a **Eco**, Recharts
+> se retiró y los gráficos se dibujan sin librería (D58), el instalador se llama
+> `eco-1.0.0-setup.exe`, la interfaz se reorganizó en barra lateral (D63), y la
+> declaración de bases preexistentes quedó corregida (D62).
+>
+> **La autoridad sobre lo que hay hoy es `README.md` y `DECISIONES.md`.** Este
+> documento explica el porqué, no el qué.
+
 > Generado por The Architect el 2026-09-09 · Arquetipo: herramienta interna de escritorio con motor de IA local
 > Hackathon ISD Summit 2026 · Track 01 Philips · Entrega: **viernes 2026-09-11 08:00 hora de Panamá**
 > Equipo Jajanken: Josué Carrillo (motor, interfaz, README) · Diego Laverde (datos, guion, video, QA)
@@ -26,7 +36,7 @@ Existen dos bases que se fusionan:
 1. **FieldLens v1 de Diego** (`Proyecto/` en el SSD externo, a fusionar en el repo): Electron 39 + Vite 7 + React 19 + TypeScript. Empaqueta, corre offline, tiene instalador de modelos por USB y tres pantallas en español. Usa modelos y configuración que las mediciones descartan.
 2. **Banco de mediciones de Josué** (`bench/`, `schema.js`, `data/`): 23 corridas con evidencia JSON sobre qué modelos y qué configuración funcionan en esta clase de hardware.
 
-**Ambas bases son preexistentes y deben declararse en el README.** Omitirlo descalifica según las bases del concurso.
+**CORREGIDO (D62).** Este párrafo decía que ambas bases eran preexistentes. No lo eran: las dos son del 9 de septiembre, dentro de la ventana del reto. Todo el proyecto se construyó durante el hackatón. Lo que el README declara es el origen del trabajo y lo que no escribimos nosotros (SDK, modelos, dependencias, asistencia de IA, marca). El documento se conserva como estaba escrito para no falsear el registro de diseño; la autoridad sobre este punto es el README y la D62.
 
 ### Objetivos
 1. Ciclo completo demostrable en video: dictar → transcribir → extraer → confirmar con evidencia → guardar → tablero se actualiza → preguntar en español y ver el filtro aplicado.

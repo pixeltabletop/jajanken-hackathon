@@ -7,12 +7,25 @@ Umbral 4.5:1 para texto normal, 3:1 para texto grande y para el borde o
 relleno que comunica un estado. La rejilla y las líneas divisorias son
 decorativas y solo se vigila que no desaparezcan (1.2:1).
 
-Última corrida: 2026-09-10 · 96/96 pares pasan.
+Última corrida: 2026-09-10 · 124/124 pares pasan.
 
 ## Blanco clásico
 
 | Elemento | Estado | Fondo | Texto | Ratio | Umbral | Veredicto |
 |---|---|---|---|---|---|---|
+| Barra lateral · texto de una fila | normal | `#ffffff` | `#162b3d` | 14.51:1 | 4.5 | pasa |
+| Barra lateral · titulo de grupo | normal | `#ffffff` | `#5b6f7f` | 5.22:1 | 4.5 | pasa |
+| Barra lateral · semaforo, texto | normal | `#ffffff` | `#5b6f7f` | 5.22:1 | 4.5 | pasa |
+| Barra lateral · icono | relleno | `#ffffff` | `#004b93` | 8.65:1 | 3 | pasa |
+| Barra lateral · nombre del producto | grande | `#ffffff` | `#004b93` | 8.65:1 | 3 | pasa |
+| Barra lateral · borde derecho | relleno | `#ffffff` | `#6e8ca1` | 3.54:1 | 3 | pasa |
+| Barra lateral · fila al pasar el cursor | normal | `#f0f7fc` | `#162b3d` | 13.42:1 | 4.5 | pasa |
+| Barra lateral · punto de accion encendida | relleno | `#ffffff` | `#0076ce` | 4.68:1 | 3 | pasa |
+| Barra lateral · contorno de accion encendida | relleno | `#ffffff` | `#0076ce` | 4.68:1 | 3 | pasa |
+| Barra lateral · fila deshabilitada | normal | `#fbfdff` | `#5b6f7f` | 5.12:1 | 4.5 | pasa |
+| Barra lateral · avatar de sesion | normal | `#004b93` | `#ffffff` | 8.65:1 | 4.5 | pasa |
+| Franja superior · titulo de seccion | grande | `#ffffff` | `#004b93` | 8.65:1 | 3 | pasa |
+| Franja superior · subtitulo | normal | `#ffffff` | `#5b6f7f` | 5.22:1 | 4.5 | pasa |
 | Texto de página | normal | `#f5f9fc` | `#162b3d` | 13.71:1 | 4.5 | pasa |
 | Texto de tarjeta | normal | `#ffffff` | `#162b3d` | 14.51:1 | 4.5 | pasa |
 | Texto secundario | normal | `#ffffff` | `#5b6f7f` | 5.22:1 | 4.5 | pasa |
@@ -43,6 +56,7 @@ decorativas y solo se vigila que no desaparezcan (1.2:1).
 | Aviso ámbar | normal | `#fff8e5` | `#4a3a10` | 10.41:1 | 4.5 | pasa |
 | Aviso ámbar, borde | relleno | `#fff8e5` | `#8a5a0c` | 5.58:1 | 3 | pasa |
 | Resaltado de evidencia | resaltado | `#ffe98a` | `#1c1a12` | 14.33:1 | 4.5 | pasa |
+| Texto seleccionado con el ratón | selección | `#ffe98a` | `#1c1a12` | 14.33:1 | 4.5 | pasa |
 | Borde del resaltado, dentro | relleno | `#ffe98a` | `#a37d00` | 3.15:1 | 3 | pasa |
 | Borde del resaltado sobre el texto de la nota | relleno | `#eaf6fd` | `#a37d00` | 3.48:1 | 3 | pasa |
 | Borde del resaltado sobre la tarjeta | relleno | `#ffffff` | `#a37d00` | 3.82:1 | 3 | pasa |
@@ -66,6 +80,19 @@ decorativas y solo se vigila que no desaparezcan (1.2:1).
 
 | Elemento | Estado | Fondo | Texto | Ratio | Umbral | Veredicto |
 |---|---|---|---|---|---|---|
+| Barra lateral · texto de una fila | normal | `#0a0b0d` | `#f4f6f8` | 18.17:1 | 4.5 | pasa |
+| Barra lateral · titulo de grupo | normal | `#0a0b0d` | `#adb9c4` | 9.86:1 | 4.5 | pasa |
+| Barra lateral · semaforo, texto | normal | `#0a0b0d` | `#adb9c4` | 9.86:1 | 4.5 | pasa |
+| Barra lateral · icono | relleno | `#0a0b0d` | `#9ad4f8` | 12.33:1 | 3 | pasa |
+| Barra lateral · nombre del producto | grande | `#0a0b0d` | `#9ad4f8` | 12.33:1 | 3 | pasa |
+| Barra lateral · borde derecho | relleno | `#0a0b0d` | `#6b7681` | 4.25:1 | 3 | pasa |
+| Barra lateral · fila al pasar el cursor | normal | `#23272c` | `#f4f6f8` | 13.87:1 | 4.5 | pasa |
+| Barra lateral · punto de accion encendida | relleno | `#0a0b0d` | `#4fb3f0` | 8.47:1 | 3 | pasa |
+| Barra lateral · contorno de accion encendida | relleno | `#0a0b0d` | `#4fb3f0` | 8.47:1 | 3 | pasa |
+| Barra lateral · fila deshabilitada | normal | `#1b1e22` | `#adb9c4` | 8.37:1 | 4.5 | pasa |
+| Barra lateral · avatar de sesion | normal | `#9ad4f8` | `#04121d` | 11.85:1 | 4.5 | pasa |
+| Franja superior · titulo de seccion | grande | `#0a0b0d` | `#9ad4f8` | 12.33:1 | 3 | pasa |
+| Franja superior · subtitulo | normal | `#0a0b0d` | `#adb9c4` | 9.86:1 | 4.5 | pasa |
 | Texto de página | normal | `#000000` | `#f4f6f8` | 19.38:1 | 4.5 | pasa |
 | Texto de tarjeta | normal | `#141619` | `#f4f6f8` | 16.73:1 | 4.5 | pasa |
 | Texto secundario | normal | `#141619` | `#adb9c4` | 9.07:1 | 4.5 | pasa |
@@ -96,6 +123,7 @@ decorativas y solo se vigila que no desaparezcan (1.2:1).
 | Aviso ámbar | normal | `#33270e` | `#f6e6c8` | 11.88:1 | 4.5 | pasa |
 | Aviso ámbar, borde | relleno | `#33270e` | `#ecbc74` | 8.36:1 | 3 | pasa |
 | Resaltado de evidencia | resaltado | `#ffe98a` | `#1c1a12` | 14.33:1 | 4.5 | pasa |
+| Texto seleccionado con el ratón | selección | `#ffe98a` | `#1c1a12` | 14.33:1 | 4.5 | pasa |
 | Borde del resaltado, dentro | relleno | `#ffe98a` | `#a37d00` | 3.15:1 | 3 | pasa |
 | Borde del resaltado sobre el texto de la nota | relleno | `#12222e` | `#a37d00` | 4.24:1 | 3 | pasa |
 | Borde del resaltado sobre la tarjeta | relleno | `#141619` | `#a37d00` | 4.74:1 | 3 | pasa |

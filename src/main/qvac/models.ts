@@ -1,6 +1,7 @@
 // Carga única de los tres modelos con SU configuración medida.
 // Sin Electron: importable desde Node puro para el humo del motor.
 
+import os from 'node:os'
 import * as sdk from '@qvac/sdk'
 import type { ModelKey, ModelStatus } from '../../shared/types.ts'
 import { whisperHint } from './prompts.ts'
@@ -54,10 +55,66 @@ export function isStaleModelError(e: unknown): boolean {
   return /not found|no such model|unknown model|invalid model|model .* not loaded/i.test(msg)
 }
 
-/** Olvida el modelo: el siguiente uso lo vuelve a cargar y el estado lo dice. */
+/**
+ * El otro lado de la moneda del identificador muerto: un identificador VIVO que
+ * nosotros ya no tenemos.
+ *
+ * El registro de modelos de QVAC no vive solo en memoria; sobrevive al proceso.
+ * Así que se puede llegar a pedir la carga de un modelo que el worker ya tiene
+ * puesto, y el SDK responde `Model with ID "..." is already registered`. Pasa
+ * cuando un cierre no fue limpio, y pasa cuando `forget()` suelta los tres
+ * porque uno murió pero los otros dos seguían perfectamente vivos.
+ *
+ * Antes eso dejaba el modelo en `error` para siempre, con la aplicación abierta
+ * y sin forma de recuperarse. Se vio en vivo: Gemma en error con ese mensaje y
+ * toda la extracción caída, mientras el modelo estaba cargado y utilizable.
+ *
+ * El identificador viene dentro del propio mensaje, así que se adopta.
+ */
+function idYaRegistrado(e: unknown): string | null {
+  const code = (e as { code?: number })?.code
+  const msg = e instanceof Error ? e.message : String(e)
+  if (code !== sdk.SDK_SERVER_ERROR_CODES.MODEL_ALREADY_REGISTERED && !/already registered/i.test(msg)) {
+    return null
+  }
+  return /Model with ID "([^"]+)" is already registered/.exec(msg)?.[1] ?? null
+}
+
+/**
+ * Carga un modelo y, si ya estaba puesto, lo adopta en vez de morir.
+ *
+ * `configPropia` es para Whisper, que lleva el catálogo de clientes dentro de su
+ * `initial_prompt`: adoptar uno cargado con otro catálogo daría un dictado con
+ * el vocabulario viejo, en silencio. Ahí se suelta y se carga de nuevo.
+ */
+async function cargar(hacer: () => Promise<string>, configPropia = false): Promise<string> {
+  try {
+    return await hacer()
+  } catch (e) {
+    const ya = idYaRegistrado(e)
+    if (!ya) throw e
+    if (!configPropia) {
+      console.warn(`[qvac] el modelo ya estaba registrado en el worker; se adopta ${ya}`)
+      return ya
+    }
+    console.warn(`[qvac] ${ya} ya estaba registrado pero lleva configuración propia; se suelta y se carga de nuevo`)
+    await sdk.unloadModel({ modelId: ya }).catch(() => undefined)
+    return hacer()
+  }
+}
+
+/**
+ * Olvida el modelo: el siguiente uso lo vuelve a cargar y el estado lo dice.
+ *
+ * NO se toca `inflight`. Si hay una carga en marcha y se borrara, la siguiente
+ * llamada arrancaria una SEGUNDA carga del mismo modelo en paralelo, y el SDK
+ * responde a la segunda con "ya registrado". Eso dejo a Gemma en error con la
+ * aplicacion abierta y toda la extraccion caida, mientras el modelo estaba
+ * cargado y perfectamente utilizable. Dejando la carga en curso, la siguiente
+ * llamada se engancha a ella en vez de competir con ella.
+ */
 export function forget(key: ModelKey): void {
   ids[key] = undefined
-  inflight[key] = undefined
   status[key] = { state: 'idle' }
 }
 
@@ -135,7 +192,7 @@ let revision: Promise<ModelStatus> | null = null
  * curso: durante el calentamiento el worker ya está ocupado, y un identificador
  * que todavía no ha nacido no puede estar muerto.
  */
-export async function verifyStatus(customerNames: () => Promise<string[]>): Promise<ModelStatus> {
+export async function verifyStatus(): Promise<ModelStatus> {
   if (revision) return revision
   const cargando = Object.values(inflight).some(Boolean)
   const listos = (Object.keys(status) as ModelKey[]).filter((k) => status[k].state === 'ready' && ids[k])
@@ -143,19 +200,18 @@ export async function verifyStatus(customerNames: () => Promise<string[]>): Prom
     return getModelStatus()
   }
   ultimaRevision = Date.now()
-  revision = revisar(listos, customerNames).finally(() => {
+  revision = revisar(listos).finally(() => {
     revision = null
   })
   return revision
 }
 
-async function revisar(listos: ModelKey[], customerNames: () => Promise<string[]>): Promise<ModelStatus> {
+async function revisar(listos: ModelKey[]): Promise<ModelStatus> {
   const latido = await latir()
   if (latido === 'muerto') {
     // El worker rechazó el latido. No se llevó un modelo: se llevó los tres.
     console.error('[qvac] el worker no responde al latido; se olvidan los tres modelos')
     for (const k of ['gemma', 'whisper', 'embed'] as ModelKey[]) forget(k)
-    recalentar(customerNames)
     return getModelStatus()
   }
   // 'mudo' es que tardó más de la cuenta, y eso NO prueba nada. Se deja el estado
@@ -177,7 +233,9 @@ async function revisar(listos: ModelKey[], customerNames: () => Promise<string[]
       perdido = true
     }
   }
-  if (perdido) recalentar(customerNames)
+  // No se dispara nada: el estado ya dice la verdad y el siguiente uso recarga
+  // por `withModel` solo el modelo que haga falta.
+  if (perdido) console.warn('[qvac] se recargara al siguiente uso, un modelo a la vez')
   return getModelStatus()
 }
 
@@ -204,29 +262,45 @@ async function latir(): Promise<'vivo' | 'muerto' | 'mudo'> {
   }
 }
 
-let recalentando = false
+/**
+ * Por que aqui NO se recarga sola.
+ *
+ * La primera version, al detectar la perdida, disparaba un `warmup()` en segundo
+ * plano para que las luces volvieran a verde sin que nadie hiciera nada. Medido
+ * con una muerte limpia, se veia bien: los tres verdes otra vez en 70,9 s.
+ *
+ * Con la maquina apretada de memoria se vio lo otro. El worker murio por falta
+ * de RAM, la deteccion funciono, y el recalentado intento releer los 3,9 GB de
+ * los tres modelos. Volvio a matar al worker, que disparo otra deteccion, que
+ * disparo otro recalentado. Los tres acabaron en `error` y la aplicacion quedo
+ * inservible, cuando sin recalentar habria bastado con volver a usarla.
+ *
+ * Un fallo de un modelo no justifica releer los tres. `withModel` ya recupera lo
+ * que hace falta, cuando hace falta, y solo ese modelo. El semaforo dice la
+ * verdad y espera: recuperar es trabajo de quien usa la aplicacion, no de un
+ * temporizador que no sabe cuanta memoria queda.
+ */
 
 /**
- * Vuelve a cargar en segundo plano lo que se perdió, uno a la vez.
- *
- * Sin esto el semáforo sería honesto pero inútil: las luces se apagarían y ahí
- * se quedarían hasta que alguien intentara dictar. Si la recarga vuelve a
- * fallar, ningún modelo queda en `ready`, `verifyStatus` deja de preguntar y no
- * hay bucle.
+ * Lo que ocupan los tres modelos en memoria, medido en la maquina de referencia.
+ * No es el tamano del archivo: es lo que el worker reserva para tenerlo puesto.
  */
-function recalentar(customerNames: () => Promise<string[]>): void {
-  if (recalentando) return
-  recalentando = true
-  void customerNames()
-    .then((names) => warmup(names))
-    .catch((e) => console.error('[qvac] no se pudo recalentar tras perder el worker', e))
-    .finally(() => {
-      recalentando = false
-    })
-}
+const GB_NECESARIOS = 4.2
 
-export function isReady(key: ModelKey): boolean {
-  return status[key].state === 'ready'
+/**
+ * Cuanta memoria libre hay ahora mismo, en gigabytes.
+ *
+ * Existe porque el fallo por falta de memoria llega MUDO: el worker de QVAC se
+ * muere a mitad de la carga y el SDK dice `Bare worker exited mid-request`, que
+ * no le sugiere a nadie que el problema es la RAM. Pasó en esta maquina con 4,4
+ * GB libres: los tres modelos cargan perfectamente en Node puro y mueren dentro
+ * de Electron, porque Electron ya se habia quedado con su parte.
+ *
+ * Es un aviso, nunca un bloqueo. Si la cuenta se equivoca, que se equivoque
+ * dejando arrancar.
+ */
+function gbLibres(): number {
+  return os.freemem() / 1024 ** 3
 }
 
 type Progress = (p: { percentage: number }) => void
@@ -248,6 +322,16 @@ async function track<T>(key: ModelKey, loader: () => Promise<T>): Promise<T> {
 // instante. La causa real viene en cause.stderrTail. Sin esto se pierde una hora.
 function describeLoadError(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e)
+  // "Bare worker exited mid-request" es lo que dice el SDK cuando al worker lo
+  // mata el sistema por falta de memoria. Traducirlo aqui ahorra el rato que
+  // costo la primera vez averiguar que no era un fallo del modelo.
+  if (/worker (exited|crashed)/i.test(msg)) {
+    const libres = gbLibres()
+    if (libres < GB_NECESARIOS) {
+      return `El motor local se quedó sin memoria. Los tres modelos necesitan unos ${GB_NECESARIOS} GB y ahora mismo hay ${libres.toFixed(1)} GB libres. Cierra otras aplicaciones y vuelve a intentarlo. (${msg})`
+    }
+    return `El motor local se cerró solo durante la carga. (${msg})`
+  }
   const cause = (e as { cause?: { message?: string; stderrTail?: string; exitCode?: number } })?.cause
   if (!cause) return msg
   const tail = (cause.stderrTail ?? '').split(/\r?\n/).find((l) => l.trim()) ?? ''
@@ -261,12 +345,12 @@ export async function loadGemma(onProgress?: Progress): Promise<string> {
   if (ids.gemma) return ids.gemma
   if (inflight.gemma) return inflight.gemma
   inflight.gemma = track('gemma', async () => {
-    ids.gemma = await sdk.loadModel({
+    ids.gemma = await cargar(() => sdk.loadModel({
       modelSrc: sdk.GEMMA4_2B_MULTIMODAL_Q4_K_M,
       // El default es 1024 y desborda con dictados largos o caché acumulada.
       modelConfig: { ctx_size: 4096 },
       onProgress
-    })
+    }))
     return ids.gemma
   }).finally(() => { inflight.gemma = undefined }) as Promise<string>
   return inflight.gemma
@@ -276,7 +360,7 @@ export async function loadWhisper(customerNames: string[], onProgress?: Progress
   if (ids.whisper) return ids.whisper
   if (inflight.whisper) return inflight.whisper
   inflight.whisper = track('whisper', async () => {
-    ids.whisper = await sdk.loadModel({
+    ids.whisper = await cargar(() => sdk.loadModel({
       modelSrc: sdk.WHISPER_BASE_Q8_0,
       modelConfig: {
         language: 'es', // Sin esto, Whisper autodetecta y TRADUCE al inglés
@@ -285,7 +369,7 @@ export async function loadWhisper(customerNames: string[], onProgress?: Progress
         initial_prompt: whisperHint(customerNames)
       },
       onProgress
-    })
+    }), true)
     return ids.whisper
   }).finally(() => { inflight.whisper = undefined }) as Promise<string>
   return inflight.whisper
@@ -306,7 +390,7 @@ export async function loadEmbed(onProgress?: Progress): Promise<string> {
   if (ids.embed) return ids.embed
   if (inflight.embed) return inflight.embed
   inflight.embed = track('embed', async () => {
-    ids.embed = await sdk.loadModel({ modelSrc: sdk.EMBEDDINGGEMMA_300M_Q8_0, onProgress })
+    ids.embed = await cargar(() => sdk.loadModel({ modelSrc: sdk.EMBEDDINGGEMMA_300M_Q8_0, onProgress }))
     return ids.embed
   }).finally(() => { inflight.embed = undefined }) as Promise<string>
   return inflight.embed
@@ -339,6 +423,11 @@ export async function loadEmbed(onProgress?: Progress): Promise<string> {
  * entrega.
  */
 export async function warmup(customerNames: string[]): Promise<ModelStatus> {
+  const libres = gbLibres()
+  if (libres < GB_NECESARIOS) {
+    console.warn(`[qvac] quedan ${libres.toFixed(1)} GB libres y los tres modelos necesitan unos ${GB_NECESARIOS} GB; puede que alguno no cargue`)
+  }
+
   await Promise.allSettled([loadGemma(), loadWhisper(customerNames), loadEmbed()])
   return getModelStatus()
 }

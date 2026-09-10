@@ -122,18 +122,18 @@ async function auditar(etiqueta) {
 }
 
 const setTheme = async (id) => {
-  // El tema ya no es un desplegable sino un interruptor de un clic entre los dos.
+  // El tema es un interruptor de un clic, en el pie de la barra lateral.
   for (let i = 0; i < 3; i++) {
     if ((await js(`document.documentElement.dataset.theme`)) === id) return true
-    await js(`(() => { const b=document.querySelector('.theme-toggle'); if (b) b.click() })()`)
+    await js(`(() => { const b=document.querySelector('#lat-tema'); if (b) b.click() })()`)
     await sleep(500)
   }
   return (await js(`document.documentElement.dataset.theme`)) === id
 }
 
-// Volver al inicio y cerrar sesión viven dentro del menú de opciones.
+// Cerrar sesión y cambiar de usuario viven en el pie de la barra lateral.
 const menu = async (texto) => {
-  await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+  await js(`(() => { const b=document.querySelector('#lat-quien'); if (b) b.click() })()`)
   await sleep(260)
   const r = await js(`(() => { const b=[...document.querySelectorAll('.menu-list button')].find(x=>x.textContent.includes(${JSON.stringify(texto)})); if(!b) return 'no-existe'; if(b.disabled) return 'deshabilitado'; b.click(); return true })()`)
   await sleep(260)
@@ -157,13 +157,13 @@ try {
     await setTheme(tema)
     await sleep(700)
 
-    await js(`(() => { const d=document.getElementById('door-capture'); if (d) d.click() })()`)
+    await js(`(() => { const d=document.getElementById('nav-capture'); if (d) d.click() })()`)
     await sleep(900)
     await auditar(`${tema} · inicio y registro`)
 
-    await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+    await js(`(() => { const b=document.querySelector('#lat-quien'); if (b) b.click() })()`)
     await sleep(350)
-    await auditar(`${tema} · menú de opciones abierto`)
+    await auditar(`${tema} · menú de sesión abierto`)
     await js(`document.body.click()`)
     await sleep(250)
 
@@ -174,9 +174,9 @@ try {
     await sleep(500)
     await auditar(`${tema} · base abierta y selector de columnas`)
 
-    await menu('Volver al inicio')
+    await js(`(() => { const d=document.getElementById('nav-home'); if (d) d.click() })()`)
     await sleep(900)
-    await js(`(() => { const d=document.getElementById('door-follow'); if (d) d.click() })()`)
+    await js(`(() => { const d=document.getElementById('nav-follow'); if (d) d.click() })()`)
     await sleep(900)
     await auditar(`${tema} · seguimiento`)
 
@@ -201,7 +201,21 @@ try {
     await sleep(600)
     await auditar(`${tema} · nota abierta con la evidencia`)
 
-    await menu('Volver al inicio')
+    // La barra lateral estrecha reaqueta cada fila a un cuadrado con solo el
+    // icono. Es un estado distinto del ancho y hay que medirlo como tal.
+    await js(`(() => { const b=document.querySelector('.lat-plegar'); if (b) b.click() })()`)
+    await sleep(600)
+    await auditar(`${tema} · barra lateral estrecha`)
+    await js(`(() => { const b=document.querySelector('.lat-plegar'); if (b) b.click() })()`)
+    await sleep(600)
+
+    // Con una acción encendida y la sección actual marcada a la vez: son los
+    // dos estados "elegido" de la barra, y son los que hacen desaparecer texto.
+    await js(`(() => { const b=document.getElementById('acc-guia'); if (b) b.click() })()`)
+    await sleep(600)
+    await auditar(`${tema} · barra con acción encendida y sección actual`)
+
+    await js(`(() => { const d=document.getElementById('nav-home'); if (d) d.click() })()`)
     await sleep(900)
   }
 } catch (e) {

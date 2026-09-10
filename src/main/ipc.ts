@@ -51,7 +51,7 @@ export function registerIpc(store: Store): void {
   // El estado de los modelos no se cree, se comprueba. Ver `verifyStatus`.
   ipcMain.handle(
     'models:status',
-    safe<[], ModelStatus>('MODELS_STATUS', () => models.verifyStatus(nombresDeClientes))
+    safe<[], ModelStatus>('MODELS_STATUS', () => models.verifyStatus())
   )
 
   ipcMain.handle('models:warmup', safe<[], ModelStatus>('MODELS_WARMUP', async () => {

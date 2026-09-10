@@ -1,7 +1,7 @@
 {
-  "ok": true,
-  "total": 80,
-  "failed": 0,
+  "ok": false,
+  "total": 35,
+  "failed": 2,
   "results": [
     {
       "ok": true,
@@ -26,12 +26,12 @@
     {
       "ok": true,
       "label": "Esc antes del segundo 5 no salta el arranque",
-      "detail": "1.8 s desde la recarga"
+      "detail": "2.6 s desde la recarga"
     },
     {
       "ok": true,
       "label": "el arranque dura al menos 5 segundos",
-      "detail": "5.9 s"
+      "detail": "6.8 s"
     },
     {
       "ok": true,
@@ -65,12 +65,17 @@
     },
     {
       "ok": true,
-      "label": "el menú ofrece cerrar sesión, distinta de volver al inicio",
+      "label": "la sesión se cierra desde el pie de la barra lateral",
       "detail": ""
     },
     {
       "ok": true,
-      "label": "en el inicio, volver al inicio sale deshabilitado",
+      "label": "y ahí mismo se cambia de usuario",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "en el inicio, la barra marca Inicio como la sección actual",
       "detail": ""
     },
     {
@@ -110,13 +115,18 @@
     },
     {
       "ok": true,
-      "label": "el tema se cambia con un icono, sin etiqueta de texto",
+      "label": "el tema se cambia con un icono en la barra lateral",
       "detail": ""
     },
     {
       "ok": true,
+      "label": "la barra lateral trae navegación, tema y sesión",
+      "detail": "Inicio · Registrar equipos · Seguimiento y reportes · Tema oscuro · Sesión de Auditoría 90636"
+    },
+    {
+      "ok": true,
       "label": "el nombre del acceso llega al selector",
-      "detail": "Entraste como Auditoría 30535. Todo lo que registres queda a"
+      "detail": "Entraste como Auditoría 90636. Todo lo que registres queda a"
     },
     {
       "ok": true,
@@ -149,7 +159,7 @@
       "detail": ""
     },
     {
-      "ok": true,
+      "ok": false,
       "label": "y se puede volver a cerrar",
       "detail": ""
     },
@@ -164,281 +174,18 @@
       "detail": ""
     },
     {
-      "ok": true,
-      "label": "la evidencia queda resaltada sobre la nota",
-      "detail": "1 citas"
-    },
-    {
-      "ok": true,
-      "label": "guarda con un clic",
+      "ok": false,
+      "label": "verificación interrumpida: Tiempo agotado esperando: filas de equipo",
       "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "la tabla creció tras guardar",
-      "detail": "45 → 46 filas"
-    },
-    {
-      "ok": true,
-      "label": "volver al inicio con un borrador pide confirmación",
-      "detail": "Tienes una observación sin guardar. Si vuelves al inicio se "
-    },
-    {
-      "ok": true,
-      "label": "y al decir que no, se queda en Registrar",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "al confirmar, vuelve al selector",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "entrar a Seguimiento lleva a la barra de pregunta",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el foco aterriza en el primer control del modo nuevo",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el cambio se anuncia en la región viva",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "hay preguntas de ejemplo pulsables",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "la pregunta se puede dictar, igual que la nota de campo",
-      "detail": "🎙 Dictar"
-    },
-    {
-      "ok": true,
-      "label": "la pregunta espera a Gemma sin bloquear el resto",
-      "detail": "lista 0 s después de entrar"
-    },
-    {
-      "ok": true,
-      "label": "el botón Preguntar responde",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el chip dice en palabras qué entendió",
-      "detail": "país: Panamá · desglose por estatus"
-    },
-    {
-      "ok": true,
-      "label": "el chip declara el desglose",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "la frase redactada responde con cifras",
-      "detail": "Con país: Panamá: 56 equipos registrados en 14 sitios, sobre 14 observaciones. Por estatus: Confirmado 10, Rep"
-    },
-    {
-      "ok": true,
-      "label": "los números del desglose suman el total de equipos",
-      "detail": "10+34+12+0 = 56 · KPI 56"
-    },
-    {
-      "ok": true,
-      "label": "el modo Seguimiento trae su guía de cómo pedirlo",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "la guía dice qué entiende y qué no",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "se lanza una consulta de varias condiciones",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "reconoce el país",
-      "detail": "país: Panamá · confianza: Media o Baja · texto: \"San Francisco\""
-    },
-    {
-      "ok": true,
-      "label": "y el sitio, que es un segundo lugar en la misma frase",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "y las dos confianzas con \"o\"",
-      "detail": "confianza: Media o Baja"
-    },
-    {
-      "ok": true,
-      "label": "dos pestañas, cada una declara cuántas filas trae",
-      "detail": "Resultados 28 filas | Gráficos 56 equipos"
-    },
-    {
-      "ok": true,
-      "label": "las pestañas se recorren con las flechas del teclado",
-      "detail": "activa la 1"
-    },
-    {
-      "ok": true,
-      "label": "el gráfico de antigüedad muestra sus cuatro bandas, aunque alguna esté en cero",
-      "detail": "0–3 años · 4–7 años · 8+ años · Sin dato"
-    },
-    {
-      "ok": true,
-      "label": "la pestaña de gráficos trae varias dimensiones",
-      "detail": "6 gráficos"
-    },
-    {
-      "ok": true,
-      "label": "las barras son controles con aria-pressed",
-      "detail": "7 barras"
-    },
-    {
-      "ok": true,
-      "label": "un clic en una barra recalcula los KPI",
-      "detail": "56/14/14/1 → 14/8/8/0"
-    },
-    {
-      "ok": true,
-      "label": "y también la frase redactada",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el gráfico donde hiciste clic conserva todas sus categorías",
-      "detail": "7 barras"
-    },
-    {
-      "ok": true,
-      "label": "la elegida se marca y las demás se atenúan",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el chip distingue lo que vino de un clic en el gráfico",
-      "detail": "de la pregunta · de un clic en el gráfico"
-    },
-    {
-      "ok": true,
-      "label": "un segundo clic lo deshace: es un interruptor",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "una combinación sin resultados muestra el estado vacío explicado",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "lo dice con esas palabras, no una tabla en blanco",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "y ofrece quitar la condición",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "cada fila del resultado abre su nota original",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "la nota se abre con la cita resaltada",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el PDF de la consulta se genera",
-      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-14-43.pdf"
-    },
-    {
-      "ok": true,
-      "label": "el tema negro se puede elegir con el icono",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el tema negro se aplica al instante",
-      "detail": "data-theme=negro"
-    },
-    {
-      "ok": true,
-      "label": "el tema blanco se puede elegir con el icono",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "el tema blanco se aplica al instante",
-      "detail": "data-theme=blanco"
-    },
-    {
-      "ok": true,
-      "label": "cambiar de tema no pierde el filtro ni el resultado",
-      "detail": "47 → 47 filas"
-    },
-    {
-      "ok": true,
-      "label": "con movimiento reducido la app sigue siendo usable",
-      "detail": ""
-    },
-    {
-      "ok": true,
-      "label": "la transición queda en un fundido corto, sin desplazamiento",
-      "detail": "{\"nombre\":\"fadeOnly\",\"dur\":\"0.08s\"}"
-    },
-    {
-      "ok": true,
-      "label": "sin errores ni avisos en consola",
-      "detail": "ninguno"
     }
   ],
   "summary": {
-    "stamp": "30535",
-    "site": "Policlínica DemoCare Prueba 30535",
-    "splashMs": 5920,
+    "stamp": "90636",
+    "site": "Policlínica DemoCare Prueba 90636",
+    "splashMs": 6815,
     "doorsHome": [
       "Registrar equipos",
       "Seguimiento y reportes"
-    ],
-    "extractMs": 16301,
-    "gemmaReadyMs": 3,
-    "queryMs": 21580,
-    "breakdown": {
-      "desglose": [
-        10,
-        34,
-        12,
-        0
-      ],
-      "suma": 56,
-      "kpi": 56
-    },
-    "chipComplejo": [
-      "país: Panamá",
-      "confianza: Media o Baja",
-      "texto: \"San Francisco\""
-    ],
-    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-14-43.pdf",
-    "tema_negro": {
-      "fondo": "rgb(20, 22, 25)",
-      "texto": "rgb(244, 246, 248)"
-    },
-    "tema_blanco": {
-      "fondo": "rgb(255, 255, 255)",
-      "texto": "rgb(22, 43, 61)"
-    },
-    "consoleErrors": []
+    ]
   }
 }

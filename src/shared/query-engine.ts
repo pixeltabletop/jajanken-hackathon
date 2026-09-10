@@ -53,7 +53,6 @@ export const EMPTY_FILTER: QueryFilter = {
   textSearch: null
 }
 
-export const EMPTY_PLAN: QueryPlan = { filter: EMPTY_FILTER, intent: 'list', groupBy: null }
 
 // ---------------------------------------------------------------- etiquetas
 

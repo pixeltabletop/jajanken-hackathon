@@ -1,0 +1,69 @@
+# Auditoría de código de Jajanken / Eco
+
+Fecha: 2026-09-10  
+Rama comprobada: main  
+HEAD observado: e04510be3afd56536364fd559c37eb22c569d9ae  
+Modalidad: solo lectura, salvo la creación de este informe.
+
+El árbol ya estaba modificado al comenzar (git status --short --branch mostró cambios en README.md, DECISIONES.md, docs/BLUEPRINT.md y src/renderer/) y recibió más cambios concurrentes durante la revisión. Este informe describe el contenido observado al final, no un commit limpio. No se auditó maquetación ni CSS de src/renderer/.
+
+## 1. Coherencia documental
+
+- **MEDIA — docs/BLUEPRINT.md:1, docs/BLUEPRINT.md:57, docs/BLUEPRINT.md:693, docs/BLUEPRINT.md:714, docs/BLUEPRINT.md:786:** el documento que README.md:217 llama «fuente de verdad» conserva el producto FieldLens, declara Recharts 3 como instalado y promete dist/philips-installed-base-1.0.0-setup.exe; el código real usa Eco, Recharts no aparece en package.json ni package-lock.json, y existe dist/eco-1.0.0-setup.exe. Hay que actualizar el blueprint o marcar esas secciones como históricas. Evidencia: rg -n -i 'fieldlens|recharts|philips-installed-base' docs/BLUEPRINT.md package.json package-lock.json DECISIONES.md; rg -n '"name"|productName|artifactName|executableName' package.json electron-builder.yml; Get-ChildItem dist -File.
+- **MEDIA — README.md:40, package.json:35:** la cifra «cuatro dependencias de producción» coincide numéricamente, pero la lista no: README nombra Electron, React, Zod y QVAC, mientras dependencies contiene @electron-toolkit/preload, @electron-toolkit/utils, @qvac/sdk y zod; Electron y React están en devDependencies. Hay que listar los cuatro paquetes reales y explicar aparte Electron/React. Evidencia: node -e "const p=require('./package.json'); console.log(Object.keys(p.dependencies)); console.log(Object.keys(p.devDependencies))" devolvió exactamente esas clasificaciones.
+- **MEDIA — README.md:163, docs/contraste.md:10, scripts/check-contrast.mjs:187:** las cifras de contraste están desincronizadas. README afirma 98/98, el informe guardado dice 96/96 y la ejecución actual sin --md produjo «OK Blanco clásico · 60/60», «OK Negro · 60/60», «CONTRASTE OK · 120/120». Hay que regenerar docs/contraste.md y copiar la cifra al README después de congelar el código. Evidencia: rg -n '98/98|96/96' README.md docs/contraste.md DECISIONES.md y node scripts/check-contrast.mjs.
+- **BAJA — README.md:9-10, data/seed-panama.json:2:** README dice que las ubicaciones son sintéticas, pero la semilla declara que las ciudades son reales y contiene Ciudad de Panamá, Colón, David y Chitré. Hay que cambiar «ubicaciones» por «instituciones e inventarios». Evidencia: rg -n -i 'ciudades son reales|Ciudad de Panamá|Colón|David|Chitré' data/seed-panama.json.
+- **BAJA — package.json:7:** homepage apunta a https://electron-vite.org, metadato del andamiaje, no al producto o repositorio. Hay que sustituirlo por la URL pública correcta o quitarlo. Evidencia: rg -n 'homepage' package.json.
+
+Resultado limpio: LICENSE:25-35 separa el código MIT de Electron/Chromium, QVAC, modelos y marca Philips; no encontré contradicción interna con el logo ni el aviso de prototipo. Las rutas citadas por README (DECISIONES.md, docs/BLUEPRINT.md, docs/contraste.md, docs/GUION-VIDEO-CAMBIOS.md, bench/, bench/e2e/, scripts/e2e-4b.mjs, scripts/check-contrast-vivo.mjs, src/main/qvac/ y LICENSE) existen: Test-Path -LiteralPath devolvió True para todas.
+
+## 2. Reglas del reto
+
+- **ALTA — README.md:1-226:** no hay enlace al video de demostración. El texto extraído de docs/briefing.html exige un video de máximo cinco minutos con enlace sin contraseña y docs/BLUEPRINT.md:710 dice que debe estar en la primera línea del README. Hay que añadir y probar el enlace público. Evidencia: la extracción con System.Net.WebUtility.HtmlDecode devolvió «Un video de cinco minutos como máximo, con enlace que abra sin pedir contraseña»; rg -n -i 'video|youtu|vimeo|loom|demostraci.n|https?://' README.md solo devolvió README.md:220, una referencia al guion.
+- **ALTA — README.md:44-45:** la declaración dice «No se usó ninguna plantilla de proyecto» y en la línea siguiente admite «El andamiaje de arranque es el de electron-vite». Como el briefing exige declarar toda plantilla/código generado bajo riesgo de descalificación, hay que declarar positivamente el scaffold de electron-vite, qué aportó y qué se modificó. Evidencia: rg -n -i 'plantilla|andamiaje|generad|asistencia de IA' README.md devolvió las líneas 41, 44 y 45.
+- **MEDIA — README.md:98-99, scripts/e2e-4b.mjs:136-137:** README afirma que la verificación automatizada comprueba que toda la app no hace peticiones fuera de localhost, pero el chequeo solo consulta performance.getEntriesByType('resource') en el renderer. No observa tráfico del proceso principal ni del worker QVAC. Hay que instrumentar esos procesos o aportar captura del tráfico completo. Evidencia: rg -n -i 'performance.getEntriesByType|Network\.|requestWillBeSent|setRequestInterception' scripts src/main src/shared encontró únicamente ese chequeo del renderer.
+
+Resultado limpio sobre inferencia local: rg -n -i 'fetch|https?://|axios|websocket|telemetr|XMLHttpRequest|EventSource|sendBeacon' src/main src/shared no devolvió coincidencias. rg -n 'loadModel|completion|embed|transcribe|unloadModel' src/main/qvac confirmó que las operaciones de IA son sdk.loadModel, sdk.completion, sdk.embed, sdk.transcribe y sdk.unloadModel. Los únicos puntos de salida/carga fueron src/main/index.ts:27, loadURL(process.env.ELECTRON_RENDERER_URL) protegido por is.dev, y src/main/ipc.ts:184, shell.openExternal('mailto:…') activado por el usuario. En desarrollo, audit.mjs, e2e-4b.mjs, e2e-cycle.mjs, check-contrast-vivo.mjs y smoke-semaforo-vivo.mjs usan fetch/WebSocket solo contra 127.0.0.1:9222 o localhost:5173; se confirmó con rg -n -i 'https?://|fetch\(|WebSocket|localhost|127\.0\.0\.1|openExternal|loadURL' src/main src/shared scripts package.json. package.json:7 es metadato. README.md:94-102 declara la posible descarga inicial de pesos por HTTP; no es inferencia en nube y el código no envía texto/audio a una API remota.
+
+Resultado limpio sobre origen: README.md:14-45 declara SDK, modelos, dependencias, asistencia de Claude Code/Codex, marca Philips y el scaffold, aunque debe corregirse la contradicción indicada. git log --reverse --date=iso-strict mostró el primer commit 196e27d y la fusión FieldLens 77c3092, ambos del 2026-09-09; DECISIONES.md:182-186 registra la corrección D62.
+
+Resultado limpio sobre flujo: scripts/e2e-cycle.mjs:105-163 automatiza escribir una nota, interpretar, revisar evidencia/deduplicación, confirmar, guardar y comprobar la tabla. bench/e2e-4b.json, leído durante la revisión, tenía ok: true, total: 80, failed: 0, con pruebas de interpretar, guardar, crecer la tabla, preguntar, calcular cifras y generar PDF. No se reejecutó porque escribe JSON y capturas.
+
+## 3. Reproducibilidad
+
+- **ALTA — README.md:133-134, docs/BLUEPRINT.md:92, docs/BLUEPRINT.md:629, docs/BLUEPRINT.md:715:** la instalación sin internet depende de Instalar modelos QVAC offline.cmd y la carpeta Modelos QVAC, que no existen en el repositorio. Un juez no puede reproducir el aprovisionamiento offline con lo entregado. Hay que incluir un procedimiento autocontenido/verificable, con rutas y checksums. Evidencia: Test-Path -LiteralPath sobre ambos elementos devolvió False; rg -n 'Instalar modelos QVAC offline|Modelos QVAC' README.md docs/BLUEPRINT.md devolvió solo instrucciones dependientes de esos elementos.
+- **MEDIA — CLAUDE.md:1:** CLAUDE.md, solicitado para el contraste y diseñado en docs/BLUEPRINT.md:766, no existe. Hay que crearlo o retirar esa expectativa; hoy no se pueden verificar sus comandos/rutas. Evidencia: Test-Path -LiteralPath CLAUDE.md devolvió False y rg sobre README.md y CLAUDE.md reportó archivo inexistente.
+- **BAJA — README.md:150-151:** «Las tres últimas necesitan la aplicación abierta» incluye a npm run bench:all, pero este encadena bancos standalone y no usa CDP; solo e2e-4b.mjs y check-contrast-vivo.mjs requieren el puerto 9222. Hay que decir «los dos scripts siguientes». Evidencia: package.json:29-32; rg -n '127\.0\.0\.1|WebSocket|remote-debugging' bench/bench7.js bench/bench_asr.js bench/bench_embed.js bench/bench_query.js no devolvió coincidencias.
+- **BAJA — package.json:8-33:** 20 scripts npm no se nombran directamente en README: format, lint, typecheck:node, typecheck:web, typecheck, start, build, postinstall, build:unpack, build:mac, build:linux, qvac:doctor, smoke:semaforo, smoke:semaforo:vivo, bench:extract, bench:asr, bench:embed, check:contrast, bench:query y e2e:4b. Hay que documentar propósito, prerrequisitos y cuáles escriben archivos, o retirar los no soportados. Evidencia: claves extraídas con node desde package.json y comparadas con rg -n -o 'npm run [A-Za-z0-9:_-]+' README.md.
+
+Resultado limpio: todos los comandos de README existen. Son npm run dev, build:win, check, smoke, bench:all, node scripts/e2e-4b.mjs y node scripts/check-contrast-vivo.mjs; las cinco claves npm existen y ambos archivos Node devolvieron True con Test-Path. Los targets node de todos los scripts npm se extrajeron con /node\s+([^\s;&]+)/g; fs.existsSync devolvió true para todos. npm ci queda respaldado por package-lock.json.
+
+## 4. Datos y privacidad
+
+No se encontraron hallazgos confirmados.
+
+Resultado limpio: data/seed-panama.json:2, data/seed-philips.json:2 y data/catalog.json:2 declaran la ficción/procedencia. La lectura completa de data/Dummy_Installed_Base_Hackathon.xlsx con XLSX.readFile mostró cinco hojas; README del workbook declara ficticios clientes, marcas, modelos y observaciones, los observadores son roles genéricos numerados y los metadatos solo indican Author: openpyxl. En los JSON, una búsqueda devolvió cero correos y cero patrones sk-, ghp_, AKIA o Bearer; los observadores son Técnico de campo PA-01 a PA-05 y roles numerados. Las coincidencias con forma de teléfono eran fechas ISO.
+
+Resultado limpio sobre secretos versionados: la búsqueda recursiva de .env*/.npmrc, excluyendo node_modules, dist y out, no devolvió archivos. git grep -n -I -E '(api[_-]?(key|token)|secret|password|passwd|private[_-]?key|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|sk-[A-Za-z0-9]|ghp_[A-Za-z0-9]|AKIA[0-9A-Z]{16}|Bearer [A-Za-z0-9._-]+)' -- . ':!package-lock.json' solo encontró la afirmación documental sin secretos y el campo de contraseña deshabilitado. El escaneo de package-lock.json solo encontró el paquete legítimo @inquirer/password.
+
+## 5. Empaquetado
+
+No se encontraron exclusiones muertas dentro de node_modules.
+
+Resultado limpio: se extrajeron las ocho exclusiones de electron-builder.yml:16-23 y Test-Path -LiteralPath devolvió True para node_modules/@qvac/diffusion-cpp, translation-nmtcpp, ocr-ggml, tts-ggml, audiogen-ggml, bci-whispercpp, vla-ggml y classification-ggml. Get-ChildItem node_modules/@qvac -Directory confirmó esos ocho paquetes instalados.
+
+## 6. Código muerto, excluyendo src/renderer/
+
+- **BAJA — package.json:36:** @electron-toolkit/preload es dependencia directa de producción sin uso. src/preload/index.ts:1 importa directamente desde electron. Hay que eliminarla si no es requisito transitivo deliberado, o usar/documentar su helper. Evidencia: rg -n -F '@electron-toolkit/preload' . --glob '!node_modules/**' --glob '!package-lock.json' --glob '!package.json' devolvió solo docs/BLUEPRINT.md:696, ninguna referencia ejecutable; la lectura numerada de src/preload/index.ts confirmó su único import.
+- **BAJA — src/main/qvac/extract.ts:69, src/shared/query-engine.ts:56, src/main/qvac/models.ts:228:** los exports CompactOutput, EMPTY_PLAN e isReady no tienen consumidores. Hay que quitar export si son internos o eliminar los símbolos. Evidencia: rg -n -w sobre cada nombre en src, scripts y bench, limitado a TS/TSX/JS/MJS, devolvió solo cada definición.
+
+Resultado limpio para el resto: rg -n '^\s*(import|export .* from|const .*require\()' src/main src/shared src/preload scripts bench conectó el bootstrap con IPC, almacén/modelos; IPC con extracción, transcripción, deduplicación, consulta/reportes; y almacén/reportes con módulos compartidos. smoke-semaforo*.mjs está conectado desde package.json; audit.mjs, e2e-cycle.mjs y convert-philips-seed.mjs tienen referencias históricas/documentales. No clasifiqué como muertos bancos antiguos solo por no estar en npm: sus JSON/decisiones los conservan como evidencia histórica.
+
+## LO QUE NO PUDE VERIFICAR
+
+- No ejecuté npm run smoke, bench:all, los E2E, build:win, format ni lint, porque crean, modifican o borran artefactos y solo se autorizó este informe. No afirmo una reproducción nueva de inferencia, flujo vivo o instalador; 80/80 proviene del JSON existente.
+- No audité maquetación ni CSS de src/renderer/. Solo usé búsquedas de referencias/imports y evidencia E2E guardada para flujo, red o código muerto fuera del renderer.
+- No pude demostrar solo con inspección local que ningún nombre ficticio coincida accidentalmente con una entidad real. Sí confirmé convención DemoCare, declaraciones de ficción, contenido del workbook/JSON y ausencia de datos personales/secretos reconocibles.
+- No verifiqué externamente las licencias vigentes del SDK/modelos; solo la coherencia interna.
+- docs/briefing.html y data/Dummy_Installed_Base_Hackathon.xlsx existen localmente pero están ignorados por .gitignore; pude leerlos, pero no forman parte de git ls-files ni necesariamente de lo que recibirá el jurado.
+- El árbol cambió durante la revisión. Entre ejecuciones de git status aparecieron cambios en scripts/check-contrast.mjs, bench/e2e-4b.json, capturas de bench/e2e/ y archivos nuevos como scripts/_ver.mjs y bench/lateral/, además de src/renderer/. No los atribuí a esta auditoría ni los modifiqué; no puedo garantizar que el estado siga idéntico después de esta fotografía.

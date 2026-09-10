@@ -66,7 +66,6 @@ const Compact = z.object({
   ci: z.string().nullable().optional(),
   eq: z.array(CompactRow)
 })
-export type CompactOutput = z.infer<typeof Compact>
 
 // Misma normalización que el banco: minúsculas, sin acentos, solo alfanumérico.
 export function normalize(s: string): string {

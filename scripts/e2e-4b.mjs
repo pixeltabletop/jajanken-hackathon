@@ -86,21 +86,31 @@ const clickText = (t, sel = 'button') =>
 const setInput = (sel, val) =>
   js(`(() => { const el=document.querySelector(${JSON.stringify(sel)}); if(!el) return false; const proto = el.tagName==='TEXTAREA'?HTMLTextAreaElement:el.tagName==='SELECT'?HTMLSelectElement:HTMLInputElement; Object.getOwnPropertyDescriptor(proto.prototype,'value').set.call(el, ${JSON.stringify(val)}); el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true})); return true })()`)
 const setTheme = async (id) => {
-  // El tema ya no es un desplegable sino un interruptor de un clic entre los dos.
+  // El tema es un interruptor de un clic, en el pie de la barra lateral.
   for (let i = 0; i < 3; i++) {
     if ((await js(`document.documentElement.dataset.theme`)) === id) return true
-    await js(`(() => { const b=document.querySelector('.theme-toggle'); if (b) b.click() })()`)
+    await js(`(() => { const b=document.querySelector('#lat-tema'); if (b) b.click() })()`)
     await sleep(500)
   }
   return (await js(`document.documentElement.dataset.theme`)) === id
 }
 
-// Volver al inicio y cerrar sesión viven dentro del menú de opciones.
+// Cerrar sesión y cambiar de usuario viven en el pie de la barra lateral.
+// El menu de sesion vive en el pie de la barra lateral, no en el encabezado.
 const menu = async (texto) => {
-  await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+  await js(`(() => { const b=document.querySelector('#lat-quien'); if (b) b.click() })()`)
   await sleep(260)
   const r = await js(`(() => { const b=[...document.querySelectorAll('.menu-list button')].find(x=>x.textContent.includes(${JSON.stringify(texto)})); if(!b) return 'no-existe'; if(b.disabled) return 'deshabilitado'; b.click(); return true })()`)
   await sleep(260)
+  return r
+}
+
+/** Navega por la barra lateral, que es como se cambia de seccion ahora. */
+const irPorLateral = async (id) => {
+  const r = await js(
+    '(() => { const b = document.getElementById("nav-' + id + '"); if (!b) return "no-existe"; b.click(); return true })()'
+  )
+  await sleep(800)
   return r
 }
 
@@ -150,11 +160,17 @@ try {
     await sleep(300)
     check((await clickText('Entrar')) === true, 'se entra con el nombre escrito')
     await sleep(1400)
-    await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+    await js(`(() => { const b=document.querySelector('#lat-quien'); if (b) b.click() })()`)
     await sleep(300)
     const opciones = await js(`[...document.querySelectorAll('.menu-list button')].map(b => ({ t: b.textContent.trim().slice(0, 30), dis: b.disabled }))`)
-    check(opciones.some((o) => /Cerrar sesión/.test(o.t)), 'el menú ofrece cerrar sesión, distinta de volver al inicio')
-    check(opciones.some((o) => /Volver al inicio/.test(o.t) && o.dis), 'en el inicio, volver al inicio sale deshabilitado')
+    check(opciones.some((o) => /Cerrar sesión/.test(o.t)), 'la sesión se cierra desde el pie de la barra lateral')
+    check(opciones.some((o) => /Cambiar de usuario/.test(o.t)), 'y ahí mismo se cambia de usuario')
+    // Navegar dejó de ser una opción de menú: es la barra, siempre visible. La
+    // sección actual se marca con aria-current, que es lo que lee un lector.
+    check(
+      await js(`document.getElementById('nav-home')?.getAttribute('aria-current') === 'page'`),
+      'en el inicio, la barra marca Inicio como la sección actual'
+    )
     await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 })
     await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 })
     await sleep(300)
@@ -181,7 +197,12 @@ try {
   await shot('4b-03-selector-foco')
   check(await js(`document.querySelectorAll('.stats article').length === 4`), 'la fila de métricas se ve antes de elegir')
   check(await js(`document.querySelectorAll('.dots .dot').length === 3`), 'el estado de los modelos son tres puntos, no tres píldoras')
-  check(await js(`!!document.querySelector('.theme-toggle svg')`), 'el tema se cambia con un icono, sin etiqueta de texto')
+  check(await js(`!!document.querySelector('#lat-tema svg')`), 'el tema se cambia con un icono en la barra lateral')
+  check(
+    await js(`document.querySelectorAll('.lateral .lat-item').length >= 5`),
+    'la barra lateral trae navegación, tema y sesión',
+    await js(`[...document.querySelectorAll('.lateral .lat-item')].map(b=>b.getAttribute('aria-label')).join(' · ')`)
+  )
   const saludo = await js(`(document.querySelector('.home-quien')||{}).textContent||''`)
   check(saludo.includes(STAMP), 'el nombre del acceso llega al selector', saludo.trim().slice(0, 60))
   check(await js(`document.querySelectorAll('.door-list li').length >= 6`), 'cada puerta dice qué se hace dentro')
@@ -225,20 +246,32 @@ try {
   console.log('\n--- 4. volver al inicio con un borrador ---')
   await setInput('#note', 'Nota a medias que no se ha guardado')
   await js(`window.__confirmAsked = null; window.__origConfirm = window.confirm; window.confirm = (m) => { window.__confirmAsked = m; return false }`)
-  await menu('Volver al inicio')
+  await irPorLateral('home')
   await sleep(400)
   const asked = await js(`window.__confirmAsked`)
-  check(!!asked && /sin guardar/i.test(asked), 'volver al inicio con un borrador pide confirmación', String(asked).slice(0, 60))
+  check(!!asked && /sin guardar/i.test(asked), 'salir de Registrar con un borrador pide confirmación', String(asked).slice(0, 60))
   check(await js(`!!document.querySelector('#note')`), 'y al decir que no, se queda en Registrar')
+
+  // La guarda tiene que cubrir TODA la navegación, no solo la vuelta al inicio:
+  // con la barra lateral se puede saltar directo a la otra puerta.
+  await js(`window.__confirmAsked = null`)
+  await irPorLateral('follow')
+  await sleep(400)
+  check(
+    /sin guardar/i.test(String(await js(`window.__confirmAsked`))),
+    'saltar a la otra puerta con un borrador también pide confirmación'
+  )
+  check(await js(`!!document.querySelector('#note')`), 'y tampoco se pierde el borrador al decir que no')
+
   await js(`window.confirm = () => true`)
-  await menu('Volver al inicio')
+  await irPorLateral('home')
   await sleep(700)
   await js(`window.confirm = window.__origConfirm`)
-  check(await js(`document.querySelectorAll('.door').length === 2`), 'al confirmar, vuelve al selector')
+  check(await js(`document.querySelectorAll('.door').length === 2`), 'al confirmar, vuelve al inicio')
 
   // ---- 5. puerta derecha: la pregunta (puntos 3, 4, 11) -------------------
   console.log('\n--- 5. puerta derecha: seguimiento ---')
-  await js(`document.getElementById('door-follow').click()`)
+  await irPorLateral('follow')
   await sleep(700)
   check(await js(`!!document.querySelector('#q-input')`), 'entrar a Seguimiento lleva a la barra de pregunta')
   check(await js(`document.activeElement === document.getElementById('q-input')`), 'el foco aterriza en el primer control del modo nuevo')

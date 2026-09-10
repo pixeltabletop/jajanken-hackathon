@@ -5,29 +5,70 @@ Inteligencia de base instalada con IA **100 % local**. De la voz al dato, sin nu
 Entrega del equipo **Jajanken** para el **Track 01 de Philips** (Customer Installed
 Base Intelligence) del ISD Summit 2026.
 
+**▶ Video de demostración (5 min):** _pendiente de publicar._ El enlace va aquí,
+en la primera línea, y abre sin pedir credenciales.
+
 > **Aviso:** prototipo del equipo Jajanken para el reto Philips · Hackathon ISD
 > Summit 2026 · **No es un producto oficial de Philips.** Todos los clientes,
-> marcas, modelos y ubicaciones de los datos son **sintéticos**.
+> marcas, modelos e inventarios son **inventados**, con la convención DemoCare.
+> Las ciudades sí son ciudades reales de Panamá, porque el filtro geográfico
+> tiene que probarse contra un mapa que existe; **ninguna institución real
+> aparece en los datos ni en la interfaz** (D12).
 
 ---
 
-## Bases preexistentes
+## Declaración de origen del trabajo
 
-**Declaración obligatoria.** Este proyecto NO se construyó desde cero durante el
-hackatón. Se partió de dos bases propias del equipo, y esto es exactamente qué
-había antes y qué se hizo durante:
+**Declaración obligatoria del reto.** Todo lo que hay en este repositorio se
+construyó **durante el hackatón**. No se partió de ninguna base preexistente
+propia ni de terceros.
 
-| Base preexistente | Autor | Qué era antes del reto | Qué se hizo durante |
-|---|---|---|---|
-| **FieldLens v1** | Diego Laverde | Aplicación Electron + React + TypeScript con una pantalla de captura, tabla y empaquetado con electron-builder. Modelo de datos plano: **un equipo por observación**. | Se conservaron Electron, la base del empaquetado y parte del sistema de color. Se **reescribió** el proceso principal completo, se abrió el modelo de datos a `Observation.equipment[]` y se rehízo el renderer. |
-| **Banco de mediciones QVAC** | Josué Carrillo | Scripts de banco (`bench/bench*.js`) para comparar modelos, cuantizaciones y esquemas sobre el SDK de QVAC, escritos en los días previos al reto. | Se ampliaron con el banco de la pregunta en español (`bench/bench_query.js`) y con la verificación contra la aplicación en ejecución. |
+Cómo se hizo, en orden:
 
-Todo lo demás —motor QVAC modular, almacén, deduplicación, modo Seguimiento,
-reportes, temas, verificación automatizada— se escribió durante el reto, y el
-historial de `git log` lo refleja commit por commit.
+1. **Diego Laverde arrancó el proyecto** al abrir el hackatón y construyó una
+   primera parte de la aplicación.
+2. **Josué Carrillo construyó su parte** en paralelo: el motor de inferencia
+   sobre el SDK de QVAC, el banco de mediciones y la extracción con esquema
+   forzado.
+3. **Las dos partes se unieron** y sobre esa unión se terminó de levantar la
+   estructura que hoy está montada: modo Seguimiento, deduplicación, temas,
+   verificación automatizada y empaquetado.
 
-Dependencias de producción: Electron, React, Zod y el SDK de QVAC de Tether.
-Cuatro, y ninguna más. Los gráficos se dibujan sin librería.
+El historial de `git log` refleja el trabajo commit por commit, todo dentro de
+la ventana del reto.
+
+### Lo que no escribimos nosotros, y va declarado
+
+| Qué | De dónde | Cómo se usa |
+|---|---|---|
+| **SDK de QVAC** (`@qvac/sdk` 0.19.0) | Tether, Apache-2.0 | Toda la inferencia. Es la pieza que el reto pide usar. |
+| **Modelos** Gemma 3n E2B, Whisper Base, EmbeddingGemma 300M | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. |
+| **Electron y React** | Sus proyectos, MIT | El armazón de escritorio y la interfaz. Viven en `devDependencies` porque el empaquetador los incorpora al compilar, que es como funciona una aplicación de Electron. |
+| **Zod** y **@electron-toolkit/utils** | Sus proyectos, MIT | Las dos únicas dependencias de producción además del SDK: validación de esquemas y utilidades de arranque de Electron. |
+| **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Se usó como asistente de programación durante todo el reto, con revisión humana de cada cambio. Las decisiones de diseño y los criterios de aceptación están en `DECISIONES.md`. |
+| **Marca Philips** | Philips | Solo el logotipo en la interfaz, para el contexto del reto. No es un producto oficial de Philips. Ver `LICENSE`. |
+
+**Andamiaje declarado.** El proyecto se arrancó con el generador de
+`electron-vite`, que aportó la estructura de tres procesos (principal, preload,
+renderer), la configuración de compilación y un ejemplo mínimo. Todo ese ejemplo
+se sustituyó: no queda ni una pantalla ni una función suyas. Lo que sobrevive es
+la disposición de carpetas y `electron.vite.config.ts`. No se usó ninguna otra
+plantilla, tema comprado ni componente de terceros: los gráficos, la barra
+lateral y los iconos se dibujan a mano, sin librería de interfaz.
+
+### Lo que quedó fuera por tiempo, no por diseño
+
+Está identificado y acotado, y es por dónde crece el proyecto:
+
+- **Búsqueda sobre documentos** (manuales de servicio, reportes en PDF) con el
+  juego RAG del propio SDK, que reutiliza el modelo de embeddings ya empaquetado.
+- **Lectura de la placa del equipo por foto** con el motor de OCR del SDK.
+- **Dictado en streaming** con detección de fin de turno, en vez de grabar y
+  transcribir al soltar.
+- **Aplicación móvil.** QVAC corre en Android e iOS, pero exige compilación
+  nativa en teléfono físico, que no cabía en la ventana del reto.
+- **Sincronización entre equipos.** Hoy cada instalación es una isla, que es
+  justo lo que hace posible la promesa de cero red.
 
 ---
 
@@ -65,9 +106,18 @@ no envía nada por su cuenta y no habla con ningún servidor.
 **Matiz honesto sobre los modelos:** los pesos (unos 3,9 GB) los provisiona el
 SDK de QVAC. En una máquina nueva, la **primera** puesta en marcha los descarga
 por HTTP, o se instalan desde USB con el procedimiento offline. Una vez en disco,
-**ni el arranque ni el uso vuelven a tocar la red**. La verificación
-automatizada comprueba, contra la aplicación en ejecución, que no queda ni una
-petición fuera de `localhost`.
+**ni el arranque ni el uso vuelven a tocar la red**.
+
+Esto se comprueba en dos mitades, porque ninguna sola alcanza:
+
+| Qué se comprueba | Cómo | Alcance real |
+|---|---|---|
+| Que la interfaz no pide nada fuera | `node scripts/e2e-4b.mjs`, leyendo las peticiones reales del renderer | Solo el renderer. La inferencia no vive ahí. |
+| Que el código empaquetado no puede pedir nada | `npm run check:sin-red`, sobre `src/main`, `src/shared` y `src/preload` | El proceso donde sí vive la inferencia. Falla si aparece `fetch`, un socket, una dirección externa u otro proveedor de IA. |
+
+La segunda existe porque la primera no ve el proceso principal, que es
+justamente el que carga los modelos y ejecuta la inferencia. La comprobación se
+prueba a sí misma: metiéndole un `fetch` a propósito, falla y lo nombra.
 
 Nada de lo que el usuario escribe, dicta o guarda sale del equipo en ningún
 momento, ni siquiera la primera vez.
@@ -101,8 +151,13 @@ npm run build:win
 `node_modules` **nunca** se copia entre máquinas: se instala con `npm ci`. Una
 copia con robocopy dejó 10.000 archivos fuera sin dar un solo error (D19).
 
-Sin internet: instalar los modelos desde USB antes de abrir la aplicación por
-primera vez, con el procedimiento de `docs/BLUEPRINT.md`, sección 12.
+**Sin internet.** El SDK de QVAC guarda los pesos en `%USERPROFILE%\.qvac`
+(`~/.qvac` fuera de Windows), dentro de `models/` y con el índice en
+`registry-corestore/`. Para una máquina sin red, se copia esa carpeta completa
+desde una donde la aplicación ya haya arrancado una vez. Los tres archivos que
+hacen falta son el de Gemma, el de Whisper Base y el de EmbeddingGemma; el resto
+de esa carpeta son modelos de las mediciones y se pueden dejar fuera. Con la
+carpeta en su sitio, la aplicación arranca sin tocar la red ni una vez.
 
 Si `npm run dev` dice **"Electron uninstall"**, ver **D22** en `DECISIONES.md`:
 con Node 24 en Windows el postinstall de Electron descarga el zip pero no lo
@@ -111,15 +166,38 @@ extrae, y hay que hacerlo a mano con `Expand-Archive`.
 ## Cómo reproducir la verificación
 
 ```bash
-npm run check                        # tipos + contraste medido en los dos temas
-npm run smoke                        # el motor sin Electron
+npm run check                        # tipos + contraste en los dos temas + sin red
+npm run smoke                        # el motor completo, sin Electron
+npm run smoke:semaforo               # el estado de los modelos no miente
 npm run bench:all                    # reproduce el banco de mediciones
-node scripts/e2e-4b.mjs              # 80 comprobaciones contra la app en ejecución
+node scripts/e2e-4b.mjs              # 84 comprobaciones contra la app en ejecución
 node scripts/check-contrast-vivo.mjs # contraste real, elemento por elemento
 ```
 
-Las tres últimas necesitan la aplicación abierta con
-`npm run dev -- -- --remote-debugging-port=9222`.
+**Solo las dos últimas** necesitan la aplicación abierta con
+`npm run dev -- -- --remote-debugging-port=9222`. Las demás corren solas.
+
+### Todos los comandos
+
+| Comando | Qué hace | Escribe archivos |
+|---|---|---|
+| `npm run dev` | Electron en desarrollo, con recarga del renderer | no |
+| `npm run build:win` | Instalador NSIS en `dist/` | sí |
+| `npm run check` | Tipos, contraste declarado y comprobación de sin red | no |
+| `npm run typecheck` | Solo los tipos, de los dos proyectos | no |
+| `npm run check:contrast` | Los pares de color declarados, en los dos temas | con `--md`, `docs/contraste.md` |
+| `npm run check:sin-red` | Ninguna salida a la red en el código empaquetado | no |
+| `npm run lint` / `npm run format` | Estilo de código | `format` sí |
+| `npm run smoke` | Carga los tres modelos y corre el ciclo, sin Electron | no |
+| `npm run smoke:semaforo` | Mata el motor y comprueba que el estado lo refleja | no |
+| `npm run smoke:semaforo:vivo` | Lo mismo, con la aplicación abierta | no |
+| `npm run bench:extract` · `:asr` · `:embed` · `:query` · `:all` | El banco de mediciones, por partes o entero | sí, `bench/*.json` |
+| `npm run e2e:4b` | Las 84 comprobaciones de interfaz | sí, `bench/e2e-4b.json` y capturas |
+| `npm run qvac:doctor` | Diagnóstico del SDK y del hardware | no |
+| `npm run build:mac` · `:linux` · `:unpack` | Empaquetados que **no** se han probado | sí |
+
+`build:mac` y `build:linux` vienen del andamiaje y se dejan por si sirven: la
+entrega es Windows y es lo único verificado.
 
 ## Resultados medidos
 
@@ -131,8 +209,8 @@ Las tres últimas necesitan la aplicación abierta con
 | Pregunta en español, intención y agrupación | 5/5 |
 | Pregunta en español, consultas de varias condiciones | 5/5 |
 | Voz: hospitales reconocidos con vocabulario sembrado | 9/10 |
-| Contraste WCAG | 98/98 pares declarados · más de 5.000 textos medidos en la app viva, 0 fallos |
-| Verificación de la interfaz contra la app real | 80/80 |
+| Contraste WCAG | 124/124 pares declarados · más de 9.000 textos medidos sobre la app viva en 18 estados, 0 fallos |
+| Verificación de la interfaz contra la app real | 84/84 |
 
 Evidencia cruda en `bench/*.json`, capturas en `bench/e2e/`.
 

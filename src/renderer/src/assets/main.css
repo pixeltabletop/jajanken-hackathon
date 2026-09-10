@@ -2,11 +2,8 @@
 body { background: linear-gradient(180deg, var(--page-top) 0 160px, var(--page) 160px); }
 #root { min-height: 100vh; }
 main { max-width: 1240px; margin: 0 auto; padding: 34px 42px 56px; }
-header { display:flex; align-items:center; justify-content:space-between; border-bottom: 4px solid var(--primary); padding-bottom: 22px; margin-bottom: 22px; }
-header small { color: var(--primary); font-size: 11px; font-weight: 700; letter-spacing: 1.4px; }
 h1 { color: var(--primary-deep); font-size: 36px; line-height: 1; margin: 6px 0 0; font-weight: 700; letter-spacing: -.8px; }
 h2 { font-size: 19px; color: var(--primary-deep); margin: 0 0 16px; font-weight: 700; }
-header b { color: var(--primary-deep); font-size: 12px; border: 1px solid var(--field-line); border-radius: 18px; padding: 8px 12px; background: var(--sky); }
 .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
 .stats article, section { background:var(--surface); border:1px solid var(--line); border-radius: 8px; box-shadow: 0 2px 8px rgb(var(--shadow-rgb) / 6%); }
 .stats article { color:var(--muted); font-size:13px; padding:15px 18px; }

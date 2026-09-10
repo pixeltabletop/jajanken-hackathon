@@ -83,16 +83,22 @@ for (let i = 0; i < 120; i += 1) {
 check(apagado !== null, 'la pantalla deja de decir verde sin que nadie toque nada')
 if (apagado) console.log(`   ${apagado.puntos} a los ${(apagado.ms / 1000).toFixed(1)} s`)
 
+// La aplicacion NO se recarga sola a proposito: un fallo de un modelo no
+// justifica releer 3,9 GB, y con la memoria apretada ese recalentado mataba al
+// worker una y otra vez. Lo que se comprueba es que al volver a pedirlo, carga.
+console.log('
+Pidiendo los modelos otra vez, como haria una persona al usarla...')
+const t1 = Date.now()
+await evaluar('window.api.modelsWarmup()')
 let vuelto = null
 for (let i = 0; i < 400; i += 1) {
   await dormir(500)
-  const puntos = await evaluar(LEER_PUNTOS)
-  if (puntos === 'ready,ready,ready') {
-    vuelto = Date.now() - t0
+  if ((await evaluar(LEER_PUNTOS)) === 'ready,ready,ready') {
+    vuelto = Date.now() - t1
     break
   }
 }
-check(vuelto !== null, 'los tres vuelven a verde solos, sin recargar la app')
+check(vuelto !== null, 'al volver a usarla, los tres vuelven a verde sin reabrir la app')
 if (vuelto) console.log(`   verde otra vez a los ${(vuelto / 1000).toFixed(1)} s`)
 
 ws.close()

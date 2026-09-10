@@ -51,6 +51,21 @@ export function ratio(a, b) {
 // Los tokens se resuelven contra el tema en curso. Un valor con '#' es literal,
 // y una función recibe los tokens del tema y devuelve el color ya mezclado.
 const PAIRS = [
+  // Barra lateral. Su fondo es --page-top, distinto del de las tarjetas, asi que
+  // ningun par declarado para --surface cubre lo que se pinta encima.
+  ['Barra lateral · texto de una fila', 'normal', 'pageTop', 'ink', AA],
+  ['Barra lateral · titulo de grupo', 'normal', 'pageTop', 'muted', AA],
+  ['Barra lateral · semaforo, texto', 'normal', 'pageTop', 'muted', AA],
+  ['Barra lateral · icono', 'relleno', 'pageTop', 'primaryDeep', AA_LARGE],
+  ['Barra lateral · nombre del producto', 'grande', 'pageTop', 'primaryDeep', AA_LARGE],
+  ['Barra lateral · borde derecho', 'relleno', 'pageTop', 'fieldLine', AA_LARGE],
+  ['Barra lateral · fila al pasar el cursor', 'normal', 'surfaceHover', 'ink', AA],
+  ['Barra lateral · punto de accion encendida', 'relleno', 'pageTop', 'primary', AA_LARGE],
+  ['Barra lateral · contorno de accion encendida', 'relleno', 'pageTop', 'primary', AA_LARGE],
+  ['Barra lateral · fila deshabilitada', 'normal', 'surface2', 'muted', AA],
+  ['Barra lateral · avatar de sesion', 'normal', 'primaryDeep', 'onPrimary', AA],
+  ['Franja superior · titulo de seccion', 'grande', 'pageTop', 'primaryDeep', AA_LARGE],
+  ['Franja superior · subtitulo', 'normal', 'pageTop', 'muted', AA],
   ['Texto de página', 'normal', 'page', 'ink', AA],
   ['Texto de tarjeta', 'normal', 'surface', 'ink', AA],
   ['Texto secundario', 'normal', 'surface', 'muted', AA],
