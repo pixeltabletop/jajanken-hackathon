@@ -297,10 +297,120 @@ Esto confirma además que los tiempos del README son correctos: los 11 a 22 segu
 
 **Lo que este arnés NO hace: la narración.** El guion trae el texto palabra por palabra con el conteo contra la capacidad de cada plano, para leerlo encima. La voz sintética del SDK habla español, pero es un modelo de varias piezas y varios gigas, y apostarlo a horas de la entrega en una máquina que ya se quedó sin memoria hoy no compensa.
 
+## 2026-09-10 · Lo que salió de dos auditorías externas
+
+Dos revisiones independientes sobre el commit `689b417`: una en clon limpio en
+otra máquina (repositorio y documentación) y otra con la aplicación corriendo de
+verdad. Cada entrada de abajo dice qué se comprobó antes de tocar nada.
+
+**D68 · La rama predeterminada NO se arregla sola (corrige la D59).** La D59 decía
+que la rama de prueba "se resuelve sola al subir `main`". Es falso: `main` ya está
+publicado y `prueba-de-acceso` sigue siendo la predeterminada, trece commits por
+detrás. Quien abre el enlace del repositorio aterriza en el README viejo, con el
+nombre viejo y con la declaración de origen contraria a la que vale. Hace falta
+una acción explícita de alguien con permiso de administración: cambiar la
+predeterminada a `main`. Como alternativa sin admin, adelantar `prueba-de-acceso`
+hasta la cabeza de `main`, que es un avance directo.
+
+**D69 · Una regla de `.gitignore` sin anclar dejó la aplicación sin compilar en el
+repositorio.** `audio/`, sin barra inicial, no señalaba la carpeta de clips de la
+raíz sino **cualquier** carpeta con ese nombre, incluida
+`src/renderer/src/audio/`, donde vive el grabador del renderer (D13). En la
+máquina de desarrollo el archivo existe y todo funciona; en un clon limpio
+`npm run check`, `npm run dev` y `npm run build:win` fallaban los tres con un
+import que no resuelve. Se ancla la regla (`/audio/`, y de paso `/out` y
+`/dist/`) y se sube el grabador. **La lección no es el arreglo:** ninguna
+verificación corrida donde se desarrolla prueba que otra persona pueda
+construirlo. Por eso entra también CI (`.github/workflows/check.yml`), que corre
+`npm run check` en cada push desde una máquina que no es la nuestra.
+
+**D70 · Una nota dictada larga se trocea antes de llegar al motor.** `sdk.transcribe`
+recibe un `audioChunk`, no una grabación entera, y con una nota larga devolvía
+solo el primer tramo **sin error y sin aviso**. Medido con la misma voz y el
+mismo formato: 9,72 s vuelve completo; 15,72 s y 25,44 s vuelven con la primera
+frase y nada más. Nunca se vio porque el banco de voz usa clips cortos. Se corta
+por silencios sobre las propias muestras PCM (`src/main/qvac/wav-split.ts`), que
+es el patrón del ejemplo de audios largos del propio SDK, pero sin ffmpeg.
+Tramos de 5 a 15 s, corte en mitad del silencio. Verificado sin modelos con
+`npm run check:troceo`: sobre 34 s de audio real salen 6 tramos, contiguos, sin
+perder ni una muestra, y una nota de 9 s sigue yendo en una sola llamada.
+
+**D71 · "por modalidad" a secas, y el filtro que el modelo se inventa.** La tabla
+`DESGLOSE` cubría "qué modalidades" y "distribución por modalidad", pero no la
+forma que usa cualquiera: "cuántos equipos hay en Panamá **por modalidad**"
+contestaba con un total, sin reparto y sin avisar. Se añaden las formas
+"por <dimensión>" para las ocho dimensiones. Aparte, a "dame el desglose por
+modalidad" el modelo le añadía un filtro `modality: "MR"` que nadie pidió: ahora,
+cuando se agrupa por una dimensión, se descarta el filtro de esa misma dimensión
+si la pregunta no nombra el valor, y se avisa. El modelo propone, el código
+decide, igual que con el lugar.
+
+**D72 · El "?" sí se apagaba, pero no por lo que parecía.** La auditoría de la
+aplicación lo midió en 1,1:1 y lo atribuyó a que el fondo no llegaba a cambiar.
+Eso es falso y se comprobó: en la hoja de estilos nada le gana a
+`.helptip-btn:hover`, y con la transición desactivada el estado asentado mide
+**4,68:1** en el tema blanco y **7,70:1** en el negro. Los dos pasan. Lo que sí
+era real es el camino: el botón se **invierte** al pasar el ratón (fondo claro con
+texto oscuro pasa a fondo oscuro con texto claro), y `color` no estaba en la lista
+de `transition` mientras `background` sí. Durante 200 ms se veía el texto nuevo
+sobre el fondo viejo. Animar también el color no arregla nada, porque a mitad del
+cruce los dos tonos se encuentran en el medio. Se quita el fondo de la transición
+y los dos cambian a la vez. Es el mismo síntoma que Josué reportó tres veces y que
+las D45 y D46 dieron por cerrado.
+
+**D73 · El medidor de contraste en vivo no mide fotogramas de paso.** De los 56
+avisos que daba, el propio auditor demostró que 4 eran falsos: el resaltado de
+evidencia arranca en `background: transparent` por su animación y se medía ahí,
+cuando asentado mide 14,33:1. Ahora el medidor le pregunta al navegador
+(`document.getAnimations()`) y espera a que no quede nada corriendo, salta los
+elementos en movimiento y los que están saliendo de pantalla. Un umbral de tiempo
+a ojo no servía: basta con que una pantalla tarde un poco más.
+
+**D74 · La marca extraída se valida contra la nota, no solo la cita.** Una nota que
+decía "tres tomógrafos **Siemens**" salió con marca **NovaMed** y confianza
+**Alta**. El error del modelo entra dentro del 8/10 declarado, pero la confianza
+Alta no: se validaba que la cita textual apareciera en la nota, y aparecía. La
+marca no. Como el catálogo es cerrado y el esquema obliga a elegir un índice, ante
+una marca de fuera el modelo pone la que más se le parece en vez de dejarlo vacío.
+Ahora, si la marca no se dice en la nota, la fila baja a confianza Baja y se avisa
+con el nombre. La cita y la clasificación son dos cosas distintas y se comprueban
+por separado.
+
+**D75 · La verificación corre en cualquier máquina, no solo en la nuestra.** El
+puerto 9222 estaba escrito a mano en seis scripts, y en la laptop de Diego lo
+ocupa el widget de Lenovo Vantage: las 86 comprobaciones no encontraban la
+ventana. Pasa a `MAM_DEBUG_PORT`, con 9222 por defecto. Y la comprobación de
+"nada se descarga de la red" excluía `localhost:5173` literal, así que en una
+máquina donde Vite arrancó en el 5174 contaba el propio servidor de desarrollo
+como tráfico externo: ahora se filtra por **host**, no por puerto.
+
+**D76 · La licencia en inglés canónico, y los avisos en `NOTICE.md`.** El `LICENSE`
+era el texto MIT traducido al español más un apéndice de exclusiones, y GitHub no
+lo reconocía: la ficha del repositorio decía "License", no "MIT". El detector
+compara contra el texto canónico. Se separa: `LICENSE` es MIT en inglés, y el
+apéndice (Electron, SDK de QVAC, modelos, marca Philips, brief y workbook) pasa a
+`NOTICE.md`, enlazado desde el README. El apéndice era bueno; estaba en el archivo
+equivocado.
+
+**D77 · Fuera `DEMO.md`.** Era el guion de la etapa FieldLens, en la raíz del
+repositorio público: hablaba de "Abrir FieldLens", mandaba al workbook de Philips
+y contradecía tanto al README como a la propia verificación
+(`bench/audit.json`, "no queda ningún rastro de FieldLens"). El guion vigente es
+`docs/GUION-VIDEO.md`.
+
+**Se decidió NO aplicar una recomendación.** La auditoría pide quitar de
+`electron-builder.yml` la exclusión `!data/Dummy_Installed_Base_Hackathon.xlsx`
+por apuntar a una ruta donde el workbook nunca estuvo. Se queda: no cuesta nada y
+es la red que impide que el documento del cliente viaje dentro del instalador si
+alguien lo deja caer ahí.
+
 ## Pendientes de decisión
 
-- **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.
+- **La rama predeterminada del repositorio** (D68). `main` ya está publicado; lo que falta es cambiar la predeterminada a `main`, o adelantar `prueba-de-acceso`. Sin eso, el enlace sigue recibiendo con el README viejo.
+- **El enlace del video en el README.** Sigue como "pendiente de publicar".
 - **Instalación en un perfil de Windows limpio.** El instalador está construido y verificado en esta máquina; en una limpia, no.
+- **Confirmar con Philips la semilla derivada.** El repositorio es público y `data/seed-philips.json` se deriva de su workbook. El brief y el workbook salieron (D54, D60) y `NOTICE.md` lo declara, pero conviene tener la respuesta por escrito.
+- **El arranque con poca memoria** (H8 de la auditoría de la aplicación, sin arreglar). Con menos de ~2 GB libres el RPC agota sus 240 s, los tres modelos se pintan en `error` y el semáforo desaparece, cuando el worker en realidad solo tardaba. Y tras un cierre abrupto quedan `~/.qvac/.worker.lock` y `.cache.lock` apuntando a un PID muerto, y la aplicación se queda esperando sin decir nada. Pide detectar el lock huérfano y volver a preguntar por el worker antes de declararlo muerto.
+- **Rendimiento en máquina cargada** (H7). La extracción midió 29,4 s contra los 14-23 s declarados, con 4,3 GB libres de 15,6 GB. Es lo que ya dice la D67: la memoria libre manda. Para grabar el video hay que cerrar todo antes.
 - Voz vive o muere (Anexo G del blueprint), con el audio real de Diego.
 - Pieza de logo con movimiento real y cadencia constante, si Diego quiere animación en el arranque (D43).
-- Nombre definitivo de la aplicación.

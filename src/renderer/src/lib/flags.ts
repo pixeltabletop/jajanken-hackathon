@@ -11,7 +11,7 @@ export const QUERY_BAR_ENABLED = false
 // proceso invita a evaluar el rendimiento de la aplicación, y quien tiene que
 // hacer eso somos nosotros, no el técnico de campo ni el jurado.
 // Se enciende con Ctrl+Alt+T y queda guardado en este equipo.
-export const INTERNAL_KEY = 'eco:panel-interno'
+export const INTERNAL_KEY = 'mam:panel-interno'
 
 export function internalPanelOn(): boolean {
   try {

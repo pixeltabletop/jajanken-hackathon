@@ -29,7 +29,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(async () => {
-  electronApp.setAppUserModelId('com.jajanken.eco')
+  electronApp.setAppUserModelId('com.jajanken.mam')
   app.on('browser-window-created', (_, w) => optimizer.watchWindowShortcuts(w))
 
   // El SDK lee esta variable al arrancar su worker, que ocurre en el primer loadModel.

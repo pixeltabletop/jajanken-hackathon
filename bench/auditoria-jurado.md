@@ -75,14 +75,19 @@ inteligencia artificial con revisión humana, y la marca Philips.
 
 ### El repositorio recibe mal a quien entra
 
-La rama predeterminada en GitHub sigue siendo `prueba-de-acceso`, no `main`. Un
-jurado que abra el enlace aterriza en una rama de prueba. Además, `main` local va
-**doce commits por delante** del remoto: el cambio de nombre a MAM, la barra
-lateral, la corrección de la declaración de origen, la comprobación de ausencia
-de red, el guion del video y el arnés de grabación no están publicados.
+**Actualizado el 2026-09-10.** `main` **ya está publicado**: los trece commits que
+faltaban (el cambio de nombre a MAM, la barra lateral, la corrección de la
+declaración de origen, la comprobación de ausencia de red, el guion del video y
+el arnés de grabación) están en el remoto, con cabeza `689b417`.
 
-Son dos acciones de un minuto cada una, y una necesita permiso de administración
-que la cuenta `josweq` no tiene.
+Lo que sigue abierto es otra cosa, y es la que importa: **la rama predeterminada
+en GitHub sigue siendo `prueba-de-acceso`**, trece commits por detrás. Un jurado
+que abra el enlace aterriza en el README viejo, con el nombre viejo y con una
+declaración de origen contraria a la que vale. No se arregla solo al publicar
+`main`, como decía la D59: hace falta cambiar la predeterminada desde la
+configuración del repositorio, que pide permiso de administración, o adelantar
+`prueba-de-acceso` hasta la cabeza de `main`, que es un avance directo y solo
+necesita permiso de escritura. Ver D68.
 
 ### El video: ya no falta todo, falta grabarlo
 
@@ -181,11 +186,12 @@ enseñe como si existieran**.
 
 ## Lo que haría en las próximas horas, en este orden
 
-1. **Subir `main`** al repositorio del jurado. Van **once commits sin publicar**,
-   incluidos el cambio de nombre a MAM, la barra lateral y la comprobación de
-   ausencia de red. Un minuto.
+1. ~~**Subir `main`** al repositorio del jurado.~~ **Hecho el 2026-09-10:** los
+   trece commits están publicados, cabeza `689b417`.
 2. **Que Diego cambie la rama predeterminada a `main`** y borre
-   `prueba-de-acceso`. Necesita permiso de administración.
+   `prueba-de-acceso`. Necesita permiso de administración. Sigue pendiente, y es
+   lo que decide con qué README se encuentra el jurado. Alternativa sin admin:
+   adelantar `prueba-de-acceso` hasta `main`, que es un avance directo. Ver D68.
 3. **Grabar el video.** Es el único punto crítico. Sin él no hay entrega. El
    guion y la coreografía ya están; hace falta cerrar aplicaciones para tener
    memoria y poner la narración encima.

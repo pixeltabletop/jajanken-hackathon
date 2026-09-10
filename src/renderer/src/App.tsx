@@ -95,7 +95,7 @@ export default function App(): JSX.Element {
    */
   const [latAbierta, setLatAbierta] = useState<boolean>(() => {
     try {
-      return localStorage.getItem('eco:lateral') !== 'estrecha'
+      return localStorage.getItem('mam:lateral') !== 'estrecha'
     } catch {
       return true
     }
@@ -248,7 +248,7 @@ export default function App(): JSX.Element {
     setLatAbierta((v) => {
       const siguiente = !v
       try {
-        localStorage.setItem('eco:lateral', siguiente ? 'ancha' : 'estrecha')
+        localStorage.setItem('mam:lateral', siguiente ? 'ancha' : 'estrecha')
       } catch {
         // Ventana privada o almacenamiento bloqueado: se pliega igual, solo que
         // no se recuerda. Nada de esto justifica romper la barra.

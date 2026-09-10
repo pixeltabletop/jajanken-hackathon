@@ -44,11 +44,11 @@ la ventana del reto.
 | Qué | De dónde | Cómo se usa |
 |---|---|---|
 | **SDK de QVAC** (`@qvac/sdk` 0.19.0) | Tether, Apache-2.0 | Toda la inferencia. Es la pieza que el reto pide usar. |
-| **Modelos** Gemma 3n E2B, Whisper Base, EmbeddingGemma 300M | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. |
+| **Modelos** `GEMMA4_2B_MULTIMODAL_Q4_K_M`, `WHISPER_BASE_Q8_0`, `EMBEDDINGGEMMA_300M_Q8_0` | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. Son los mismos identificadores de la tabla de modelos y cuantizaciones. |
 | **Electron y React** | Sus proyectos, MIT | El armazón de escritorio y la interfaz. Viven en `devDependencies` porque el empaquetador los incorpora al compilar, que es como funciona una aplicación de Electron. |
 | **Zod** y **@electron-toolkit/utils** | Sus proyectos, MIT | Las dos únicas dependencias de producción además del SDK: validación de esquemas y utilidades de arranque de Electron. |
 | **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Se usó como asistente de programación durante todo el reto, con revisión humana de cada cambio. Las decisiones de diseño y los criterios de aceptación están en `DECISIONES.md`. |
-| **Marca Philips** | Philips | Solo el logotipo en la interfaz, para el contexto del reto. No es un producto oficial de Philips. Ver `LICENSE`. |
+| **Marca Philips** | Philips | Solo el logotipo en la interfaz, para el contexto del reto. No es un producto oficial de Philips. Ver `NOTICE.md`. |
 
 **Andamiaje declarado.** El proyecto se arrancó con el generador de
 `electron-vite`, que aportó la estructura de tres procesos (principal, preload,
@@ -168,7 +168,7 @@ extrae, y hay que hacerlo a mano con `Expand-Archive`.
 ## Cómo reproducir la verificación
 
 ```bash
-npm run check                        # tipos + tokens + contraste en los dos temas + sin red
+npm run check                        # tipos + tokens + contraste + sin red + troceo de audio
 npm run smoke                        # el motor completo, sin Electron
 npm run smoke:semaforo               # el estado de los modelos no miente
 npm run bench:all                    # reproduce el banco de mediciones
@@ -179,17 +179,30 @@ node scripts/check-contrast-vivo.mjs # contraste real, elemento por elemento
 **Solo las dos últimas** necesitan la aplicación abierta con
 `npm run dev -- -- --remote-debugging-port=9222`. Las demás corren solas.
 
+Si el 9222 está ocupado en tu máquina (en una laptop Lenovo lo toma el widget de
+Vantage, y entonces los scripts no encuentran la ventana), levanta la aplicación
+en otro puerto y dilo con la misma variable:
+
+```bash
+npm run dev -- -- --remote-debugging-port=9333
+MAM_DEBUG_PORT=9333 node scripts/e2e-4b.mjs
+```
+
+`npm run check` corre en cualquier máquina y no necesita ni la aplicación ni los
+modelos: es lo mismo que corre CI en cada push.
+
 ### Todos los comandos
 
 | Comando | Qué hace | Escribe archivos |
 |---|---|---|
 | `npm run dev` | Electron en desarrollo, con recarga del renderer | no |
 | `npm run build:win` | Instalador NSIS en `dist/` | sí |
-| `npm run check` | Tipos, tokens, contraste declarado y comprobación de sin red | no |
+| `npm run check` | Tipos, tokens, contraste declarado, sin red y troceo de audio | no |
 | `npm run typecheck` | Solo los tipos, de los dos proyectos | no |
 | `npm run check:contrast` | Los pares de color declarados, en los dos temas | con `--md`, `docs/contraste.md` |
 | `npm run check:tokens` | Que toda variable de color usada exista de verdad | no |
 | `npm run check:sin-red` | Ninguna salida a la red en el código empaquetado | no |
+| `npm run check:troceo` | Que una nota larga se corte bien antes de ir al motor, sin cargar modelos | no |
 | `npm run lint` / `npm run format` | Estilo de código | `format` sí |
 | `npm run smoke` | Carga los tres modelos y corre el ciclo, sin Electron | no |
 | `npm run smoke:semaforo` | Mata el motor y comprueba que el estado lo refleja | no |
@@ -259,15 +272,20 @@ posibles.
 
 ## Licencias
 
-Código propio bajo MIT. Electron y Chromium bajo sus respectivas licencias.
-Modelos Gemma, Whisper y EmbeddingGemma bajo Apache-2.0.
+Código propio bajo MIT (`LICENSE`, texto canónico en inglés para que GitHub la
+reconozca). Electron y Chromium bajo sus respectivas licencias. Los modelos del
+catálogo de QVAC bajo Apache-2.0.
+
+**El alcance exacto está en [`NOTICE.md`](NOTICE.md):** qué cubre la licencia
+MIT, qué no cubre, y de dónde salen los datos de demostración.
 
 ## Dónde está todo
 
 | Qué | Dónde |
 |---|---|
-| Diseño, fuente de verdad | `docs/BLUEPRINT.md` |
+| Diseño, documento histórico | `docs/BLUEPRINT.md` (se conserva como registro del arranque; **no es la autoridad**: lo son este README y `DECISIONES.md`) |
 | Decisiones con evidencia | `DECISIONES.md` |
+| Alcance de la licencia y origen de los datos | `NOTICE.md` |
 | Contraste medido por tema | `docs/contraste.md` |
 | Cambios que afectan al guion del video | `docs/GUION-VIDEO-CAMBIOS.md` |
 | Mediciones crudas | `bench/` |

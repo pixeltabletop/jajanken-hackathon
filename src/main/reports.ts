@@ -274,7 +274,7 @@ export async function renderReportPdf(req: ReportRequest, all: Observation[], ap
   if (found) logo = `data:image/svg+xml;base64,${(await readFile(found)).toString('base64')}`
 
   const html = await buildReportHtml(req, all, logo)
-  const dir = join(tmpdir(), 'eco-reports')
+  const dir = join(tmpdir(), 'mam-reports')
   await mkdir(dir, { recursive: true })
   const file = join(dir, `r-${Date.now()}.html`)
   await writeFile(file, html, 'utf8')

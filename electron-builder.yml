@@ -30,7 +30,6 @@ files:
   - '!scripts'
   - '!schema.js'
   - '!DECISIONES.md'
-  - '!DEMO.md'
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'

@@ -589,6 +589,7 @@ Sin esto, nada de lo demás cuenta.
 2. Josué sube `~/personal/jajanken` al repo como rama `motor`, con `git remote add origin`. Diego sube `Proyecto/` como rama `app`. Se crea `main` vacío con README.
 3. Josué escribe a la organización: confirmación de inscripción del equipo Jajanken en Track 01, regla de un track por equipo frente al texto de Track 05, y a quién dar acceso al repo.
 4. README inicial en `main` con la sección **"Bases preexistentes"** escrita: FieldLens v1 de Diego Laverde y banco de mediciones de Josué Carrillo, ambos del 9 de septiembre, ambos del equipo. Aunque sea del propio equipo, se declara.
+  <!-- CORREGIDO (D62): no hubo bases preexistentes. Las dos son del 9 de septiembre, dentro de la ventana del reto. El texto original se conserva; la autoridad es el README y DECISIONES.md. -->
 5. **Verificación:** Diego hace un cambio de una línea en `main`, Josué lo baja, cambia otra línea, la sube, Diego la ve. Si esto falla, se resuelve antes de seguir.
 
 ### Bloque 1 · Voz real y guion · mié 16:00–18:00 · Diego graba, Josué mide
@@ -831,6 +832,7 @@ Pie fijo: "Prototipo del equipo Jajanken para el reto Philips · No es un produc
 ## Reglas no negociables
 1. Cero llamadas de red para inferencia. Cero. Descalifica.
 2. README declara bases preexistentes: FieldLens v1 (Diego) y bench/ (Josué). Omitirlo descalifica.
+  <!-- CORREGIDO (D62): no hubo bases preexistentes. Las dos son del 9 de septiembre, dentro de la ventana del reto. El texto original se conserva; la autoridad es el README y DECISIONES.md. -->
 3. Solo datos sintéticos. Los 10 sitios de Panamá son ficticios y se dice en la app.
 4. No se toca código después del jueves 21:00 salvo que la demo no arranque.
 5. Ningún bloque se cierra sin su verificación del BLUEPRINT.
@@ -842,6 +844,7 @@ Pie fijo: "Prototipo del equipo Jajanken para el reto Philips · No es un produc
 
 1. **Inferencia local o nada.** Ninguna llamada a API de IA. Es la regla del hackathon y no admite matices.
 2. **Declarar las bases preexistentes en el README.** Las dos. Aunque sean del propio equipo.
+  <!-- CORREGIDO (D62): no hubo bases preexistentes. Las dos son del 9 de septiembre, dentro de la ventana del reto. El texto original se conserva; la autoridad es el README y DECISIONES.md. -->
 3. **Repositorio y video accesibles sin credenciales** antes de las 07:00 del viernes, verificado desde una cuenta ajena.
 4. **Datos sintéticos únicamente.** Ningún nombre de institución real con inventario inventado.
 5. **`json_schema`, `temp: 0`, `seed: 42`, `ctx_size: 4096`, `language: 'es'`.** Son las cinco configuraciones que las mediciones demostraron. No se cambian sin volver a medir.
@@ -894,6 +897,7 @@ Cada una tumbó una prueba antes de arreglarse. Van en el README como "Notas par
 
 ## Qué es
 ## Bases preexistentes  ← OBLIGATORIO, primera sección después de Qué es
+  <!-- CORREGIDO (D62): no hubo bases preexistentes. Las dos son del 9 de septiembre, dentro de la ventana del reto. El texto original se conserva; la autoridad es el README y DECISIONES.md. -->
    - FieldLens v1, Diego Laverde, 2026-09-09: app Electron con captura, extracción y tabla.
    - Banco de mediciones QVAC, Josué Carrillo, 2026-09-09: bench/ con 23 corridas.
    - Datos: workbook sintético de Philips (referencia/), 10 observaciones ficticias propias (data/seed-panama.json).
