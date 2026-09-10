@@ -167,9 +167,17 @@ export function isThemeId(v: unknown): v is ThemeId {
   return typeof v === 'string' && THEMES.some((t) => t.id === v)
 }
 
-/** camelCase → --kebab-case, el nombre real de la propiedad personalizada. */
+/**
+ * camelCase → --kebab-case, el nombre real de la propiedad personalizada.
+ *
+ * El dígito cuenta como separador. Sin eso, `surface2` salía como `--surface2`
+ * mientras TODAS las hojas de estilo escribían `var(--surface-2)`, así que esa
+ * variable no existió nunca y cada sitio que la usaba se quedaba sin fondo, en
+ * silencio y en los dos temas. El medidor de contraste no lo vio porque lee los
+ * tokens del objeto, no lo que llega al navegador. Ver `check-tokens.mjs`.
+ */
 export function cssVarName(key: keyof ThemeTokens): string {
-  return `--${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`
+  return `--${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`).replace(/([a-z])(\d)/g, '$1-$2')}`
 }
 
 /** Escribe los tokens del tema en :root. Se aplica al instante, sin reiniciar. */

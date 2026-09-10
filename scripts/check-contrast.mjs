@@ -53,6 +53,16 @@ export function ratio(a, b) {
 const PAIRS = [
   // Barra lateral. Su fondo es --page-top, distinto del de las tarjetas, asi que
   // ningun par declarado para --surface cubre lo que se pinta encima.
+  // Elegido y presionado: el fondo se mueve dentro de la misma familia y el
+  // texto conserva su token, asi que hay que medir CADA texto contra el fondo
+  // nuevo, no solo contra la superficie normal.
+  ['Tarjeta elegida · titulo', 'grande', 'surfaceHover', 'primaryDeep', AA_LARGE],
+  ['Tarjeta elegida · descripcion', 'normal', 'surfaceHover', 'ink', AA],
+  ['Tarjeta elegida · vinetas', 'normal', 'surfaceHover', 'muted', AA],
+  ['Tarjeta elegida · antetitulo', 'normal', 'surfaceHover', 'muted', AA],
+  ['Tarjeta elegida · entrar', 'normal', 'surfaceHover', 'primaryDeep', AA],
+  ['Tarjeta normal · entrar', 'normal', 'surface', 'primaryDeep', AA],
+  ['Tarjeta elegida · borde', 'relleno', 'surfaceHover', 'primary', AA_LARGE],
   ['Barra lateral · texto de una fila', 'normal', 'pageTop', 'ink', AA],
   ['Barra lateral · titulo de grupo', 'normal', 'pageTop', 'muted', AA],
   ['Barra lateral · semaforo, texto', 'normal', 'pageTop', 'muted', AA],

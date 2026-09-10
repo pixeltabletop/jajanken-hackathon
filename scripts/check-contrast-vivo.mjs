@@ -121,6 +121,39 @@ async function auditar(etiqueta) {
   if (malas.length > 8) console.log(`      … y ${malas.length - 8} más`)
 }
 
+/**
+ * Fuerza :hover y :active sobre TODOS los elementos que casen con el selector, y
+ * devuelve una funcion para soltarlos.
+ *
+ * Esto es el agujero por el que se colo el peor defecto de contraste del
+ * proyecto. El auditor recorria pantallas y estados de datos, pero nunca pasaba
+ * el raton por encima de nada. Y el fallo estaba justo ahi: la regla generica
+ * `button:hover` le ganaba en especificidad a la de la tarjeta y le metia un
+ * azul claro de fondo sin tocar el color del texto. Invisible para un humano que
+ * no este mirando en ese instante, invisible para una lista de pares, y bien
+ * visible para quien usa la aplicacion.
+ *
+ * `Emulation.setEmulatedMedia` no sirve: :hover no es una media query. Hay que
+ * pedirselo al motor de estilos nodo por nodo.
+ */
+const forzarEstado = async (selector, estados) => {
+  await send('DOM.enable')
+  await send('CSS.enable')
+  const doc = await send('DOM.getDocument', { depth: -1 })
+  const raiz = doc.result?.root?.nodeId
+  if (!raiz) return async () => undefined
+  const encontrados = await send('DOM.querySelectorAll', { nodeId: raiz, selector })
+  const nodeIds = encontrados.result?.nodeIds ?? []
+  for (const nodeId of nodeIds) {
+    await send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: estados })
+  }
+  return async () => {
+    for (const nodeId of nodeIds) {
+      await send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: [] })
+    }
+  }
+}
+
 const setTheme = async (id) => {
   // El tema es un interruptor de un clic, en el pie de la barra lateral.
   for (let i = 0; i < 3; i++) {
@@ -157,9 +190,30 @@ try {
     await setTheme(tema)
     await sleep(700)
 
+    // El inicio, con el raton encima de las dos puertas y luego presionandolas.
+    // Son los dos estados donde el texto desaparecia.
+    await auditar(`${tema} · inicio en reposo`)
+
+    let soltar = await forzarEstado('.door', ['hover'])
+    await sleep(400)
+    await auditar(`${tema} · puertas con el raton encima`)
+    await soltar()
+
+    soltar = await forzarEstado('.door', ['hover', 'active'])
+    await sleep(400)
+    await auditar(`${tema} · puertas presionadas`)
+    await soltar()
+
     await js(`(() => { const d=document.getElementById('nav-capture'); if (d) d.click() })()`)
     await sleep(900)
     await auditar(`${tema} · inicio y registro`)
+
+    // Todo lo pulsable de la pantalla, a la vez, con el raton encima. Si alguna
+    // regla generica le gana a la de un componente, sale aqui.
+    soltar = await forzarEstado('button, [role="tab"], a', ['hover'])
+    await sleep(400)
+    await auditar(`${tema} · registro, todo pulsable con el raton encima`)
+    await soltar()
 
     await js(`(() => { const b=document.querySelector('#lat-quien'); if (b) b.click() })()`)
     await sleep(350)
@@ -179,6 +233,16 @@ try {
     await js(`(() => { const d=document.getElementById('nav-follow'); if (d) d.click() })()`)
     await sleep(900)
     await auditar(`${tema} · seguimiento`)
+
+    soltar = await forzarEstado('button, [role="tab"]', ['hover'])
+    await sleep(400)
+    await auditar(`${tema} · seguimiento, todo pulsable con el raton encima`)
+    await soltar()
+
+    soltar = await forzarEstado('button, [role="tab"]', ['hover', 'active'])
+    await sleep(400)
+    await auditar(`${tema} · seguimiento, todo pulsable presionado`)
+    await soltar()
 
     await js(`(() => { const b=[...document.querySelectorAll('.guide-toggle')].find(x=>/Cómo pedirlo/.test(x.textContent)); if (b) b.click() })()`)
     await sleep(600)
@@ -214,6 +278,11 @@ try {
     await js(`(() => { const b=document.getElementById('acc-guia'); if (b) b.click() })()`)
     await sleep(600)
     await auditar(`${tema} · barra con acción encendida y sección actual`)
+
+    soltar = await forzarEstado('.lateral .lat-item', ['hover'])
+    await sleep(400)
+    await auditar(`${tema} · barra lateral con el raton encima`)
+    await soltar()
 
     await js(`(() => { const d=document.getElementById('nav-home'); if (d) d.click() })()`)
     await sleep(900)

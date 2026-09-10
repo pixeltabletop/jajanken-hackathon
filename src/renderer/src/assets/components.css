@@ -339,13 +339,14 @@ video.logo { mix-blend-mode: multiply; }
   background: var(--surface); color: var(--ink);
   transition: border-color .18s var(--ease), background .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
 }
-.door:hover { background: var(--surface-hover); border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 18px rgb(var(--shadow-rgb) / 14%); }
-.door:active { transform: translateY(0); }
+.door:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 18px rgb(var(--shadow-rgb) / 14%); }
 .door:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-color: var(--primary); }
 .door-kicker { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
 .door b { font-size: 24px; color: var(--primary-deep); letter-spacing: -.4px; }
 .door-sub { font-size: 13.5px; color: var(--ink); line-height: 1.55; }
-.door-go { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--primary); }
+/* Azul profundo, no el azul medio: sobre el fondo aclarado de la tarjeta
+   elegida el medio se quedaba en 4,33:1, por debajo del umbral. */
+.door-go { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--primary-deep); }
 .home-note { margin: 12px 0 0; font-size: 13px; }
 .home-btn { margin: 0; }
 .theme-switch { display: inline-flex; align-items: center; gap: 6px; }
@@ -533,15 +534,30 @@ option:checked, option:hover { background: var(--sky); color: var(--on-sky); fon
    dentro de la selección. */
 ::selection { background: var(--mark); color: var(--mark-ink); }
 
-/* Presionado: se oscurece el relleno, nunca el texto. */
+/* ELEGIR NO CAMBIA EL COLOR DEL TEXTO. NUNCA.
+ *
+ * Antes, presionar una tarjeta le cambiaba el fondo a --sky y el texto a
+ * --on-sky, y habia que acordarse de arrastrar cada hijo con color propio detras
+ * del padre. Cada hijo que se olvidara quedaba con su color viejo sobre un fondo
+ * nuevo, y ahi es donde el texto desaparecia. Se reporto una y otra vez.
+ *
+ * La regla nueva es la que pidio Josue: al elegir, el relleno se aclara o se
+ * oscurece un poco, y ya. El texto conserva su token. Si el texto no cambia y el
+ * fondo se mueve dentro de la misma familia, el contraste no puede hundirse, y
+ * deja de depender de que alguien se acuerde de una lista de hijos.
+ *
+ * Lo que SI marca la eleccion, aparte del tono: el borde y un hundimiento de un
+ * pixel. Son senales que no dependen del color. */
 button.primary:active:not(:disabled) { background: var(--primary-deep); color: var(--on-primary); }
-button.ghost:active:not(:disabled), .door:active, .rep-kind:active, .theme-card:active, .bar-btn:active {
-  background: var(--sky); color: var(--on-sky);
+button.ghost:active:not(:disabled),
+.door:active,
+.rep-kind:active,
+.theme-card:active,
+.bar-btn:active {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+  transform: translateY(1px);
 }
-/* Y los hijos con color propio siguen al padre mientras esta presionado: si no,
-   el titulo de la tarjeta se queda con su azul sobre el fondo nuevo. */
-.door:active b, .door:active .door-sub, .door:active .door-list li,
-.rep-kind:active b, .rep-kind:active span, .theme-card:active b { color: var(--on-sky); }
 
 /* =========================================================================
    Acceso y selector rediseñado

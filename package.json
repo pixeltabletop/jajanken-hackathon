@@ -27,8 +27,9 @@
     "bench:embed": "node bench/bench_embed.js EMBEDDINGGEMMA_300M_Q8_0",
     "bench:all": "npm run bench:extract && npm run bench:asr && npm run bench:embed && npm run bench:query",
     "check:contrast": "node scripts/check-contrast.mjs",
+    "check:tokens": "node scripts/check-tokens.mjs",
     "check:sin-red": "node scripts/check-sin-red.mjs",
-    "check": "npm run typecheck && npm run check:contrast && npm run check:sin-red",
+    "check": "npm run typecheck && npm run check:tokens && npm run check:contrast && npm run check:sin-red",
     "bench:query": "node bench/bench_query.js",
     "e2e:4b": "node scripts/e2e-4b.mjs"
   },
