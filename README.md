@@ -168,11 +168,11 @@ extrae, y hay que hacerlo a mano con `Expand-Archive`.
 ## Cómo reproducir la verificación
 
 ```bash
-npm run check                        # tipos + contraste en los dos temas + sin red
+npm run check                        # tipos + tokens + contraste en los dos temas + sin red
 npm run smoke                        # el motor completo, sin Electron
 npm run smoke:semaforo               # el estado de los modelos no miente
 npm run bench:all                    # reproduce el banco de mediciones
-node scripts/e2e-4b.mjs              # 84 comprobaciones contra la app en ejecución
+node scripts/e2e-4b.mjs              # 86 comprobaciones contra la app en ejecución
 node scripts/check-contrast-vivo.mjs # contraste real, elemento por elemento
 ```
 
@@ -185,16 +185,17 @@ node scripts/check-contrast-vivo.mjs # contraste real, elemento por elemento
 |---|---|---|
 | `npm run dev` | Electron en desarrollo, con recarga del renderer | no |
 | `npm run build:win` | Instalador NSIS en `dist/` | sí |
-| `npm run check` | Tipos, contraste declarado y comprobación de sin red | no |
+| `npm run check` | Tipos, tokens, contraste declarado y comprobación de sin red | no |
 | `npm run typecheck` | Solo los tipos, de los dos proyectos | no |
 | `npm run check:contrast` | Los pares de color declarados, en los dos temas | con `--md`, `docs/contraste.md` |
+| `npm run check:tokens` | Que toda variable de color usada exista de verdad | no |
 | `npm run check:sin-red` | Ninguna salida a la red en el código empaquetado | no |
 | `npm run lint` / `npm run format` | Estilo de código | `format` sí |
 | `npm run smoke` | Carga los tres modelos y corre el ciclo, sin Electron | no |
 | `npm run smoke:semaforo` | Mata el motor y comprueba que el estado lo refleja | no |
 | `npm run smoke:semaforo:vivo` | Lo mismo, con la aplicación abierta | no |
 | `npm run bench:extract` · `:asr` · `:embed` · `:query` · `:all` | El banco de mediciones, por partes o entero | sí, `bench/*.json` |
-| `npm run e2e:4b` | Las 84 comprobaciones de interfaz | sí, `bench/e2e-4b.json` y capturas |
+| `npm run e2e:4b` | Las 86 comprobaciones de interfaz | sí, `bench/e2e-4b.json` y capturas |
 | `npm run qvac:doctor` | Diagnóstico del SDK y del hardware | no |
 | `npm run build:mac` · `:linux` · `:unpack` | Empaquetados que **no** se han probado | sí |
 
@@ -211,8 +212,8 @@ entrega es Windows y es lo único verificado.
 | Pregunta en español, intención y agrupación | 5/5 |
 | Pregunta en español, consultas de varias condiciones | 5/5 |
 | Voz: hospitales reconocidos con vocabulario sembrado | 9/10 |
-| Contraste WCAG | 124/124 pares declarados · más de 9.000 textos medidos sobre la app viva en 18 estados, 0 fallos |
-| Verificación de la interfaz contra la app real | 84/84 |
+| Contraste WCAG | 150/150 pares declarados · más de 9.000 textos medidos sobre la app viva en 32 estados, incluidos los de raton encima y presionado, 0 fallos |
+| Verificación de la interfaz contra la app real | 86/86 |
 
 Evidencia cruda en `bench/*.json`, capturas en `bench/e2e/`.
 
@@ -224,7 +225,7 @@ Evidencia cruda en `bench/*.json`, capturas en `bench/e2e/`.
 | Los tres modelos, en paralelo | 49 a 61 s |
 | Interpretar una nota | 14 a 23 s |
 | Interpretar una pregunta | 11 a 22 s |
-| Instalador | 594 MB · 3,0 GB instalado |
+| Instalador | 595 MB · 3,0 GB instalado |
 | Deduplicar | 0,1 a 0,5 s |
 | Guardar | menos de 0,1 s |
 
