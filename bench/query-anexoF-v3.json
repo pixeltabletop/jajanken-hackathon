@@ -4,9 +4,9 @@
   "total": 10,
   "gate": 7,
   "passes": true,
-  "msMin": 11208,
-  "msMax": 11962,
-  "msMedian": 11479,
+  "msMin": 10933,
+  "msMax": 11919,
+  "msMedian": 11416,
   "context": {
     "countries": [
       "Argentina",
@@ -49,20 +49,16 @@
       "question": "hospitales en Panamá con resonadores",
       "ok": true,
       "problems": [],
-      "ms": 11661,
+      "ms": 11576,
       "raw": {
-        "lugares": [
-          "Panamá"
-        ],
-        "m": [
-          0
-        ],
-        "b": [],
+        "lugar": "Panamá",
+        "m": 0,
+        "b": -1,
         "amin": null,
         "amax": null,
-        "s": [],
-        "c": [],
-        "i": 2,
+        "s": -1,
+        "c": -1,
+        "i": 0,
         "g": 3
       },
       "plan": {
@@ -77,11 +73,11 @@
           "confidence": null,
           "textSearch": null
         },
-        "intent": "breakdown",
-        "groupBy": "modality"
+        "intent": "list",
+        "groupBy": null
       },
       "warnings": [],
-      "answer": "Con país: Panamá · modalidad: Resonancia magnética: 8 equipos registrados en 5 sitios, sobre 5 observaciones. Por modalidad: Resonancia magnética 8.",
+      "answer": "Con país: Panamá · modalidad: Resonancia magnética: 8 equipos registrados en 5 sitios, sobre 5 observaciones. Se enumeran 5 filas de equipo.",
       "counts": {
         "equipment": 8,
         "rows": 5,
@@ -93,17 +89,15 @@
       "question": "tomógrafos de más de diez años",
       "ok": true,
       "problems": [],
-      "ms": 11208,
+      "ms": 11416,
       "raw": {
-        "lugares": [],
-        "m": [
-          1
-        ],
-        "b": [],
+        "lugar": null,
+        "m": 1,
+        "b": -1,
         "amin": 10,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
         "g": -1
       },
@@ -135,19 +129,15 @@
       "question": "equipos Aurelia Health en Brasil",
       "ok": true,
       "problems": [],
-      "ms": 11656,
+      "ms": 11103,
       "raw": {
-        "lugares": [
-          "Brasil"
-        ],
-        "m": [],
-        "b": [
-          1
-        ],
-        "amin": null,
+        "lugar": "Brasil",
+        "m": -1,
+        "b": 1,
+        "amin": -1,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
         "g": 4
       },
@@ -179,19 +169,17 @@
       "question": "todo lo que hay en Colón",
       "ok": true,
       "problems": [],
-      "ms": 11962,
+      "ms": 11438,
       "raw": {
-        "lugares": [
-          "Colón"
-        ],
-        "m": [],
-        "b": [],
-        "amin": null,
+        "lugar": "Colón",
+        "m": -1,
+        "b": -1,
+        "amin": -1,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
-        "g": 1
+        "g": -1
       },
       "plan": {
         "filter": {
@@ -221,17 +209,15 @@
       "question": "ecógrafos nuevos, de menos de tres años",
       "ok": true,
       "problems": [],
-      "ms": 11479,
+      "ms": 11074,
       "raw": {
-        "lugares": [],
-        "m": [
-          2
-        ],
-        "b": [],
+        "lugar": null,
+        "m": 2,
+        "b": -1,
         "amin": null,
         "amax": 3,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
         "g": -1
       },
@@ -263,19 +249,17 @@
       "question": "registros con confianza baja",
       "ok": true,
       "problems": [],
-      "ms": 11229,
+      "ms": 11391,
       "raw": {
-        "lugares": [],
-        "m": [],
-        "b": [],
-        "amin": null,
+        "lugar": null,
+        "m": -1,
+        "b": -1,
+        "amin": -1,
         "amax": null,
-        "s": [],
-        "c": [
-          2
-        ],
+        "s": -1,
+        "c": 2,
         "i": 0,
-        "g": 6
+        "g": -1
       },
       "plan": {
         "filter": {
@@ -305,18 +289,16 @@
       "question": "equipos estimados, no confirmados",
       "ok": true,
       "problems": [],
-      "ms": 11312,
+      "ms": 11181,
       "raw": {
-        "lugares": [],
-        "m": [],
-        "b": [],
-        "amin": null,
+        "lugar": null,
+        "m": -1,
+        "b": -1,
+        "amin": -1,
         "amax": null,
-        "s": [
-          2
-        ],
-        "c": [],
-        "i": 0,
+        "s": 2,
+        "c": -1,
+        "i": 1,
         "g": -1
       },
       "plan": {
@@ -331,11 +313,11 @@
           "confidence": null,
           "textSearch": null
         },
-        "intent": "list",
+        "intent": "count",
         "groupBy": null
       },
       "warnings": [],
-      "answer": "Con estatus: Estimado: 31 equipos registrados en 12 sitios, sobre 12 observaciones. Se enumeran 14 filas de equipo. 1 fila de confianza baja.",
+      "answer": "Con estatus: Estimado: 31 equipos registrados en 12 sitios, sobre 12 observaciones. 1 fila es de confianza baja.",
       "counts": {
         "equipment": 31,
         "rows": 14,
@@ -347,19 +329,15 @@
       "question": "resonadores viejos en México",
       "ok": true,
       "problems": [],
-      "ms": 11454,
+      "ms": 10933,
       "raw": {
-        "lugares": [
-          "México"
-        ],
-        "m": [
-          0
-        ],
-        "b": [],
+        "lugar": "México",
+        "m": 0,
+        "b": -1,
         "amin": 8,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
         "g": 7
       },
@@ -391,19 +369,17 @@
       "question": "qué tiene el DemoCare Chiriquí",
       "ok": true,
       "problems": [],
-      "ms": 11690,
+      "ms": 11919,
       "raw": {
-        "lugares": [
-          "DemoCare Chiriquí"
-        ],
-        "m": [],
-        "b": [],
-        "amin": null,
-        "amax": null,
-        "s": [],
-        "c": [],
+        "lugar": "DemoCare Chiriquí",
+        "m": -1,
+        "b": -1,
+        "amin": -1,
+        "amax": -1,
+        "s": -1,
+        "c": -1,
         "i": 0,
-        "g": 2
+        "g": -1
       },
       "plan": {
         "filter": {
@@ -435,17 +411,15 @@
       "question": "monitores de paciente",
       "ok": true,
       "problems": [],
-      "ms": 11395,
+      "ms": 11681,
       "raw": {
-        "lugares": [],
-        "m": [
-          4
-        ],
-        "b": [],
+        "lugar": null,
+        "m": 4,
+        "b": -1,
         "amin": null,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
         "g": -1
       },

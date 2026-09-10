@@ -76,15 +76,22 @@ export interface DedupResult {
   reason: string
 }
 
+/**
+ * Un campo del filtro admite un valor, varios o ninguno. Varios significa "o":
+ * "confianza baja o media" es `confidence: ['Low', 'Medium']`. La comparación
+ * vive en `matches()` de query-engine.ts, para que exista un solo criterio.
+ */
+export type OneOrMany<T> = T | T[] | null
+
 export interface QueryFilter {
-  country: string | null
-  city: string | null
-  modality: Modality | null
-  brand: Brand | null
+  country: OneOrMany<string>
+  city: OneOrMany<string>
+  modality: OneOrMany<Modality>
+  brand: OneOrMany<Brand>
   minAgeYears: number | null
   maxAgeYears: number | null
-  status: Status | null
-  confidence: Confidence | null
+  status: OneOrMany<Status>
+  confidence: OneOrMany<Confidence>
   textSearch: string | null
 }
 

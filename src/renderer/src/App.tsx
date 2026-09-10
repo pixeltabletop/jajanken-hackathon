@@ -6,6 +6,7 @@ import type { TranscriptFix } from '../../shared/transcript.ts'
 import type { DedupResult, ModelStatus, Observation, QueryFilter } from '../../shared/types.ts'
 import { DEFAULT_THEME, isThemeId, type ThemeId } from './assets/themes.ts'
 import { WavRecorder } from './audio/wav-recorder.ts'
+import { Access } from './components/Access.tsx'
 import { Capture } from './components/Capture.tsx'
 import { Dashboard } from './components/Dashboard.tsx'
 import { FollowUpMode } from './components/FollowUpMode.tsx'
@@ -63,6 +64,8 @@ export default function App(): JSX.Element {
   // Bloque 4B: arranque de marca, elección de tema y dos puertas.
   const [booting, setBooting] = useState(true)
   const [askTheme, setAskTheme] = useState(false)
+  /** Acceso: hoy no valida nada, solo recoge el nombre. Ver Access.tsx. */
+  const [entered, setEntered] = useState(false)
   const [mode, setMode] = useState<Mode>('home')
   /** Registrar abre sin lista. La tabla solo aparece si se pide. */
   const [showBase, setShowBase] = useState(false)
@@ -298,6 +301,16 @@ export default function App(): JSX.Element {
     )
   }
 
+  if (!booting && !askTheme && !entered) {
+    return (
+      <Access
+        initialName={operator}
+        observations={observations.length}
+        onEnter={(n) => { onOperator(n); setEntered(true) }}
+      />
+    )
+  }
+
   if (booting) {
     return (
       <Splash
@@ -327,7 +340,8 @@ export default function App(): JSX.Element {
         <div key="home" className="mode-enter">
           <Home
             rows={rows} total={observations.length}
-            onPrepare={prepare} onPick={go} modelsReady={allReady}
+            onPrepare={prepare} onPick={go}
+            modelsReady={allReady} gemmaReady={!!gemmaReady} operator={operator}
           />
         </div>
       ) : mode === 'follow' ? (

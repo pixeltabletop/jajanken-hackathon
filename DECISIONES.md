@@ -113,6 +113,20 @@ O sea que el archivo no contiene una animación: contiene una imagen fija que pa
 
 **Para Diego:** si la intención era una pieza animada, la exportación no la contiene. Hace falta un archivo con movimiento real, cadencia constante y luminancia sobre su propio fondo. Mientras tanto el arranque funciona sin él.
 
+**D44 · Pantalla de acceso honesta, sin autenticación.** Josué la pidió como marcador de sitio: que se vea dónde irá el control de acceso, sin pedir credenciales hoy. La casilla de contraseña está **deshabilitada**, la pantalla dice con esas palabras que no valida nada y que cualquiera que abra la aplicación entra, y no se guarda ni se envía ninguna contraseña. Lo que sí es real es el nombre: alimenta el campo Observador de cada registro y el Solicitado por de cada reporte, que antes había que escribir a mano en dos sitios distintos.
+
+**D45 · El medidor de contraste ahora también corre sobre la app viva.** `scripts/check-contrast.mjs` mide los pares que yo declaro; `scripts/check-contrast-vivo.mjs` recorre la aplicación en ejecución, elemento por elemento, en los dos temas y en cinco estados, calcula el fondo efectivo subiendo por los ancestros y mide 2.766 textos. Encontró a la primera lo que la lista declarada no veía: en el tema Negro el texto dentro del resaltado amarillo de evidencia heredaba `--ink`, que ahí es casi blanco, y quedaba en **1.12:1**. Es decir, el diferenciador del producto era ilegible en uno de los dos temas. Josué lo venía diciendo tres veces: "al seleccionar, el texto desaparece".
+
+**D46 · Nada que se elija pierde su texto.** Además del resaltado se cerraron tres huecos que no salen en ninguna lista de tokens porque no los pinta nuestro CSS: las opciones de los desplegables (las pinta el sistema con su propio azul), la selección de texto con el ratón, y el estado presionado de los botones. Los tres llevan ahora colores propios del tema.
+
+**D47 · Un campo del filtro admite varios valores. "Confianza baja o media" ya se puede pedir.** `QueryFilter` pasa a `OneOrMany<T>` y la comparación vive en una sola función, `matches()`. El chip lo lee con "o", los gráficos añaden y quitan valores sin tocar los demás, y el desplegable muestra "Varios: Baja o Media" cuando hay más de uno.
+
+**D48 · La pregunta admite varios lugares en la misma frase.** Antes había un solo `lugar` y "de Panamá, en San Francisco" acababa como una sola cadena que no era ni país ni ciudad, así que no devolvía nada. Ahora el modelo entrega `lugares`, una lista copiada de la pregunta, y **la categoría de cada uno la sigue decidiendo el código** contra el catálogo: país exacto, ciudad exacta, ciudad contenida, o sitio. La consulta que pidió Josué, "equipos de Panamá, en San Francisco, con confianza baja o media", resuelve a país=Panama, texto=San Francisco, confianza=[Baja, Media].
+
+**D49 · Tanda C del banco: cinco consultas de varias condiciones, puerta 4 de 5.** Mide lo que la versión anterior no sabía hacer. Evidencia en `bench/query-complejas.json`.
+
+**D50 · El modo Seguimiento tiene su guía de cómo pedirlo.** Igual que la nota tiene la suya. Dice qué entiende (lugar, modalidad, marca, edad, estatus, confianza, y qué tipo de respuesta se quiere), qué **no** entiende todavía (comparar dos periodos, fechas de visita, opiniones, datos que no están en la base) y trae un ejemplo completo pulsable. Existe para que nadie escriba a ciegas: cuando algo no entra en parámetros la aplicación no inventa, pero es mejor decirlo antes que después.
+
 ## Pendientes de decisión
 
 - Voz vive o muere (Anexo G del blueprint), con el audio real de Diego.

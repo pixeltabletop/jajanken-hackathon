@@ -32,25 +32,22 @@ export function whisperHint(customerNames: string[], brands: readonly string[] =
   return `Nota de campo de un tecnico de equipo medico. Hospitales: ${hospitals}. Marcas: ${brands.join(', ')}.`
 }
 
-// Interpretación de la pregunta en español (Bloque 4B). El modelo traduce la
-// pregunta a un plan de consulta y NADA más: los conteos los calcula
-// src/shared/query-engine.ts.
+// Interpretación de la pregunta en español. El modelo traduce la pregunta a un
+// plan de consulta y NADA más: los conteos los calcula query-engine.ts.
 //
-// Iteración 2 (la única que permite la puerta de calidad). La 1 daba 6/10 y 2/5.
-// Tres cambios, cada uno contra un fallo medido en bench/query-anexoF.json:
-//   1. El lugar deja de ser dos indices (pais y ciudad) y pasa a ser UNA cadena
-//      copiada de la pregunta. El modelo ya no decide la categoria, la decide
-//      resolvePlan() contra el catalogo. Mataba 4 de los 8 fallos: preguntar por
-//      "Panama" acababa como ciudad "Panama City", y "DemoCare Chiriqui" como
-//      ciudad "Chitre".
-//   2. La regla de la edad pone el numero de la pregunta por delante del atajo
-//      de "viejos": "mas de diez anios" salia como 8.
-//   3. La intencion trae disparadores explicitos: "cual es el estatus de" y
-//      "que X hay" son desglose, no conteo ni lista.
-// Ningun ejemplo es una consulta del banco.
+// Iteración 3 (2026-09-09, tarde). La 1 daba 6/10, la 2 llegó a 10/10 en el
+// Anexo F. Esta añade lo que Josué pidió probar: consultas de varias condiciones
+// como "equipos de Panamá, en San Francisco, con confianza baja o media". La
+// versión anterior las rompía por dos sitios:
+//   1. Un solo `lugar` para toda la frase: "Panamá" y "San Francisco" acababan
+//      pegados en una sola cadena que no era ni país ni ciudad. Ahora es
+//      `lugares`, una lista, y la categoría de cada uno la sigue decidiendo el
+//      código contra el catálogo, no el modelo.
+//   2. Una sola confianza y un solo estado: "baja o media" perdía la segunda.
+//      Ahora `c` y `s` son listas, y una lista vacía significa "cualquiera".
 export const PROMPT_QUERY_ES = `Traduces una pregunta en espanol sobre una base de equipo medico a un plan de consulta. Responde solo el JSON compacto.
-Claves: lugar, m modalidad, b marca, amin edad minima en anios, amax edad maxima, s estado, c confianza, i intencion, g agrupacion.
-Los indices usan -1 para "cualquiera".
+Claves: lugares, m modalidades, b marcas, amin edad minima en anios, amax edad maxima, s estados, c confianzas, i intencion, g agrupacion.
+lugares, m, b, s y c son LISTAS. Una lista vacia [] significa "cualquiera", y es lo que va cuando la pregunta no lo menciona. En la duda, deja la lista vacia.
 
 m: ${idx(MODALITIES)}
 b: ${idx(BRANDS)}
@@ -58,23 +55,26 @@ c: ${idx(CONFIDENCE)}
 s: ${idx(STATUSES)}
 i: 0=lista, enumera filas 1=conteo, una sola cifra 2=desglose por grupo
 g: -1=ninguna 0=pais 1=ciudad 2=sitio 3=modalidad 4=marca 5=estado 6=confianza 7=antiguedad
+   g es SIEMPRE la dimension por la que se pide el reparto, NUNCA el lugar donde se pide.
+   "el estatus de las unidades en Panama" -> g=5 (estatus), NO g=0. El lugar va en lugares.
 
 Reglas:
-1. lugar es el pais, la ciudad o el hospital que nombra la pregunta, copiado TAL CUAL de la pregunta, sin la preposicion. Si la pregunta no nombra ningun lugar, lugar=null. Nunca escribas un lugar que no aparezca en la pregunta.
-2. Edad con numero, manda el numero de la pregunta: "de mas de N anios" -> amin=N, amax=null. "de menos de N anios" -> amax=N, amin=null. "de N anios o mas" -> amin=N.
-2b. Edad sin ningun numero en la pregunta: "nuevos" o "recientes" -> amax=3 y amin=null. "viejos" o "antiguos" -> amin=8 y amax=null. Si la pregunta trae un numero, esta regla NO aplica.
-3. i=1 (conteo) solo si empieza por "cuantos" o "cuantas".
-4. i=2 (desglose) si la pregunta pide como se reparte un conjunto. Disparadores: "cual es el estatus de", "que marcas hay", "que modalidades hay", "que paises hay", "distribucion por", "reparto por", "como se reparte". Con i=2, g es SIEMPRE la dimension que nombra la pregunta, no el lugar:
-   estatus o estado -> g=5 · marcas -> g=4 · modalidades o tipos de equipo -> g=3 · paises -> g=0 · ciudades -> g=1 · sitios u hospitales -> g=2 · confianza -> g=6 · antiguedad o edad -> g=7.
-   El lugar de la pregunta va en "lugar", nunca en g. "cual es el estatus de las unidades en Brasil" es g=5 (estatus), no g=0.
-5. i=0 (lista) en los demas casos: "cuales", "dame", "muestra", "que hay en", "que tiene".
-6. Sinonimos de modalidad: resonancia/resonador/MRI=0, tomografo/scanner/CT=1, ecografo/ultrasonido=2, rayos x=3, monitores de paciente=4.
-7. "confianza baja"->c=2. "estimados"->s=2. "confirmados"->s=0. "reportados"->s=1.
-8. No pongas nada que la pregunta no diga. Sin marca preguntada, b=-1. Sin modalidad preguntada, m=-1.
+1. lugares es la lista de paises, ciudades u hospitales que NOMBRA la pregunta, cada uno copiado TAL CUAL y por separado, sin preposiciones. "de Panama, en San Francisco" -> ["Panama","San Francisco"]. Si no nombra ninguno, [].
+2. Nunca escribas un lugar que no aparezca en la pregunta. No completes el pais de una ciudad ni al reves.
+3. Edad con numero, manda el numero de la pregunta: "de mas de N anios" -> amin=N, amax=null. "de menos de N anios" -> amax=N, amin=null. "de N anios o mas" -> amin=N.
+3b. Edad sin ningun numero: "nuevos" o "recientes" -> amax=3 y amin=null. "viejos" o "antiguos" -> amin=8 y amax=null. Si la pregunta trae un numero, esta regla NO aplica.
+4. c y s recogen TODAS las opciones que pida la pregunta. "confianza baja o media" -> c=[2,1]. "baja" -> c=[2]. Sin mencion -> c=[].
+5. i=1 (conteo) solo si empieza por "cuantos" o "cuantas".
+6. i=2 (desglose) si la pregunta pide como se reparte un conjunto. Disparadores y su g:
+   "cual es el estatus de" -> i=2, g=5 - "que marcas hay" -> i=2, g=4 - "que modalidades hay" -> i=2, g=3 - "que paises" -> i=2, g=0 - "que ciudades" -> i=2, g=1 - "por confianza" -> i=2, g=6 - "por antiguedad" -> i=2, g=7 - "distribucion por X" o "reparto por X" o "como se reparte por X" -> i=2, g=X.
+7. i=0 (lista) en los demas casos: "cuales", "dame", "muestra", "que hay en", "que tiene".
+8. Sinonimos de modalidad: resonancia/resonador/MRI=0, tomografo/scanner/CT=1, ecografo/ultrasonido=2, rayos x=3, monitores de paciente=4.
+9. Solo se llena lo que la pregunta dice con sus palabras. Si no nombra marca, b=[]. Si no nombra tipo de equipo, m=[]. Si no habla de estado, s=[]. Si no habla de confianza, c=[]. Nunca deduzcas un valor "probable".
 
 Ejemplos (ninguno es una consulta del banco de medicion):
-"cuantos tomografos hay" -> {"lugar":null,"m":1,"b":-1,"amin":null,"amax":null,"s":-1,"c":-1,"i":1,"g":-1}
-"muestra los equipos Orion Imaging" -> {"lugar":null,"m":-1,"b":3,"amin":null,"amax":null,"s":-1,"c":-1,"i":0,"g":-1}
-"como se reparte la base por ciudad" -> {"lugar":null,"m":-1,"b":-1,"amin":null,"amax":null,"s":-1,"c":-1,"i":2,"g":1}
-"que modalidades hay en Peru" -> {"lugar":"Peru","m":-1,"b":-1,"amin":null,"amax":null,"s":-1,"c":-1,"i":2,"g":3}
-"equipos de mas de cuatro anios en el Hospital DemoCare Pines" -> {"lugar":"Hospital DemoCare Pines","m":-1,"b":-1,"amin":4,"amax":null,"s":-1,"c":-1,"i":0,"g":-1}`
+"cuantos tomografos hay" -> {"lugares":[],"m":[1],"b":[],"amin":null,"amax":null,"s":[],"c":[],"i":1,"g":-1}
+"muestra los equipos Orion Imaging" -> {"lugares":[],"m":[],"b":[3],"amin":null,"amax":null,"s":[],"c":[],"i":0,"g":-1}
+"como se reparte la base por ciudad" -> {"lugares":[],"m":[],"b":[],"amin":null,"amax":null,"s":[],"c":[],"i":2,"g":1}
+"que modalidades hay en Peru" -> {"lugares":["Peru"],"m":[],"b":[],"amin":null,"amax":null,"s":[],"c":[],"i":2,"g":3}
+"equipos reportados o estimados en Brasil, en Campinas" -> {"lugares":["Brasil","Campinas"],"m":[],"b":[],"amin":null,"amax":null,"s":[1,2],"c":[],"i":0,"g":-1}
+"equipos de mas de cuatro anios en el Hospital DemoCare Pines" -> {"lugares":["Hospital DemoCare Pines"],"m":[],"b":[],"amin":4,"amax":null,"s":[],"c":[],"i":0,"g":-1}`

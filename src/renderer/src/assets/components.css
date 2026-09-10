@@ -115,7 +115,7 @@ button.recording:hover:not(:disabled) { background: var(--bad); }
 .fixes ul { margin: 6px 0; padding-left: 18px; }
 .fixes li { margin-bottom: 2px; }
 .fixes s { color: var(--muted); }
-.fixes mark { background: var(--mark); padding: 0 3px; border-radius: 2px; font-weight: 700; }
+.fixes mark { background: var(--mark); color: var(--mark-ink); padding: 0 3px; border-radius: 2px; font-weight: 700; }
 
 /* ---------- botones y acciones ---------- */
 .actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
@@ -134,8 +134,8 @@ button.small { padding: 5px 10px; font-size: 12px; }
 
 /* ---------- evidencia ---------- */
 .evidence { background: var(--sky); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; line-height: 1.75; font-size: 14px; margin: 0 0 8px; }
-.evidence mark { background: var(--mark); color: var(--ink); padding: 1px 3px; border-radius: 2px; box-shadow: inset 0 -2px 0 var(--mark-edge); animation: markIn .4s var(--ease) both; }
-.evidence mark.invalid { background: var(--bad-bg); box-shadow: inset 0 -2px 0 var(--bad); }
+.evidence mark { background: var(--mark); color: var(--mark-ink); padding: 1px 3px; border-radius: 2px; box-shadow: inset 0 -2px 0 var(--mark-edge); animation: markIn .4s var(--ease) both; }
+.evidence mark.invalid { background: var(--bad-bg); color: var(--bad); box-shadow: inset 0 -2px 0 var(--bad); }
 @keyframes markIn { from { background: transparent; box-shadow: inset 0 0 0 transparent; } }
 .evidence-legend { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
 
@@ -317,7 +317,7 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
 .door {
   all: unset; box-sizing: border-box; cursor: pointer;
   display: flex; flex-direction: column; gap: 7px;
-  border: 2px solid var(--line); border-radius: 10px; padding: 24px 24px 20px;
+  border: 2px solid var(--line); border-radius: 10px; padding: 0 0 0;
   background: var(--surface); color: var(--ink);
   transition: border-color .18s var(--ease), background .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
 }
@@ -483,3 +483,103 @@ tr.evidence-row .evidence { margin-bottom: 6px; }
 }
 /* Dos temas, no tres: las miniaturas ocupan la mitad cada una. */
 .theme-cards { grid-template-columns: repeat(2, 1fr); }
+
+
+/* =========================================================================
+   Nada que se elija pierde su texto
+   Tres sitios donde el texto desaparecía al seleccionar y que no salían en la
+   lista de pares declarados: el resaltado de evidencia sobre tema oscuro, las
+   opciones de un desplegable (las pinta el sistema) y la selección de texto.
+   ========================================================================= */
+
+/* Opciones de los desplegables: el sistema las pinta con SU azul de resaltado,
+   y encima nuestro texto azul se perdía. Se fijan colores propios. */
+select { color-scheme: inherit; }
+option { background: var(--surface); color: var(--ink); }
+option:checked, option:hover { background: var(--sky); color: var(--on-sky); font-weight: 700; }
+
+/* Selección de texto con el ratón. */
+::selection { background: var(--primary-deep); color: var(--on-primary); }
+:root[data-theme='negro'] ::selection, :root[data-theme='azul'] ::selection { background: var(--primary); color: var(--on-primary); }
+
+/* Presionado: se oscurece el relleno, nunca el texto. */
+button.primary:active:not(:disabled) { background: var(--primary-deep); color: var(--on-primary); }
+button.ghost:active:not(:disabled), .door:active, .rep-kind:active, .theme-card:active, .bar-btn:active {
+  background: var(--sky); color: var(--on-sky);
+}
+
+/* =========================================================================
+   Acceso y selector rediseñado
+   ========================================================================= */
+
+/* ---------- acceso ---------- */
+.access {
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; background: var(--page); padding: 24px;
+  animation: modeIn .24s var(--ease) both;
+}
+.access-card {
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column; gap: 4px; align-items: stretch;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 30px 30px 26px; box-shadow: 0 8px 30px rgb(var(--shadow-rgb) / 10%);
+}
+.access-card .logo { align-self: center; margin-bottom: 10px; }
+.access-card h1 { text-align: center; font-size: 30px; margin: 0; color: var(--primary-deep); }
+.access-sub { text-align: center; margin: 4px 0 20px; font-size: 13px; color: var(--muted); }
+.access-field { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 16px; }
+.access-field input {
+  width: 100%; margin-top: 5px; padding: 11px 13px; font-size: 15px;
+  border: 1px solid var(--field-line); border-radius: 6px;
+  background: var(--surface); color: var(--ink);
+}
+.access-field input:disabled { background: var(--surface-2); color: var(--muted); border-style: dashed; cursor: not-allowed; }
+.access-hint { display: block; margin-top: 5px; font-size: 11.5px; font-weight: 400; line-height: 1.45; }
+.access-go { width: 100%; margin: 4px 0 0; padding: 12px; font-size: 15px; }
+.access-modo {
+  margin: 18px 0 0; font-size: 12px; line-height: 1.6;
+  color: var(--alert-ink); background: var(--alert-bg);
+  border-left: 3px solid var(--alert); border-radius: 0 6px 6px 0; padding: 10px 12px;
+}
+.access-base { margin: 12px 0 0; font-size: 12px; text-align: center; }
+.access-legal {
+  max-width: 640px; text-align: center; font-size: 12px; color: var(--muted); line-height: 1.7;
+}
+.access-legal b { color: var(--ink); }
+
+/* ---------- selector rediseñado ---------- */
+.home-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.home-head h2 { margin: 0; font-size: 24px; }
+.home-quien { margin: 0; font-size: 13px; }
+.home-quien b { color: var(--ink); }
+.door { gap: 0; padding: 0; overflow: hidden; }
+.door-top {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 22px 12px; border-bottom: 1px solid var(--line); width: 100%;
+  background: var(--surface-2);
+}
+.door-num {
+  width: 26px; height: 26px; border-radius: 50%; flex: none;
+  background: var(--primary); color: var(--on-primary);
+  font-size: 13px; font-weight: 700; line-height: 26px; text-align: center;
+}
+.door b { display: block; padding: 16px 22px 0; font-size: 23px; }
+.door-sub { display: block; padding: 7px 22px 0; }
+.door-list {
+  list-style: none; margin: 14px 0 0; padding: 0 22px; display: flex; flex-direction: column; gap: 6px;
+}
+.door-list li { position: relative; padding-left: 18px; font-size: 12.5px; color: var(--muted); }
+.door-list li::before {
+  content: ''; position: absolute; left: 0; top: 6px;
+  width: 8px; height: 8px; border-radius: 2px; background: var(--primary); opacity: .55;
+}
+.door-foot {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 18px; padding: 13px 22px; width: 100%;
+  border-top: 1px solid var(--line); background: var(--surface-2);
+}
+.door-go { margin: 0; }
+.door-listo { font-size: 11.5px; flex: 1; text-align: right; line-height: 1.4; }
+.door:hover .door-top, .door:hover .door-foot { background: var(--sky); }
+.door:hover .door-num { background: var(--primary-deep); }

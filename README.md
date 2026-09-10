@@ -36,11 +36,19 @@ npm run check                             # tipos + contraste medido en los tres
 npm run smoke                             # el motor sin Electron
 npm run bench:all                         # reproduce el banco de mediciones
 node scripts/e2e-cycle.mjs                # ciclo de registro contra la app viva
-node scripts/e2e-4b.mjs                   # verificación del Bloque 4B, 60 comprobaciones
+node scripts/e2e-4b.mjs                   # verificación del Bloque 4B contra la app viva
+node scripts/check-contrast-vivo.mjs      # contraste real, elemento por elemento, en los dos temas
 ```
 
 Si `npm run dev` dice "Electron uninstall", ver **D22** en `DECISIONES.md`: el
 binario se extrae a mano.
+
+## Acceso
+
+La aplicación abre con una pantalla de acceso que **no valida credenciales**: la
+casilla de contraseña está deshabilitada y así lo dice en pantalla. No hay
+usuarios ni sesión. Lo que sí se usa es el nombre, que queda como observador de
+cada registro y como solicitante de cada reporte.
 
 ## Panel interno
 

@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "problemas": [],
+  "results": [
+    {
+      "estado": "acceso",
+      "medidos": 12,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · inicio y registro",
+      "medidos": 55,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · base abierta y selector de columnas",
+      "medidos": 664,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · seguimiento",
+      "medidos": 578,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · guía de cómo pedirlo",
+      "medidos": 611,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · gráfico con una barra elegida",
+      "medidos": 105,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "blanco · nota abierta con la evidencia",
+      "medidos": 582,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · inicio y registro",
+      "medidos": 56,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · base abierta y selector de columnas",
+      "medidos": 664,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · seguimiento",
+      "medidos": 578,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · guía de cómo pedirlo",
+      "medidos": 611,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · gráfico con una barra elegida",
+      "medidos": 105,
+      "fallos": 0,
+      "malas": []
+    },
+    {
+      "estado": "negro · nota abierta con la evidencia",
+      "medidos": 582,
+      "fallos": 0,
+      "malas": []
+    }
+  ]
+}

@@ -11,12 +11,12 @@ import {
   MODALITY_LABEL_ES,
   MODALITY_SHORT_ES,
   STATUS_LABEL_ES,
-  type Brand,
+
   type Confidence,
   type Modality,
   type Status
 } from './catalog.ts'
-import type { Equipment, Observation, QueryFilter } from './types.ts'
+import type { Equipment, Observation, OneOrMany, QueryFilter } from './types.ts'
 
 export type QueryIntent = 'list' | 'count' | 'breakdown'
 export type GroupBy =
@@ -66,6 +66,25 @@ export function ageBand(a: number | null): AgeBand {
   if (a <= 3) return '0–3 años'
   if (a <= 7) return '4–7 años'
   return '8+ años'
+}
+
+/** Lista de valores de un campo del filtro, sea uno, varios o ninguno. */
+export function listOf<T>(f: OneOrMany<T>): T[] {
+  return f === null || f === undefined ? [] : Array.isArray(f) ? f : [f]
+}
+
+/** Si el campo filtra algo. Un array vacio no filtra nada. */
+export const isSet = <T>(f: OneOrMany<T>): boolean => listOf(f).length > 0
+
+/**
+ * Criterio unico de comparacion. Varios valores significan "o": un equipo de
+ * confianza media casa con ['Low', 'Medium'].
+ */
+export function matches<T>(f: OneOrMany<T>, value: T | null, eq: (a: T, b: T) => boolean = (a, b) => a === b): boolean {
+  const vals = listOf(f)
+  if (!vals.length) return true
+  if (value === null) return false
+  return vals.some((v) => eq(v, value))
 }
 
 export const norm = (s: string | null | undefined): string =>
@@ -134,24 +153,27 @@ export function applyFilterAudited(hits: EquipmentHit[], f: QueryFilter): Filter
     miss.set(field, { rows: cur.rows + 1, equipment: cur.equipment + h.eq.quantity })
   }
 
+  const igualTexto = (a: string, b: string): boolean => norm(a) === norm(b)
+  const contieneTexto = (a: string, b: string): boolean => norm(b).includes(norm(a))
+
   for (const h of hits) {
     const { obs, eq, site } = h
     // Campos vacíos primero: se cuentan aparte en vez de desaparecer.
-    if (f.country && !obs.country) { note('country', h); continue }
-    if (f.city && !obs.city) { note('city', h); continue }
-    if (f.brand && !eq.brand) { note('brand', h); continue }
+    if (isSet(f.country) && !obs.country) { note('country', h); continue }
+    if (isSet(f.city) && !obs.city) { note('city', h); continue }
+    if (isSet(f.brand) && !eq.brand) { note('brand', h); continue }
     if ((f.minAgeYears !== null || f.maxAgeYears !== null) && eq.approxAgeYears === null) {
       note('age', h); continue
     }
 
-    if (f.country && norm(obs.country) !== norm(f.country)) continue
-    if (f.city && !norm(obs.city).includes(norm(f.city))) continue
-    if (f.modality && eq.modality !== f.modality) continue
-    if (f.brand && eq.brand !== f.brand) continue
+    if (!matches(f.country, obs.country, igualTexto)) continue
+    if (!matches(f.city, obs.city, contieneTexto)) continue
+    if (!matches(f.modality, eq.modality)) continue
+    if (!matches(f.brand, eq.brand)) continue
     if (f.minAgeYears !== null && (eq.approxAgeYears as number) < f.minAgeYears) continue
     if (f.maxAgeYears !== null && (eq.approxAgeYears as number) > f.maxAgeYears) continue
-    if (f.status && eq.status !== f.status) continue
-    if (f.confidence && eq.confidence !== f.confidence) continue
+    if (!matches(f.status, eq.status)) continue
+    if (!matches(f.confidence, eq.confidence)) continue
     if (f.textSearch) {
       // Búsqueda tolerante solo en el nombre del sitio, más la ciudad para
       // desambiguar. El resto de campos se filtra por catálogo, exacto.
@@ -172,11 +194,11 @@ export function applyFilter(hits: EquipmentHit[], f: QueryFilter): EquipmentHit[
 }
 
 export function isEmptyFilter(f: QueryFilter): boolean {
-  return Object.values(f).every((v) => v === null)
+  return countActive(f) === 0
 }
 
 export function countActive(f: QueryFilter): number {
-  return Object.values(f).filter((v) => v !== null).length
+  return Object.values(f).filter((v) => (Array.isArray(v) ? v.length > 0 : v !== null)).length
 }
 
 // ---------------------------------------------------------------- resumen
@@ -326,10 +348,16 @@ export interface FilterPart {
 /** El filtro activo en palabras, parte por parte. Alimenta el chip removible. */
 export function describeFilterParts(f: QueryFilter): FilterPart[] {
   const out: FilterPart[] = []
-  if (f.country) out.push({ field: 'country', text: `país: ${countryLabel(f.country)}` })
-  if (f.city) out.push({ field: 'city', text: `ciudad: ${f.city}` })
-  if (f.modality) out.push({ field: 'modality', text: `modalidad: ${MODALITY_LABEL_ES[f.modality]}` })
-  if (f.brand) out.push({ field: 'brand', text: `marca: ${f.brand}` })
+  // Varios valores se leen con "o": "confianza: Baja o Media".
+  const unir = (vs: string[]): string => (vs.length < 2 ? vs[0] : `${vs.slice(0, -1).join(', ')} o ${vs[vs.length - 1]}`)
+  const country = listOf(f.country)
+  const city = listOf(f.city)
+  const modality = listOf(f.modality)
+  const brand = listOf(f.brand)
+  if (country.length) out.push({ field: 'country', text: `país: ${unir(country.map(countryLabel))}` })
+  if (city.length) out.push({ field: 'city', text: `ciudad: ${unir(city)}` })
+  if (modality.length) out.push({ field: 'modality', text: `modalidad: ${unir(modality.map((m) => MODALITY_LABEL_ES[m]))}` })
+  if (brand.length) out.push({ field: 'brand', text: `marca: ${unir(brand)}` })
   if (f.minAgeYears !== null && f.maxAgeYears !== null) {
     out.push({ field: 'minAgeYears', text: `edad: ${f.minAgeYears}–${f.maxAgeYears} años` })
   } else if (f.minAgeYears !== null) {
@@ -337,8 +365,10 @@ export function describeFilterParts(f: QueryFilter): FilterPart[] {
   } else if (f.maxAgeYears !== null) {
     out.push({ field: 'maxAgeYears', text: `edad: hasta ${f.maxAgeYears} años` })
   }
-  if (f.status) out.push({ field: 'status', text: `estatus: ${STATUS_LABEL_ES[f.status]}` })
-  if (f.confidence) out.push({ field: 'confidence', text: `confianza: ${CONFIDENCE_LABEL_ES[f.confidence]}` })
+  const status = listOf(f.status)
+  const confidence = listOf(f.confidence)
+  if (status.length) out.push({ field: 'status', text: `estatus: ${unir(status.map((v) => STATUS_LABEL_ES[v]))}` })
+  if (confidence.length) out.push({ field: 'confidence', text: `confianza: ${unir(confidence.map((v) => CONFIDENCE_LABEL_ES[v]))}` })
   if (f.textSearch) out.push({ field: 'textSearch', text: `texto: "${f.textSearch}"` })
   return out
 }
@@ -400,11 +430,13 @@ export function toggleGroupValue(f: QueryFilter, by: Exclude<GroupBy, null>, key
     if (key === '4–7 años') return { ...f, minAgeYears: 4, maxAgeYears: 7 }
     return { ...f, minAgeYears: 8, maxAgeYears: null }
   }
-  const field: keyof QueryFilter =
-    by === 'facility' ? 'textSearch' : (by as 'country' | 'city' | 'modality' | 'brand' | 'status' | 'confidence')
-  const current = f[field]
   if (key === SIN_DATO) return f
-  return { ...f, [field]: current === key ? null : (key as Modality & Brand & Status & Confidence) }
+  const field = by === 'facility' ? 'textSearch' : (by as 'country' | 'city' | 'modality' | 'brand' | 'status' | 'confidence')
+  if (field === 'textSearch') return { ...f, textSearch: f.textSearch === key ? null : key }
+  // Con varios valores activos, el clic quita o anade el suyo sin tocar los demas.
+  const vals = listOf(f[field] as OneOrMany<string>)
+  const next = vals.includes(key) ? vals.filter((v) => v !== key) : [...vals, key]
+  return { ...f, [field]: next.length === 0 ? null : next.length === 1 ? next[0] : next }
 }
 
 /** True si ese valor de grupo está activo en el filtro. Para `aria-pressed`. */
@@ -416,5 +448,5 @@ export function groupValueActive(f: QueryFilter, by: Exclude<GroupBy, null>, key
     return false
   }
   const field = by === 'facility' ? 'textSearch' : by
-  return f[field as keyof QueryFilter] === key
+  return listOf(f[field as keyof QueryFilter] as OneOrMany<string>).includes(key)
 }

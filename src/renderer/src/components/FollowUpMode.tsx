@@ -29,6 +29,7 @@ import { FilterBar } from './FilterBar.tsx'
 import { InterpretChip, type PartOrigin } from './InterpretChip.tsx'
 import { KpiRow } from './KpiRow.tsx'
 import { QueryBar } from './QueryBar.tsx'
+import { QueryGuide } from './QueryGuide.tsx'
 import { ResultCharts } from './ResultCharts.tsx'
 
 interface Props {
@@ -136,6 +137,8 @@ export function FollowUpMode({
   return (
     <section className="follow" aria-labelledby="follow-h">
       <h2 id="follow-h">Seguimiento y reportes</h2>
+
+      <QueryGuide onUseExample={(q) => { setQuestion(q); void onAsk(q) }} />
 
       <QueryBar
         value={question} onValue={setQuestion} onAsk={onAsk}

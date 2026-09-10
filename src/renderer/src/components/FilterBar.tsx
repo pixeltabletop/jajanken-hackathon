@@ -1,8 +1,10 @@
 import { useState, type JSX } from 'react'
 import { BRANDS, CONFIDENCE, CONFIDENCE_LABEL_ES, MODALITIES, MODALITY_LABEL_ES, STATUSES, STATUS_LABEL_ES } from '../../../shared/catalog.ts'
+import type { Confidence, Modality, Status } from '../../../shared/catalog.ts'
 import { COLUMNS, countryLabel, type ColumnKey } from '../../../shared/columns.ts'
 import type { QueryFilter } from '../../../shared/types.ts'
 import { EMPTY_FILTER } from '../lib/filter.ts'
+import { listOf } from '../../../shared/query-engine.ts'
 
 interface Props {
   filter: QueryFilter
@@ -14,6 +16,25 @@ interface Props {
   shown: number
   total: number
 }
+
+
+/**
+ * Un campo del filtro puede traer varios valores ("confianza baja o media"), y
+ * un desplegable solo sabe mostrar uno. Cuando hay varios se muestra una opcion
+ * sintetica que los declara; elegir cualquier otra cosa reemplaza el conjunto, y
+ * quitarlos por separado se hace desde el chip de interpretacion.
+ */
+function selValue<T extends string>(v: T | T[] | null): string {
+  const vs = listOf(v)
+  return vs.length > 1 ? '__varios__' : (vs[0] ?? '')
+}
+
+function variosLabel<T extends string>(v: T | T[] | null, etiqueta: (x: T) => string): string | null {
+  const vs = listOf(v)
+  return vs.length > 1 ? 'Varios: ' + vs.map(etiqueta).join(' o ') : null
+}
+
+const limpio = (v: string): string => (v === '__varios__' ? '' : v)
 
 export function FilterBar({ filter, onFilter, countries, cities, columns, onColumns, shown, total }: Props): JSX.Element {
   const [openCols, setOpenCols] = useState(false)
@@ -63,37 +84,43 @@ export function FilterBar({ filter, onFilter, countries, cities, columns, onColu
 
       <div className="fb-row fb-selects">
         <label>País
-          <select value={filter.country ?? ''} onChange={(e) => set({ country: e.target.value || null })}>
+          <select value={selValue(filter.country)} onChange={(e) => set({ country: limpio(e.target.value) || null })}>
+            {variosLabel(filter.country, (c: string) => countryLabel(c)) && <option value="__varios__">{variosLabel(filter.country, (c: string) => countryLabel(c))}</option>}
             <option value="">Todos</option>
             {countries.map((c) => <option key={c} value={c}>{countryLabel(c)}</option>)}
           </select>
         </label>
         <label>Ciudad
-          <select value={filter.city ?? ''} onChange={(e) => set({ city: e.target.value || null })}>
+          <select value={selValue(filter.city)} onChange={(e) => set({ city: limpio(e.target.value) || null })}>
+            {variosLabel(filter.city, (c: string) => c) && <option value="__varios__">{variosLabel(filter.city, (c: string) => c)}</option>}
             <option value="">Todas</option>
             {cities.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
         <label>Modalidad
-          <select value={filter.modality ?? ''} onChange={(e) => set({ modality: (e.target.value || null) as QueryFilter['modality'] })}>
+          <select value={selValue(filter.modality)} onChange={(e) => set({ modality: (limpio(e.target.value) || null) as QueryFilter['modality'] })}>
+            {variosLabel(filter.modality, (m: string) => MODALITY_LABEL_ES[m as Modality]) && <option value="__varios__">{variosLabel(filter.modality, (m: string) => MODALITY_LABEL_ES[m as Modality])}</option>}
             <option value="">Todas</option>
             {MODALITIES.map((m) => <option key={m} value={m}>{MODALITY_LABEL_ES[m]}</option>)}
           </select>
         </label>
         <label>Marca
-          <select value={filter.brand ?? ''} onChange={(e) => set({ brand: (e.target.value || null) as QueryFilter['brand'] })}>
+          <select value={selValue(filter.brand)} onChange={(e) => set({ brand: (limpio(e.target.value) || null) as QueryFilter['brand'] })}>
+            {variosLabel(filter.brand, (b: string) => b) && <option value="__varios__">{variosLabel(filter.brand, (b: string) => b)}</option>}
             <option value="">Todas</option>
             {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </label>
         <label>Estado
-          <select value={filter.status ?? ''} onChange={(e) => set({ status: (e.target.value || null) as QueryFilter['status'] })}>
+          <select value={selValue(filter.status)} onChange={(e) => set({ status: (limpio(e.target.value) || null) as QueryFilter['status'] })}>
+            {variosLabel(filter.status, (v: string) => STATUS_LABEL_ES[v as Status]) && <option value="__varios__">{variosLabel(filter.status, (v: string) => STATUS_LABEL_ES[v as Status])}</option>}
             <option value="">Todos</option>
             {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL_ES[s]}</option>)}
           </select>
         </label>
         <label>Confianza
-          <select value={filter.confidence ?? ''} onChange={(e) => set({ confidence: (e.target.value || null) as QueryFilter['confidence'] })}>
+          <select value={selValue(filter.confidence)} onChange={(e) => set({ confidence: (limpio(e.target.value) || null) as QueryFilter['confidence'] })}>
+            {variosLabel(filter.confidence, (v: string) => CONFIDENCE_LABEL_ES[v as Confidence]) && <option value="__varios__">{variosLabel(filter.confidence, (v: string) => CONFIDENCE_LABEL_ES[v as Confidence])}</option>}
             <option value="">Todas</option>
             {CONFIDENCE.map((c) => <option key={c} value={c}>{CONFIDENCE_LABEL_ES[c]}</option>)}
           </select>

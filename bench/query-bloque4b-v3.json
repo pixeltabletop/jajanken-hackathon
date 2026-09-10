@@ -4,9 +4,9 @@
   "total": 5,
   "gate": 4,
   "passes": true,
-  "msMin": 11404,
-  "msMax": 12245,
-  "msMedian": 11644,
+  "msMin": 11197,
+  "msMax": 11877,
+  "msMedian": 11504,
   "context": {
     "countries": [
       "Argentina",
@@ -49,17 +49,15 @@
       "question": "cuál es el estatus de las unidades en Panamá",
       "ok": true,
       "problems": [],
-      "ms": 11644,
+      "ms": 11647,
       "raw": {
-        "lugares": [
-          "Panamá"
-        ],
-        "m": [],
-        "b": [],
-        "amin": null,
+        "lugar": "Panamá",
+        "m": -1,
+        "b": -1,
+        "amin": -1,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 2,
         "g": 5
       },
@@ -91,19 +89,17 @@
       "question": "cuántas son de baja confianza",
       "ok": true,
       "problems": [],
-      "ms": 11476,
+      "ms": 11246,
       "raw": {
-        "lugares": [],
-        "m": [],
-        "b": [],
-        "amin": null,
+        "lugar": null,
+        "m": -1,
+        "b": -1,
+        "amin": -1,
         "amax": null,
-        "s": [],
-        "c": [
-          2
-        ],
+        "s": -1,
+        "c": 2,
         "i": 1,
-        "g": 6
+        "g": -1
       },
       "plan": {
         "filter": {
@@ -133,19 +129,17 @@
       "question": "cuáles son las de baja confianza",
       "ok": true,
       "problems": [],
-      "ms": 11404,
+      "ms": 11197,
       "raw": {
-        "lugares": [],
-        "m": [],
-        "b": [],
-        "amin": null,
-        "amax": null,
-        "s": [],
-        "c": [
-          2
-        ],
+        "lugar": null,
+        "m": -1,
+        "b": -1,
+        "amin": -1,
+        "amax": -1,
+        "s": -1,
+        "c": 2,
         "i": 0,
-        "g": 6
+        "g": -1
       },
       "plan": {
         "filter": {
@@ -175,17 +169,15 @@
       "question": "dame los ecógrafos de más de siete años",
       "ok": true,
       "problems": [],
-      "ms": 11797,
+      "ms": 11504,
       "raw": {
-        "lugares": [],
-        "m": [
-          2
-        ],
-        "b": [],
+        "lugar": null,
+        "m": 2,
+        "b": -1,
         "amin": 7,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
         "g": 7
       },
@@ -220,19 +212,17 @@
         "intención=list, se esperaba breakdown",
         "agrupación=null, se esperaba brand"
       ],
-      "ms": 12245,
+      "ms": 11877,
       "raw": {
-        "lugares": [
-          "Ciudad de Panamá"
-        ],
-        "m": [],
-        "b": [],
-        "amin": null,
+        "lugar": "Ciudad de Panamá",
+        "m": -1,
+        "b": -1,
+        "amin": -1,
         "amax": null,
-        "s": [],
-        "c": [],
+        "s": -1,
+        "c": -1,
         "i": 0,
-        "g": 1
+        "g": 4
       },
       "plan": {
         "filter": {

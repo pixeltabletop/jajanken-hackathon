@@ -119,6 +119,22 @@ try {
   const net = await js(`performance.getEntriesByType('resource').filter(r => !/^(file|data|blob)/.test(r.name) && !/localhost:5173/.test(r.name)).map(r => r.name).slice(0,5)`)
   check(net.length === 0, 'nada se descarga de la red: todo viaja en el paquete', net.join(' ') || 'ninguna petición externa')
 
+  // ---- 1b. acceso -------------------------------------------------------
+  console.log('\n--- 1b. acceso ---')
+  const hayAcceso = await waitFor(`!!document.querySelector('.access') || !!document.querySelector('.theme-first')`, 'acceso o elección de tema', 15000, 300)
+  if (await js(`!!document.querySelector('.access')`)) {
+    check(true, 'aparece la pantalla de acceso', `${hayAcceso} ms tras el arranque`)
+    check(await js(`document.getElementById('acc-pass').disabled === true`), 'la casilla de contraseña está deshabilitada: no se piden credenciales')
+    const aviso = await js(`(document.querySelector('.access-modo')||{}).textContent||''`)
+    check(/Modo prueba/.test(aviso) && /no valida|No hay usuarios/.test(aviso), 'dice en pantalla que no valida credenciales', aviso.slice(0, 70))
+    check(/No es un producto oficial de Philips/.test(await js(`(document.querySelector('.access-legal')||{}).textContent||''`)), 'el pie legal también está en el acceso')
+    await shot('4b-02-acceso')
+    await setInput('#acc-user', `Auditoría ${STAMP}`)
+    await sleep(300)
+    check((await clickText('Entrar')) === true, 'se entra con el nombre escrito')
+    await sleep(900)
+  }
+
   // el paso de tema solo sale en un perfil limpio; si sale, se cierra
   if (await js(`!!document.querySelector('.theme-first')`)) {
     check(true, 'primera ejecución: aparece el paso de elección de tema')
@@ -138,6 +154,9 @@ try {
   check(focusRing.foco, 'la tarjeta recibe foco de teclado', `contorno ${focusRing.outline}`)
   await shot('4b-03-selector-foco')
   check(await js(`document.querySelectorAll('.stats article').length === 4`), 'la fila de métricas se ve antes de elegir')
+  const saludo = await js(`(document.querySelector('.home-quien')||{}).textContent||''`)
+  check(saludo.includes(STAMP), 'el nombre del acceso llega al selector', saludo.trim().slice(0, 60))
+  check(await js(`document.querySelectorAll('.door-list li').length >= 6`), 'cada puerta dice qué se hace dentro')
   summary.doorsHome = await js(`[...document.querySelectorAll('.door b')].map(b=>b.textContent.trim())`)
 
   // ---- 3. puerta izquierda: el ciclo sigue igual (punto 2) ----------------
@@ -228,6 +247,35 @@ try {
   check(suma.suma === suma.kpi, 'los números del desglose suman el total de equipos', `${suma.desglose.join('+')} = ${suma.suma} · KPI ${suma.kpi}`)
   summary.breakdown = suma
   await shot('4b-05-seguimiento')
+
+  // ---- 5b. guía de cómo pedirlo y consulta de varias condiciones --------
+  console.log('\n--- 5b. guía y consulta compleja ---')
+  check(await js(`!!document.querySelector('.follow .guide-toggle')`), 'el modo Seguimiento trae su guía de cómo pedirlo')
+  await js(`(() => { const b=[...document.querySelectorAll('.guide-toggle')].find(x=>/Cómo pedirlo/.test(x.textContent)); if (b) b.click() })()`)
+  await sleep(500)
+  const guia = await js(`(document.querySelector('.follow .guide-body')||{}).textContent||''`)
+  check(/Confianza/.test(guia) && /Todavía no entiende/.test(guia), 'la guía dice qué entiende y qué no')
+  await shot('4b-05b-guia-consulta')
+  await js(`(() => { const b=[...document.querySelectorAll('.guide-toggle')].find(x=>/Cómo pedirlo/.test(x.textContent)); if (b) b.click() })()`)
+  await sleep(300)
+
+  const COMPLEJA = 'equipos de Panamá, en San Francisco, con confianza baja o media'
+  await setInput('#q-input', COMPLEJA)
+  await sleep(500)
+  check((await clickText('Preguntar')) === true, 'se lanza una consulta de varias condiciones')
+  await waitFor(`[...document.querySelectorAll('.ichip-text')].some(c => /confianza/.test(c.textContent))`, 'la interpretación de la consulta compleja', 90000, 800)
+  const chipC = await js(`[...document.querySelectorAll('.ichip-text')].map(c=>c.textContent.trim())`)
+  check(chipC.some((c) => /país/.test(c)), 'reconoce el país', chipC.join(' · '))
+  check(chipC.some((c) => /texto|sitio/.test(c)), 'y el sitio, que es un segundo lugar en la misma frase')
+  check(chipC.some((c) => /confianza:.*o /.test(c)), 'y las dos confianzas con "o"', chipC.find((c) => /confianza/.test(c)) ?? '')
+  summary.chipComplejo = chipC
+  await shot('4b-05c-consulta-compleja')
+  await js(`(() => { const b=[...document.querySelectorAll('.interp-parts .ghost')].find(x=>/Limpiar/.test(x.textContent)); if (b) b.click() })()`)
+  await sleep(400)
+  await setInput('#q-input', 'cuál es el estatus de las unidades en Panamá')
+  await sleep(500)
+  await clickText('Preguntar')
+  await waitFor(`[...document.querySelectorAll('.ichip-text')].some(c => /desglose/.test(c.textContent))`, 'volver al desglose', 90000, 800)
 
   // ---- 6. pestañas (punto 15) --------------------------------------------
   console.log('\n--- 6. pestañas ---')
@@ -371,6 +419,9 @@ try {
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
   await send('Page.reload', { ignoreCache: false })
   await sleep(6500)
+  // Tras recargar vuelve a salir el acceso: se atraviesa igual que al principio.
+  await js(`(() => { const b=[...document.querySelectorAll('.access button')].find(x=>/Entrar/.test(x.textContent)); if(b) b.click() })()`)
+  await sleep(700)
   await js(`(() => { const b=document.querySelector('.theme-first button.primary'); if(b) b.click() })()`)
   await sleep(500)
   const rm = await js(`(() => {

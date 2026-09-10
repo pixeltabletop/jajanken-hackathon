@@ -1,0 +1,292 @@
+{
+  "set": "complejas",
+  "hits": 5,
+  "total": 5,
+  "gate": 4,
+  "passes": true,
+  "msMin": 11517,
+  "msMax": 12389,
+  "msMedian": 11962,
+  "context": {
+    "countries": [
+      "Argentina",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Dominican Republic",
+      "Ecuador",
+      "Mexico",
+      "Panama",
+      "Peru"
+    ],
+    "cities": [
+      "Arraiján",
+      "Bogota",
+      "Buenos Aires",
+      "Campinas",
+      "Chitré",
+      "Ciudad de Panamá",
+      "Colón",
+      "David",
+      "La Chorrera",
+      "Lima",
+      "Medellin",
+      "Mexico City",
+      "Monterrey",
+      "Panama City",
+      "Penonomé",
+      "Quito",
+      "San Jose",
+      "San Miguelito",
+      "Santiago",
+      "Santo Domingo",
+      "Sao Paulo"
+    ]
+  },
+  "rows": [
+    {
+      "question": "equipos de Panamá, en San Francisco, con confianza baja o media",
+      "ok": true,
+      "problems": [],
+      "ms": 12389,
+      "raw": {
+        "lugares": [
+          "Panamá",
+          "San Francisco"
+        ],
+        "m": [],
+        "b": [],
+        "amin": null,
+        "amax": null,
+        "s": [],
+        "c": [
+          1,
+          2
+        ],
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": "Panama",
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": [
+            "Medium",
+            "Low"
+          ],
+          "textSearch": "San Francisco"
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [
+        "\"San Francisco\" no es un país ni una ciudad de la base: se busca como sitio"
+      ],
+      "answer": "Con país: Panamá · confianza: Media o Baja · texto: \"San Francisco\": 1 equipo registrado en 1 sitio, sobre 1 observación. Se enumeran 1 fila de equipo.",
+      "counts": {
+        "equipment": 1,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "ecógrafos reportados o estimados en Panamá de más de cuatro años",
+      "ok": true,
+      "problems": [],
+      "ms": 12075,
+      "raw": {
+        "lugares": [
+          "Panamá"
+        ],
+        "m": [
+          2
+        ],
+        "b": [],
+        "amin": 4,
+        "amax": null,
+        "s": [
+          1,
+          2
+        ],
+        "c": [],
+        "i": 0,
+        "g": 7
+      },
+      "plan": {
+        "filter": {
+          "country": "Panama",
+          "city": null,
+          "modality": "Ultrasound",
+          "brand": null,
+          "minAgeYears": 4,
+          "maxAgeYears": null,
+          "status": [
+            "Reported",
+            "Estimated"
+          ],
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (país: Panamá · modalidad: Ecografía · edad: 4 años o más · estatus: Reportado o Estimado). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "cuántos equipos hay en Brasil y en México",
+      "ok": true,
+      "problems": [],
+      "ms": 11614,
+      "raw": {
+        "lugares": [
+          "Brasil",
+          "México"
+        ],
+        "m": [],
+        "b": [],
+        "amin": null,
+        "amax": null,
+        "s": [],
+        "c": [],
+        "i": 1,
+        "g": 0
+      },
+      "plan": {
+        "filter": {
+          "country": [
+            "Brazil",
+            "Mexico"
+          ],
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "count",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con país: Brasil o México: 20 equipos registrados en 4 sitios, sobre 4 observaciones.",
+      "counts": {
+        "equipment": 20,
+        "rows": 7,
+        "sites": 4,
+        "observations": 4
+      }
+    },
+    {
+      "question": "tomógrafos NovaMed de confianza alta o media",
+      "ok": true,
+      "problems": [],
+      "ms": 11962,
+      "raw": {
+        "lugares": [],
+        "m": [
+          1
+        ],
+        "b": [
+          0
+        ],
+        "amin": null,
+        "amax": null,
+        "s": [],
+        "c": [
+          0,
+          1
+        ],
+        "i": 2,
+        "g": 4
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "CT",
+          "brand": "NovaMed",
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": [
+            "High",
+            "Medium"
+          ],
+          "textSearch": null
+        },
+        "intent": "breakdown",
+        "groupBy": "brand"
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (modalidad: Tomografía · marca: NovaMed · confianza: Alta o Media). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "equipos confirmados o reportados de menos de tres años",
+      "ok": true,
+      "problems": [],
+      "ms": 11517,
+      "raw": {
+        "lugares": [],
+        "m": [],
+        "b": [],
+        "amin": null,
+        "amax": 3,
+        "s": [
+          0,
+          1
+        ],
+        "c": [],
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": 3,
+          "status": [
+            "Confirmed",
+            "Reported"
+          ],
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con edad: hasta 3 años · estatus: Confirmado o Reportado: 13 equipos registrados en 5 sitios, sobre 5 observaciones. Se enumeran 5 filas de equipo.",
+      "counts": {
+        "equipment": 13,
+        "rows": 5,
+        "sites": 5,
+        "observations": 5
+      }
+    }
+  ]
+}

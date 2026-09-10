@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-09T23:59:30.276Z",
+  "at": "2026-09-10T02:05:54.252Z",
   "sets": [
     {
       "set": "anexoF",
@@ -7,9 +7,9 @@
       "total": 10,
       "gate": 7,
       "passes": true,
-      "msMin": 10933,
-      "msMax": 11919,
-      "msMedian": 11416
+      "msMin": 11208,
+      "msMax": 11962,
+      "msMedian": 11479
     },
     {
       "set": "bloque4b",
@@ -17,9 +17,19 @@
       "total": 5,
       "gate": 4,
       "passes": true,
-      "msMin": 11197,
-      "msMax": 11877,
-      "msMedian": 11504
+      "msMin": 11404,
+      "msMax": 12245,
+      "msMedian": 11644
+    },
+    {
+      "set": "complejas",
+      "hits": 5,
+      "total": 5,
+      "gate": 4,
+      "passes": true,
+      "msMin": 11517,
+      "msMax": 12389,
+      "msMedian": 11962
     }
   ],
   "passes": true

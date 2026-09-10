@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "total": 59,
+  "total": 72,
   "failed": 0,
   "results": [
     {
@@ -26,17 +26,42 @@
     {
       "ok": true,
       "label": "Esc antes del segundo 5 no salta el arranque",
-      "detail": "1.7 s desde la recarga"
+      "detail": "1.8 s desde la recarga"
     },
     {
       "ok": true,
       "label": "el arranque dura al menos 5 segundos",
-      "detail": "5.8 s"
+      "detail": "5.9 s"
     },
     {
       "ok": true,
-      "label": "nada se descarga de la red: el vídeo viaja en el paquete",
+      "label": "nada se descarga de la red: todo viaja en el paquete",
       "detail": "ninguna petición externa"
+    },
+    {
+      "ok": true,
+      "label": "aparece la pantalla de acceso",
+      "detail": "4 ms tras el arranque"
+    },
+    {
+      "ok": true,
+      "label": "la casilla de contraseña está deshabilitada: no se piden credenciales",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "dice en pantalla que no valida credenciales",
+      "detail": "Modo prueba. No hay usuarios ni sesión: cualquiera que abra la aplicac"
+    },
+    {
+      "ok": true,
+      "label": "el pie legal también está en el acceso",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "se entra con el nombre escrito",
+      "detail": ""
     },
     {
       "ok": true,
@@ -61,6 +86,16 @@
     {
       "ok": true,
       "label": "la fila de métricas se ve antes de elegir",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el nombre del acceso llega al selector",
+      "detail": "Entraste como Auditoría 02255. Todo lo que registres queda a"
+    },
+    {
+      "ok": true,
+      "label": "cada puerta dice qué se hace dentro",
       "detail": ""
     },
     {
@@ -171,12 +206,42 @@
     {
       "ok": true,
       "label": "la frase redactada responde con cifras",
-      "detail": "Con país: Panamá: 56 equipos registrados en 14 sitios, sobre 14 observaciones. Por estatus: Reportado 32, Conf"
+      "detail": "Con país: Panamá: 56 equipos registrados en 14 sitios, sobre 14 observaciones. Por estatus: Reportado 36, Esti"
     },
     {
       "ok": true,
       "label": "los números del desglose suman el total de equipos",
-      "detail": "32+12+12 = 56 · KPI 56"
+      "detail": "36+12+8 = 56 · KPI 56"
+    },
+    {
+      "ok": true,
+      "label": "el modo Seguimiento trae su guía de cómo pedirlo",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la guía dice qué entiende y qué no",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "se lanza una consulta de varias condiciones",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "reconoce el país",
+      "detail": "país: Panamá · confianza: Media o Baja · texto: \"San Francisco\""
+    },
+    {
+      "ok": true,
+      "label": "y el sitio, que es un segundo lugar en la misma frase",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "y las dos confianzas con \"o\"",
+      "detail": "confianza: Media o Baja"
     },
     {
       "ok": true,
@@ -256,7 +321,7 @@
     {
       "ok": true,
       "label": "el PDF de la consulta se genera",
-      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-01-01.pdf"
+      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-02-13.pdf"
     },
     {
       "ok": true,
@@ -300,26 +365,31 @@
     }
   ],
   "summary": {
-    "stamp": "01067",
-    "site": "Policlínica DemoCare Prueba 01067",
-    "splashMs": 5830,
+    "stamp": "02255",
+    "site": "Policlínica DemoCare Prueba 02255",
+    "splashMs": 5866,
     "doorsHome": [
       "Registrar equipos",
       "Seguimiento y reportes"
     ],
-    "extractMs": 14797,
+    "extractMs": 15662,
     "gemmaReadyMs": 3,
-    "queryMs": 31853,
+    "queryMs": 24822,
     "breakdown": {
       "desglose": [
-        32,
+        36,
         12,
-        12
+        8
       ],
       "suma": 56,
       "kpi": 56
     },
-    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-01-01.pdf",
+    "chipComplejo": [
+      "país: Panamá",
+      "confianza: Media o Baja",
+      "texto: \"San Francisco\""
+    ],
+    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-02-13.pdf",
     "tema_negro": {
       "fondo": "rgb(20, 22, 25)",
       "texto": "rgb(244, 246, 248)"

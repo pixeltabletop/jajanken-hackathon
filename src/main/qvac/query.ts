@@ -37,36 +37,39 @@ export interface QueryContext {
 export const QUERY_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['lugar', 'm', 'b', 'amin', 'amax', 's', 'c', 'i', 'g'],
+  required: ['lugares', 'm', 'b', 'amin', 'amax', 's', 'c', 'i', 'g'],
   properties: {
-    lugar: { type: ['string', 'null'] },
-    m: { type: 'integer', minimum: -1, maximum: MODALITIES.length - 1 },
-    b: { type: 'integer', minimum: -1, maximum: BRANDS.length - 1 },
+    lugares: { type: 'array', maxItems: 4, items: { type: 'string' } },
+    m: { type: 'array', maxItems: 4, items: { type: 'integer', minimum: 0, maximum: MODALITIES.length - 1 } },
+    b: { type: 'array', maxItems: 4, items: { type: 'integer', minimum: 0, maximum: BRANDS.length - 1 } },
     amin: { type: ['number', 'null'] },
     amax: { type: ['number', 'null'] },
-    s: { type: 'integer', minimum: -1, maximum: STATUSES.length - 1 },
-    c: { type: 'integer', minimum: -1, maximum: CONFIDENCE.length - 1 },
+    s: { type: 'array', maxItems: 4, items: { type: 'integer', minimum: 0, maximum: STATUSES.length - 1 } },
+    c: { type: 'array', maxItems: 3, items: { type: 'integer', minimum: 0, maximum: CONFIDENCE.length - 1 } },
     i: { type: 'integer', minimum: 0, maximum: 2 },
     g: { type: 'integer', minimum: -1, maximum: 7 }
   }
 } as const
 
 const CompactPlan = z.object({
-  lugar: z.string().nullable(),
-  m: z.number().int().min(-1).max(MODALITIES.length - 1),
-  b: z.number().int().min(-1).max(BRANDS.length - 1),
+  lugares: z.array(z.string()).max(4),
+  m: z.array(z.number().int().min(0).max(MODALITIES.length - 1)).max(4),
+  b: z.array(z.number().int().min(0).max(BRANDS.length - 1)).max(4),
   amin: z.number().nullable(),
   amax: z.number().nullable(),
-  s: z.number().int().min(-1).max(STATUSES.length - 1),
-  c: z.number().int().min(-1).max(CONFIDENCE.length - 1),
+  s: z.array(z.number().int().min(0).max(STATUSES.length - 1)).max(4),
+  c: z.array(z.number().int().min(0).max(CONFIDENCE.length - 1)).max(3),
   i: z.number().int().min(0).max(2),
   g: z.number().int().min(-1).max(7)
 })
 
-const at = <T>(arr: readonly T[], i: number): T | null => (i >= 0 && i < arr.length ? arr[i] : null)
-
 const clampAge = (v: number | null): number | null =>
   v === null || !Number.isFinite(v) || v < 0 || v > 60 ? null : Math.round(v)
+
+const uniq = <T>(xs: T[]): T[] => [...new Set(xs)]
+
+/** Ninguno, uno o varios: así lo espera QueryFilter. */
+const one = <T>(xs: T[]): T | T[] | null => (xs.length === 0 ? null : xs.length === 1 ? xs[0] : xs)
 
 export type PlaceKind = 'country' | 'city' | 'site' | 'none'
 
@@ -108,8 +111,22 @@ export function resolvePlan(raw: unknown, ctx: QueryContext): { plan: QueryPlan;
   const p = CompactPlan.parse(raw)
   const warnings: string[] = []
 
-  const place = resolvePlace(p.lugar, ctx)
-  if (place.kind === 'site') warnings.push(`"${place.value}" no es un país ni una ciudad de la base: se busca como sitio`)
+  // Cada lugar de la pregunta se clasifica por separado y contra el catálogo.
+  // Así "de Panamá, en San Francisco" da país + sitio, en vez de una sola cadena
+  // pegada que no es ninguna de las dos cosas.
+  const countries: string[] = []
+  const cities: string[] = []
+  const sites: string[] = []
+  for (const raw of p.lugares) {
+    const place = resolvePlace(raw, ctx)
+    if (place.kind === 'country' && place.value) countries.push(place.value)
+    else if (place.kind === 'city' && place.value) cities.push(place.value)
+    else if (place.kind === 'site' && place.value) {
+      sites.push(place.value)
+      warnings.push(`"${place.value}" no es un país ni una ciudad de la base: se busca como sitio`)
+    }
+  }
+  if (sites.length > 1) warnings.push('Solo se puede buscar un sitio por consulta; se usa el primero')
 
   let minAgeYears = clampAge(p.amin)
   let maxAgeYears = clampAge(p.amax)
@@ -130,15 +147,15 @@ export function resolvePlan(raw: unknown, ctx: QueryContext): { plan: QueryPlan;
     plan: {
       filter: {
         ...EMPTY_FILTER,
-        country: place.kind === 'country' ? place.value : null,
-        city: place.kind === 'city' ? place.value : null,
-        modality: at(MODALITIES, p.m),
-        brand: at(BRANDS, p.b),
+        country: one(countries),
+        city: one(cities),
+        modality: one(uniq(p.m).map((i) => MODALITIES[i])),
+        brand: one(uniq(p.b).map((i) => BRANDS[i])),
         minAgeYears,
         maxAgeYears,
-        status: at(STATUSES, p.s),
-        confidence: at(CONFIDENCE, p.c),
-        textSearch: place.kind === 'site' ? place.value : null
+        status: one(uniq(p.s).map((i) => STATUSES[i])),
+        confidence: one(uniq(p.c).map((i) => CONFIDENCE[i])),
+        textSearch: sites[0] ?? null
       },
       intent,
       groupBy

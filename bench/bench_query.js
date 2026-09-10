@@ -6,6 +6,7 @@
 // Dos tandas:
 //   A. las 10 consultas del Anexo F del blueprint (filtro).  Puerta: >= 7/10.
 //   B. 5 consultas de intención y agrupación del Bloque 4B.  Puerta: >= 4/5.
+//   C. 5 consultas de varias condiciones a la vez.            Puerta: >= 4/5.
 //
 // Se puntúa como la extracción: correcto si todos los campos no nulos esperados
 // coinciden y ningún campo fue inventado. Evidencia cruda en bench/query-*.json.
@@ -78,7 +79,7 @@ const ANEXO_F = [
   { q: 'registros con confianza baja', want: { confidence: 'Low' } },
   { q: 'equipos estimados, no confirmados', want: { status: 'Estimated' } },
   // "viejos" sin número: el criterio de aceptación admite 7 a 10 (nota del Anexo F).
-  { q: 'resonadores viejos en México', want: { modality: 'MR', country: 'Mexico', minAgeYears: [7, 10] } },
+  { q: 'resonadores viejos en México', want: { modality: 'MR', country: 'Mexico', minAgeYears: { rango: [7, 10] } } },
   { q: 'qué tiene el DemoCare Chiriquí', want: { textSearch: /chiriqui/ } },
   { q: 'monitores de paciente', want: { modality: 'Patient Monitoring' } }
 ]
@@ -88,11 +89,32 @@ const BLOQUE_4B = [
   { q: 'cuántas son de baja confianza', want: { confidence: 'Low' }, intent: 'count', groupBy: null },
   { q: 'cuáles son las de baja confianza', want: { confidence: 'Low' }, intent: 'list', groupBy: null },
   { q: 'dame los ecógrafos de más de siete años', want: { modality: 'Ultrasound', minAgeYears: 7 }, intent: 'list', groupBy: null },
-  { q: 'qué marcas hay en Ciudad de Panamá', want: { city: ['Ciudad de Panamá', 'Panama City'] }, intent: 'breakdown', groupBy: 'brand' }
+  { q: 'qué marcas hay en Ciudad de Panamá', want: { city: { unoDe: ['Ciudad de Panamá', 'Panama City'] } }, intent: 'breakdown', groupBy: 'brand' }
+]
+
+
+// Tanda C: varias condiciones en la misma frase. Es lo que pidio Josue el
+// 2026-09-09: "quiero saber los equipos de Panama, en San Francisco, que tengan
+// un estado de confianza bajo o medio". Mide dos cosas que la version anterior
+// no sabia hacer: nombrar dos lugares y admitir "o" en un campo.
+const COMPLEJAS = [
+  { q: 'equipos de Panamá, en San Francisco, con confianza baja o media',
+    want: { country: 'Panama', confidence: ['Low', 'Medium'], textSearch: /san francisco/ } },
+  { q: 'ecógrafos reportados o estimados en Panamá de más de cuatro años',
+    want: { country: 'Panama', modality: 'Ultrasound', status: ['Reported', 'Estimated'], minAgeYears: 4 } },
+  { q: 'cuántos equipos hay en Brasil y en México',
+    want: { country: ['Brazil', 'Mexico'] }, intent: 'count', groupBy: null },
+  { q: 'tomógrafos NovaMed de confianza alta o media',
+    want: { modality: 'CT', brand: 'NovaMed', confidence: ['High', 'Medium'] } },
+  { q: 'equipos confirmados o reportados de menos de tres años',
+    want: { status: ['Confirmed', 'Reported'], maxAgeYears: 3 } }
 ]
 
 const FIELDS = ['country', 'city', 'modality', 'brand', 'minAgeYears', 'maxAgeYears', 'status', 'confidence', 'textSearch']
-const norm = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+const norm = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+// Un campo puede traer uno o varios valores. Se comparan como conjuntos.
+const conjunto = (v) => (v === null || v === undefined ? [] : Array.isArray(v) ? v.map(norm).sort() : [norm(v)])
+const mismoConjunto = (a, b) => a.length === b.length && a.every((x, i) => x === b[i])
 
 function scoreFilter(want, got) {
   const problems = []
@@ -100,18 +122,20 @@ function scoreFilter(want, got) {
     const expected = want[f]
     const actual = got[f]
     if (expected === undefined) {
-      // No se pidió: cualquier valor aquí es un campo inventado.
-      if (actual !== null) problems.push(`inventó ${f}=${JSON.stringify(actual)}`)
+      // No se pidio: cualquier valor aqui es un campo inventado.
+      if (actual !== null && conjunto(actual).length) problems.push(`invento ${f}=${JSON.stringify(actual)}`)
       continue
     }
     if (expected instanceof RegExp) {
       if (!expected.test(norm(actual))) problems.push(`${f}=${JSON.stringify(actual)} no casa con ${expected}`)
-    } else if (Array.isArray(expected) && typeof expected[0] === 'number') {
-      const [lo, hi] = expected
-      if (typeof actual !== 'number' || actual < lo || actual > hi) problems.push(`${f}=${JSON.stringify(actual)} fuera de ${lo}–${hi}`)
-    } else if (Array.isArray(expected)) {
-      if (!expected.some((v) => norm(v) === norm(actual))) problems.push(`${f}=${JSON.stringify(actual)}, se esperaba uno de ${expected.join(' | ')}`)
-    } else if (norm(expected) !== norm(actual)) {
+    } else if (expected && expected.rango) {
+      const [lo, hi] = expected.rango
+      if (typeof actual !== 'number' || actual < lo || actual > hi) problems.push(`${f}=${JSON.stringify(actual)} fuera de ${lo}-${hi}`)
+    } else if (expected && expected.unoDe) {
+      if (!expected.unoDe.some((v) => norm(v) === norm(actual))) problems.push(`${f}=${JSON.stringify(actual)}, se esperaba uno de ${expected.unoDe.join(' | ')}`)
+    } else if (typeof expected === 'number') {
+      if (actual !== expected) problems.push(`${f}=${JSON.stringify(actual)}, se esperaba ${expected}`)
+    } else if (!mismoConjunto(conjunto(expected), conjunto(actual))) {
       problems.push(`${f}=${JSON.stringify(actual)}, se esperaba ${JSON.stringify(expected)}`)
     }
   }
@@ -181,9 +205,11 @@ async function runSet(name, cases, gate) {
 
 const a = await runSet('anexoF', ANEXO_F, 7)
 const b = await runSet('bloque4b', BLOQUE_4B, 4)
+const c = await runSet('complejas', COMPLEJAS, 4)
 
-writeFileSync('bench/query-resumen.json', JSON.stringify({ at: new Date().toISOString(), sets: [a, b], passes: a.passes && b.passes }, null, 2))
-console.log(`\n${a.passes && b.passes ? 'BANCO OK: se conecta la barra de pregunta' : 'BANCO POR DEBAJO: una iteración de prompt de 30 min y volver a medir'}`)
+const pasa = a.passes && b.passes && c.passes
+writeFileSync('bench/query-resumen.json', JSON.stringify({ at: new Date().toISOString(), sets: [a, b, c], passes: pasa }, null, 2))
+console.log(`\n${pasa ? 'BANCO OK: se conecta la barra de pregunta' : 'BANCO POR DEBAJO: una iteración de prompt de 30 min y volver a medir'}`)
 
 await unloadAll()
-process.exit(a.passes && b.passes ? 0 : 1)
+process.exit(pasa ? 0 : 1)
