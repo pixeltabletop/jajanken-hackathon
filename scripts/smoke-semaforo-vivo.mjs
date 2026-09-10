@@ -86,8 +86,8 @@ if (apagado) console.log(`   ${apagado.puntos} a los ${(apagado.ms / 1000).toFix
 // La aplicacion NO se recarga sola a proposito: un fallo de un modelo no
 // justifica releer 3,9 GB, y con la memoria apretada ese recalentado mataba al
 // worker una y otra vez. Lo que se comprueba es que al volver a pedirlo, carga.
-console.log('
-Pidiendo los modelos otra vez, como haria una persona al usarla...')
+console.log('')
+console.log('Pidiendo los modelos otra vez, como haria una persona al usarla...')
 const t1 = Date.now()
 await evaluar('window.api.modelsWarmup()')
 let vuelto = null

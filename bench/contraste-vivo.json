@@ -22,19 +22,19 @@
     },
     {
       "estado": "blanco · base abierta y selector de columnas",
-      "medidos": 727,
+      "medidos": 738,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · seguimiento",
-      "medidos": 633,
+      "medidos": 644,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · guía de cómo pedirlo",
-      "medidos": 666,
+      "medidos": 677,
       "fallos": 0,
       "malas": []
     },
@@ -46,19 +46,19 @@
     },
     {
       "estado": "blanco · nota abierta con la evidencia",
-      "medidos": 637,
+      "medidos": 648,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · barra lateral estrecha",
-      "medidos": 622,
+      "medidos": 633,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · barra con acción encendida y sección actual",
-      "medidos": 670,
+      "medidos": 681,
       "fallos": 0,
       "malas": []
     },
@@ -76,19 +76,19 @@
     },
     {
       "estado": "negro · base abierta y selector de columnas",
-      "medidos": 727,
+      "medidos": 738,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · seguimiento",
-      "medidos": 633,
+      "medidos": 644,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · guía de cómo pedirlo",
-      "medidos": 666,
+      "medidos": 677,
       "fallos": 0,
       "malas": []
     },
@@ -100,19 +100,19 @@
     },
     {
       "estado": "negro · nota abierta con la evidencia",
-      "medidos": 637,
+      "medidos": 648,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · barra lateral estrecha",
-      "medidos": 622,
+      "medidos": 633,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · barra con acción encendida y sección actual",
-      "medidos": 670,
+      "medidos": 681,
       "fallos": 0,
       "malas": []
     }

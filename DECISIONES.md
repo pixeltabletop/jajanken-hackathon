@@ -174,8 +174,8 @@ Medido en la app viva matando `bare.exe` con la ventana abierta (`npm run smoke:
 
 | Qué | Antes | Ahora |
 |---|---|---|
-| Tiempo en verde siendo mentira | para siempre | 14,9 s |
-| Vuelta a los tres verdes | nunca sin reabrir | 70,9 s, sola |
+| Tiempo en verde siendo mentira | para siempre | 12 a 15 s |
+| Vuelta a los tres verdes | nunca sin reabrir la aplicación | 40 s, al volver a usarla |
 
 El sondeo del renderer con los tres listos baja de 15 s a 6 s, porque con este cambio dejó de ser cosmético: es lo que destapa un worker muerto. Verificado sin regresión: humo del motor OK, 80/80 en vivo, contraste 98/98 y en vivo sin fallos.
 
