@@ -254,6 +254,24 @@ Verificado: 85/85 sobre la app viva, contraste declarado 150/150 y contraste viv
 
 **Una comprobación que dejó de mentir.** El paso de movimiento reducido esperaba 6,5 segundos a ojo tras recargar. Fallaba de vez en cuando por medio segundo, porque el arranque de marca dura 5 s y la recarga tarda lo que tarda. Ahora espera a que aparezca el acceso y a que aparezca la barra, no al reloj.
 
+**D66 · El empaquetado con el nombre nuevo, verificado de punta a punta.**
+
+Renombrar toca el empaquetado en sitios que no se ven hasta que se construye. Dos quedaron a medias: el identificador de aplicación seguía siendo `com.jajanken.eco`, y `artifactName` usaba `${name}` del `package.json`, que es `mam` en minúsculas, así que el instalador habría salido como `mam-1.0.0-setup.exe` mientras el README prometía `MAM-1.0.0-setup.exe`. Un juez que siga el README y no encuentre el archivo no perdona eso. Corregido a `com.jajanken.mam` y a `${productName}`.
+
+Construido y **arrancado desde el ejecutable empaquetado**, no desde desarrollo:
+
+| Qué se comprobó | Resultado |
+|---|---|
+| El instalador | `MAM-1.0.0-setup.exe`, 595 MB |
+| La ventana | se llama MAM, y el acceso también |
+| Los tres modelos | los tres en `ready` |
+| Una extracción real | 14,7 s, dentro del rango medido de 14 a 23 s |
+| Lo que extrajo | sitio correcto, 15 monitores, con su cita textual |
+| La trampa de la nota | **no inventó equipo de imagen**, que era lo que la nota negaba |
+| Peticiones fuera del equipo | ninguna |
+
+Lo que sigue sin probarse es un **perfil de Windows limpio**, que es distinto de esta máquina y es lo único que demuestra que otra persona puede instalarlo.
+
 ## Pendientes de decisión
 
 - **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.
