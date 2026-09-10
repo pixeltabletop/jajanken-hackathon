@@ -21,7 +21,11 @@ import { spawn, spawnSync } from 'node:child_process'
 import { mkdirSync, writeFileSync, statSync } from 'node:fs'
 import os from 'node:os'
 
-const PUERTO = 9222
+// El puerto de depuracion se puede mover: en una maquina donde el 9222 este
+// ocupado por otro programa (el widget de Lenovo Vantage, por ejemplo) este
+// script no encuentra la ventana y falla entero. MAM_DEBUG_PORT lo cambia,
+// aqui y en el arranque de la app.
+const PUERTO = Number(process.env.MAM_DEBUG_PORT ?? 9222)
 const ENSAYO = process.argv.includes('--ensayo')
 
 /**
@@ -65,10 +69,10 @@ const GB_ENSAYO = 0.25
 // --------------------------------------------------------------- protocolo
 
 const t = await (await fetch(`http://127.0.0.1:${PUERTO}/json/list`).catch(() => null))?.json() ?? []
-const pagina = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
+const pagina = t.find((x) => x.type === 'page' && /^https?:\/\/(localhost|127\.0\.0\.1)[:/]|MAM/i.test(`${x.url} ${x.title}`))
 if (!pagina) {
   console.error(`No encontré la ventana de MAM en el puerto ${PUERTO}.`)
-  console.error('Levántala con: npm run dev -- -- --remote-debugging-port=9222')
+  console.error('Levántala con: npm run dev -- -- --remote-debugging-port=' + PUERTO)
   process.exit(1)
 }
 
