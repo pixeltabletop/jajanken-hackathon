@@ -1,0 +1,217 @@
+// Registro único de temas. Cada entrada trae sus tokens de color y qué variante
+// del logo animado usa. Ningún componente ni hoja de estilo puede escribir un
+// color a mano: si aparece uno, sube aquí. Esa es la condición para que cambiar
+// de tema no sea una cacería por todo el código.
+//
+// Los valores se miden con scripts/check-contrast.mjs, que importa este archivo.
+// Cambiar un token obliga a correr `npm run check:contrast` antes de commitear.
+
+export type ThemeId = 'blanco' | 'azul' | 'negro'
+
+/** Nombre de cada token, sin el prefijo `--`. */
+export interface ThemeTokens {
+  /** Fondo de página. */
+  page: string
+  /** Franja superior del degradado del body. */
+  pageTop: string
+  /** Fondo de tarjetas y secciones. */
+  surface: string
+  /** Fondo sutil dentro de una tarjeta (filas de equipo, barra de filtros). */
+  surface2: string
+  /** Fondo de fila de tabla al pasar el cursor. */
+  surfaceHover: string
+  ink: string
+  muted: string
+  line: string
+  /** Borde de campos de formulario. */
+  fieldLine: string
+  primary: string
+  primaryDeep: string
+  /** Texto sobre un relleno primario. */
+  onPrimary: string
+  sky: string
+  /** Texto sobre el fondo `sky`. */
+  onSky: string
+  /** Anillo de foco. Se mide a 3:1 contra las superficies que toca. */
+  focus: string
+  /** Líneas de rejilla de los gráficos. */
+  grid: string
+  /** Color de la sombra de las tarjetas, en rgb() sin alfa. */
+  shadowRgb: string
+  ok: string
+  okBg: string
+  warn: string
+  warnBg: string
+  bad: string
+  badBg: string
+  /** Resaltado de evidencia. Mismo par en los tres temas: es el diferenciador. */
+  mark: string
+  markInk: string
+  markEdge: string
+  /** Avisos ámbar. */
+  alert: string
+  alertBg: string
+  alertInk: string
+  /** Relleno de la barra seleccionada en un gráfico. */
+  barOn: string
+  /** Relleno de las barras no seleccionadas cuando hay una selección. */
+  barOff: string
+  /**
+   * Fondo propio de la pieza de logo de este tema, medido del archivo. El vídeo
+   * es opaco, así que el recuadro solo desaparece si la caja lleva ese color.
+   */
+  logoBg: string
+}
+
+export interface Theme {
+  id: ThemeId
+  /** Nombre visible, en español. */
+  label: string
+  /** Una línea para el paso de elección. */
+  hint: string
+  tokens: ThemeTokens
+}
+
+// El resaltado de evidencia lleva su propio fondo, así que el par amarillo/tinta
+// se conserva idéntico en los tres temas y se lee siempre. D24.
+const MARK = { mark: '#ffe98a', markInk: '#1c1a12', markEdge: '#a37d00' }
+
+export const THEMES: Theme[] = [
+  {
+    id: 'blanco',
+    label: 'Blanco clásico',
+    hint: 'El de siempre. Fondo claro, azul Philips.',
+    tokens: {
+      page: '#f5f9fc',
+      pageTop: '#ffffff',
+      surface: '#ffffff',
+      surface2: '#fbfdff',
+      surfaceHover: '#f0f7fc',
+      ink: '#162b3d',
+      muted: '#5b6f7f',
+      line: '#d8e5ed',
+      fieldLine: '#6e8ca1',
+      primary: '#0076ce',
+      primaryDeep: '#004b93',
+      onPrimary: '#ffffff',
+      sky: '#eaf6fd',
+      onSky: '#004b93',
+      focus: '#0076ce',
+      grid: '#dde8f0',
+      shadowRgb: '0 75 147',
+      ok: '#1c6b47',
+      okBg: '#dcede3',
+      warn: '#7a4f0a',
+      warnBg: '#f7ebd6',
+      bad: '#9e362b',
+      badBg: '#f8e4e1',
+      ...MARK,
+      alert: '#8a5a0c',
+      alertBg: '#fff8e5',
+      alertInk: '#4a3a10',
+      barOn: '#004b93',
+      barOff: '#6693b6',
+      logoBg: '#f4f8fb'
+    }
+  },
+  {
+    id: 'azul',
+    label: 'Azul oscuro',
+    hint: 'Azul profundo de marca. Para salas con poca luz.',
+    tokens: {
+      page: '#012c53',
+      pageTop: '#01223f',
+      surface: '#013a6b',
+      surface2: '#02426f',
+      surfaceHover: '#014e8c',
+      ink: '#f2f8fd',
+      muted: '#b9d6ee',
+      line: '#0b5896',
+      fieldLine: '#5f9fd0',
+      primary: '#63b8f0',
+      primaryDeep: '#a8d8f8',
+      onPrimary: '#012c53',
+      sky: '#023a6b',
+      onSky: '#dcecfa',
+      focus: '#8fd0ff',
+      grid: '#0a4d84',
+      shadowRgb: '0 12 24',
+      ok: '#7fd7ad',
+      okBg: '#0b4736',
+      warn: '#f0c07a',
+      warnBg: '#4d3512',
+      bad: '#f5a79c',
+      badBg: '#5a221b',
+      ...MARK,
+      alert: '#f2c580',
+      alertBg: '#3d2f10',
+      alertInk: '#fbeed3',
+      barOn: '#8fd0ff',
+      barOff: '#6faad8',
+      logoBg: '#020711'
+    }
+  },
+  {
+    id: 'negro',
+    label: 'Negro',
+    hint: 'Máximo contraste. Fondo negro, texto claro.',
+    tokens: {
+      page: '#000000',
+      pageTop: '#0a0b0d',
+      surface: '#141619',
+      surface2: '#1b1e22',
+      surfaceHover: '#23272c',
+      ink: '#f4f6f8',
+      muted: '#adb9c4',
+      line: '#343a41',
+      fieldLine: '#6b7681',
+      primary: '#4fb3f0',
+      primaryDeep: '#9ad4f8',
+      onPrimary: '#04121d',
+      sky: '#12222e',
+      onSky: '#cfe6f5',
+      focus: '#7ecbff',
+      grid: '#2a3037',
+      shadowRgb: '0 0 0',
+      ok: '#6fd3a5',
+      okBg: '#0c3a2b',
+      warn: '#ecbc74',
+      warnBg: '#3d2c0f',
+      bad: '#f2a094',
+      badBg: '#4a1d17',
+      ...MARK,
+      alert: '#ecbc74',
+      alertBg: '#33270e',
+      alertInk: '#f6e6c8',
+      barOn: '#9ad4f8',
+      barOff: '#5c8fb0',
+      logoBg: '#000000'
+    }
+  }
+]
+
+export const DEFAULT_THEME: ThemeId = 'blanco'
+
+export const THEME_BY_ID: Record<ThemeId, Theme> = Object.fromEntries(
+  THEMES.map((t) => [t.id, t])
+) as Record<ThemeId, Theme>
+
+export function isThemeId(v: unknown): v is ThemeId {
+  return typeof v === 'string' && THEMES.some((t) => t.id === v)
+}
+
+/** camelCase → --kebab-case, el nombre real de la propiedad personalizada. */
+export function cssVarName(key: keyof ThemeTokens): string {
+  return `--${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`
+}
+
+/** Escribe los tokens del tema en :root. Se aplica al instante, sin reiniciar. */
+export function applyTheme(id: ThemeId): void {
+  const theme = THEME_BY_ID[id] ?? THEME_BY_ID[DEFAULT_THEME]
+  const root = document.documentElement
+  for (const [key, value] of Object.entries(theme.tokens)) {
+    root.style.setProperty(cssVarName(key as keyof ThemeTokens), value)
+  }
+  root.dataset.theme = theme.id
+  root.style.colorScheme = theme.id === 'blanco' ? 'light' : 'dark'
+}

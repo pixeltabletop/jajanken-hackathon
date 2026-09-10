@@ -1,0 +1,26 @@
+{
+  "at": "2026-09-09T23:59:30.276Z",
+  "sets": [
+    {
+      "set": "anexoF",
+      "hits": 10,
+      "total": 10,
+      "gate": 7,
+      "passes": true,
+      "msMin": 10933,
+      "msMax": 11919,
+      "msMedian": 11416
+    },
+    {
+      "set": "bloque4b",
+      "hits": 4,
+      "total": 5,
+      "gate": 4,
+      "passes": true,
+      "msMin": 11197,
+      "msMax": 11877,
+      "msMedian": 11504
+    }
+  ],
+  "passes": true
+}

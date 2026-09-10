@@ -24,7 +24,11 @@
     "bench:extract": "node bench/bench7.js GEMMA4_2B_MULTIMODAL_Q4_K_M es nocache",
     "bench:asr": "node bench/bench_asr.js WHISPER_BASE_Q8_0 es+prompt",
     "bench:embed": "node bench/bench_embed.js EMBEDDINGGEMMA_300M_Q8_0",
-    "bench:all": "npm run bench:extract && npm run bench:asr && npm run bench:embed"
+    "bench:all": "npm run bench:extract && npm run bench:asr && npm run bench:embed && npm run bench:query",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check": "npm run typecheck && npm run check:contrast",
+    "bench:query": "node bench/bench_query.js",
+    "e2e:4b": "node scripts/e2e-4b.mjs"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",

@@ -10,6 +10,7 @@ export type TimingKey =
   | 'extract'
   | 'dedup'
   | 'save'
+  | 'query'
 
 export interface TimingStat {
   count: number
@@ -31,7 +32,8 @@ export const TIMING_LABEL: Record<TimingKey, string> = {
   transcribe: 'Transcribir el dictado',
   extract: 'Interpretar la nota',
   dedup: 'Buscar el cliente en la base',
-  save: 'Guardar'
+  save: 'Guardar',
+  query: 'Interpretar la pregunta'
 }
 
 /** Qué se le promete al usuario mientras espera, en segundos. */
@@ -43,7 +45,8 @@ export const TIMING_HINT: Record<TimingKey, string> = {
   transcribe: 'Depende de cuánto hables',
   extract: 'Lo más lento del ciclo, es el modelo escribiendo',
   dedup: 'Casi instantáneo con el modelo caliente',
-  save: 'Escritura local en disco'
+  save: 'Escritura local en disco',
+  query: 'Solo traduce la pregunta a un filtro; las cifras las calcula el código'
 }
 
 export function record(table: TimingTable, key: TimingKey, ms: number): TimingTable {

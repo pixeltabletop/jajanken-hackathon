@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld('api', {
   save: (observation: unknown) => ipcRenderer.invoke('obs:save', observation),
   list: () => ipcRenderer.invoke('obs:list'),
   settingsGet: () => ipcRenderer.invoke('settings:get'),
-  settingsSet: (patch: { operator?: string }) => ipcRenderer.invoke('settings:set', patch),
+  settingsSet: (patch: { operator?: string; theme?: string }) => ipcRenderer.invoke('settings:set', patch),
   report: (req: unknown, action: 'save' | 'open' | 'mail') => ipcRenderer.invoke('report:generate', { req, action }),
   queryParse: (question: string) => ipcRenderer.invoke('query:parse', { question })
 })

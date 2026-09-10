@@ -2,9 +2,10 @@
 
 import { countryLabel, type ColumnKey } from './columns.ts'
 import { CONFIDENCE_LABEL_ES, MODALITY_LABEL_ES, STATUS_LABEL_ES } from './catalog.ts'
+import type { GroupBy, QueryIntent } from './query-engine.ts'
 import type { Equipment, Observation, QueryFilter } from './types.ts'
 
-export type ReportKind = 'inventario' | 'cliente' | 'validacion' | 'cambios' | 'resumen'
+export type ReportKind = 'inventario' | 'cliente' | 'validacion' | 'cambios' | 'resumen' | 'consulta'
 
 export interface ReportDef {
   kind: ReportKind
@@ -40,6 +41,12 @@ export const REPORTS: ReportDef[] = [
     purpose: 'Trazabilidad de las correcciones'
   },
   {
+    kind: 'consulta',
+    title: 'Respuesta a una consulta',
+    description: 'La pregunta tal como se hizo, qué entendió la app, la respuesta redactada y la tabla que la sostiene.',
+    purpose: 'Qué se preguntó y qué contestaron los registros'
+  },
+  {
     kind: 'resumen',
     title: 'Resumen ejecutivo',
     description: 'Agregados por país, modalidad y antigüedad, con las oportunidades de renovación.',
@@ -59,6 +66,16 @@ export interface ReportRequest {
   facility?: string
   /** Texto libre del usuario que se imprime bajo el título. */
   note?: string
+  /** Solo para el reporte de consulta: la pregunta tal como se escribió. */
+  question?: string
+  /**
+   * Intención y agrupación del plan. La frase redactada y el desglose NO viajan
+   * en la petición: los recalcula el generador con el mismo motor que la
+   * pantalla. Si viajaran como texto, un PDF podría contradecir a su propia
+   * tabla cuando el filtro cambia entre que se lee la frase y se pulsa el botón.
+   */
+  intent?: QueryIntent
+  groupBy?: GroupBy
 }
 
 // ---------------------------------------------------------------------------

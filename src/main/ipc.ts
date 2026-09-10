@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os'
 import { BRANDS } from '../shared/catalog.ts'
 import { REPORT_BY_KIND, type ReportRequest } from '../shared/reports.ts'
 import { renderReportPdf } from './reports.ts'
+import type { QueryPlan } from '../shared/query-engine.ts'
 import type { TimingTable } from '../shared/timings.ts'
 import type {
   ApiError,
@@ -21,9 +22,10 @@ import type {
 } from '../shared/types.ts'
 import { buildCanonical, rankCandidates } from './qvac/dedup.ts'
 import { extractObservation } from './qvac/extract.ts'
+import { parseQuestion } from './qvac/query.ts'
 import * as models from './qvac/models.ts'
 import { transcribeWav } from './qvac/transcribe.ts'
-import type { Store } from './store.ts'
+import type { Settings, Store } from './store.ts'
 
 type Handler<A extends unknown[], R> = (...args: A) => Promise<R> | R
 
@@ -120,8 +122,8 @@ export function registerIpc(store: Store): void {
 
   ipcMain.handle('obs:list', safe<[], Observation[]>('LIST', () => store.list()))
 
-  ipcMain.handle('settings:get', safe<[], { operator: string }>('SETTINGS', () => store.getSettings()))
-  ipcMain.handle('settings:set', safe<[Partial<{ operator: string }>], { operator: string }>('SETTINGS_SET', (p) => store.setSettings(p)))
+  ipcMain.handle('settings:get', safe<[], Settings>('SETTINGS', () => store.getSettings()))
+  ipcMain.handle('settings:set', safe<[Partial<Settings>], Settings>('SETTINGS_SET', (p) => store.setSettings(p)))
 
   // Reportes: se compone HTML y lo imprime Chromium. Sin librerias ni red.
   ipcMain.handle(
@@ -175,8 +177,17 @@ Generado: ${new Date().toLocaleString('es-PA')}
     )
   )
 
-  // Bloque 5. Se conecta solo si mide >= 7/10 en bench/bench_query.js.
-  ipcMain.handle('query:parse', safe<[{ question: string }], never>('QUERY', () => {
-    throw new Error('La pregunta en español se construye en el Bloque 5')
-  }))
+  // Pregunta en español. El modelo solo traduce a un plan; las cifras las
+  // calcula src/shared/query-engine.ts sobre los registros guardados.
+  ipcMain.handle(
+    'query:parse',
+    safe<[{ question: string }], { plan: QueryPlan; ms: number; warnings: string[] }>('QUERY', async ({ question }) => {
+      const q = (question ?? '').trim()
+      if (!q) throw new Error('La pregunta está vacía')
+      const ctx = await store.queryContext()
+      const r = await parseQuestion(models.requireModel('gemma'), q, ctx)
+      await store.recordTiming('query', r.ms)
+      return { plan: r.plan, ms: r.ms, warnings: r.warnings }
+    })
+  )
 }

@@ -340,85 +340,201 @@ Mismos `generationParams`. Prompt en `prompts.ts` con los índices del catálogo
 
 ## 6. Arquitectura del frontend
 
-### Pantalla única, tres zonas, misma disposición que FieldLens v1
-| Zona | Componente | Qué ve el usuario |
+> Reescrita en el Bloque 4B (2026-09-09). La versión anterior describía una
+> pantalla única que ya no existe. Decisiones D23, D29, D34.
+
+### Arranque, y luego dos puertas
+La aplicación abre con el **arranque de marca**: el logo animado al centro,
+mínimo 5 segundos, con el pie legal obligatorio visible y el texto de lo que de
+verdad está pasando ("Cargando Gemma 2B · local · sin red"). Se salta con Esc o
+un clic **solo después** del mínimo, y a los 15 segundos aparece "Continuar de
+todos modos". En la primera ejecución sigue el paso de elección de tema.
+
+Después se aterriza en el **selector de dos puertas**, no en el tablero:
+
+| Puerta | Componente | Qué hace |
 |---|---|---|
-| Cabecera | Header + Stats | Logo, "FieldLens", indicador de modelos cargados, 4 métricas |
-| Zona 1 · Captura | Capture | Textarea con la nota, botón Dictar/Detener, botón Interpretar, estado |
-| Zona 2 · Revisión | Review → EquipmentRow × N, EvidenceHighlight, FollowUp, DuplicateAlert | Una fila por equipo, cada una editable, con la cita resaltada en el texto original. Pregunta sugerida. Candidatos de duplicado. Botón Confirmar y guardar. |
-| Zona 3 · Base instalada | Dashboard → QueryBar, filtros, DataTable, Charts | Barra "Pregunta en español", chip con la interpretación, tabla por equipo, tres gráficos de barras |
+| Izquierda · Registrar equipos | `Capture` + `Review` | Dictar o escribir una nota de visita y convertirla en registros |
+| Derecha · Seguimiento y reportes | `FollowUpMode` | Preguntar en español por el estatus de lo ya registrado |
+
+`mode: 'home' \| 'capture' \| 'follow'` en `App.tsx`, con `useState` y renderizado
+condicional. Sin librería de router. Volver al inicio está siempre en el
+`Header`; con un borrador sin guardar pide confirmación antes de descartarlo.
+Entrar a Seguimiento **no** está bloqueado por la carga de modelos: solo la barra
+de pregunta espera a Gemma, y lo dice (D30).
 
 ### Jerarquía
 ```
 App
-├─ Header (estado de modelos)
-├─ Stats (observaciones · clientes · equipos 7+ años · filas con baja confianza)
-├─ Capture
-├─ Review
-│   ├─ EvidenceHighlight (rawText con <mark> por cada evidence)
-│   ├─ EquipmentRow × N (editable, badge de confianza y estado)
-│   ├─ FollowUp (una pregunta, desde missingFields[0])
-│   └─ DuplicateAlert (3 candidatos con ciudad y puntaje, o "cliente nuevo")
-└─ Dashboard
-    ├─ QueryBar (input + chip "Interpretado como: país=Panamá, modalidad=MR, edad≥7")
-    ├─ Filtros manuales (país, modalidad) — se conservan de v1
-    ├─ DataTable (una fila por Equipment, columnas: sitio, ciudad, país, modalidad, cantidad, marca, edad, confianza, estado)
-    └─ Charts (equipos por modalidad · por país · por rango de antigüedad 0-3 / 4-7 / 8+)
+├─ Splash (logo, pie legal, texto concreto de la carga)
+├─ ThemeFirstRun (solo la primera vez)
+├─ Header (logo, volver al inicio, tema, estado de modelos)
+├─ Home
+│   ├─ dos tarjetas <button>, alcanzables con Tab
+│   └─ Stats (observaciones · clientes · equipos 7+ años · baja confianza)
+├─ modo capture
+│   ├─ Capture
+│   ├─ Review → EvidenceHighlight, EquipmentRow × N, FollowUp, DuplicateAlert
+│   └─ "Ver la base registrada" → Dashboard + ReportsSection (cerrado de entrada)
+└─ modo follow
+    ├─ QueryBar (pregunta en español, ejemplos pulsables)
+    ├─ InterpretChip (el filtro en palabras, cada parte removible)
+    ├─ respuesta redactada (plantilla determinista sobre cifras ya calculadas)
+    ├─ ExportBar (PDF · CSV · preparar correo)
+    └─ pestañas: Resultados (KpiRow + FilterBar + DataTable) · Gráficos (ResultCharts)
 ```
+
+### Registrar abre sin lista
+La tabla de la base **no se renderiza** al entrar. Aparece de dos formas y
+ninguna más: con el control "Ver la base registrada", o al llegar con una
+preselección. Su estado no se recuerda entre entradas. D29.
+
+### Modo Seguimiento
+- La respuesta sale **exclusivamente** de los registros guardados. El modelo
+  traduce la pregunta a un `QueryPlan` y nada más; los conteos los calcula
+  `src/shared/query-engine.ts`. D24.
+- Cada fila del resultado abre su nota original con la cita resaltada: el
+  diferenciador vive también en este modo.
+- Los gráficos filtran al hacer clic. El gráfico donde se hizo clic conserva
+  todas sus categorías con las no elegidas atenuadas; los demás se recalculan.
+  Un segundo clic lo deshace. Las barras son botones con `aria-pressed`.
+- Estado vacío explicado: "Ningún registro cumple ese filtro", el filtro en
+  palabras y un botón para quitar la condición más restrictiva. Nunca una tabla
+  vacía sin explicación.
+- Ninguna fila con cantidad se descarta en silencio: lo que queda fuera por un
+  campo vacío se declara como "sin dato". D32.
+
+### Transiciones
+`document.startViewTransition` a 180–220 ms, opacidad más 8–12 px de
+desplazamiento, con reserva en CSS (`.mode-enter`). Con
+`prefers-reduced-motion: reduce`, fundido de 80 ms y sin desplazamiento. Al
+terminar, el foco aterriza en el primer control del modo nuevo y el cambio se
+anuncia en un `aria-live`. **Los datos no se animan.** Umbral de 150 ms para
+mostrar indicador de espera, permanencia mínima de 400 ms, y siempre con texto
+concreto: la regla del blueprint prohíbe el spinner mudo.
 
 ### Estado
 - `observations: Observation[]` en App, cargado con `obs:list` al montar.
 - `draft: Observation | null` — el resultado de extracción en revisión.
-- `filter: QueryFilter` — aplicado a la tabla y los gráficos. Lo escriben tanto QueryBar como los filtros manuales.
-- `modelStatus` — sondeado cada 2 s hasta que los tres estén `ready`.
+- `plan: QueryPlan` dentro de `FollowUpMode`, más el origen de cada parte del
+  filtro (pregunta, clic en gráfico o filtro manual) para el chip.
+- `theme: ThemeId`, persistido en `settings.json` de `userData`.
 - Sin librería de estado. `useState` + `useMemo` bastan.
 
 ### Estados de espera, obligatorios
-La extracción tarda ~12 s. La interfaz **nunca** muestra un spinner genérico:
-- Zona 2 muestra un esqueleto de fila que se rellena. Mientras el stream llega, el texto crudo del JSON compacto NO se muestra; se muestra "Leyendo la nota… identificando equipos…".
-- Barra de progreso indeterminada con el texto "Gemma 2B · local · sin red".
-- Si supera 30 s, se muestra "Está tardando más de lo normal" con botón Cancelar.
+La extracción tarda ~12 s y la interpretación de la pregunta 15–22 s. La interfaz
+**nunca** muestra un spinner genérico: esqueleto de fila, barra de progreso
+indeterminada con "Gemma 2B · local · sin red", y "Está tardando más de lo
+normal" con botón Cancelar pasados los 30 s.
 
 ### Accesibilidad, no negociable
-- Todo control operable por teclado. Foco visible (ya existe `outline` en v1, se conserva).
-- Contraste mínimo 4.5:1 en texto. Los tokens de v1 cumplen.
-- Cada `input` con `label` asociado. Cada botón con texto, no solo icono.
-- La grabación anuncia su estado en un `aria-live="polite"`.
-- Los gráficos llevan tabla equivalente accesible (la DataTable ya lo es).
+- Todo control operable por teclado. Foco visible **medido**: el anillo de v1
+  (`#caecff` sobre blanco) daba 1.16:1, es decir, invisible. Ahora es `--focus`
+  a 4.68:1. D27.
+- Contraste mínimo 4.5:1 en texto y 3:1 en bordes de estado, **medido con la
+  fórmula de WCAG y por tema** con `npm run check:contrast`. Tabla en
+  `docs/contraste.md`.
+- La selección nunca se comunica solo con color: borde de 2 px, marca de
+  verificación o negrita.
+- Cada `input` con `label`. Cada botón con texto, no solo icono.
+- Las pestañas son `role="tablist"` con navegación por flechas y `aria-selected`,
+  y cada una declara cuántas filas trae.
+- Los gráficos llevan tabla equivalente accesible (la `DataTable` ya lo es).
 
 ---
 
 ## 7. Sistema de diseño
 
-Se conserva el de FieldLens v1. Está en `src/renderer/src/assets/base.css` y `main.css`. Solo se pule.
+> Reescrito en el Bloque 4B (2026-09-09): tres temas y logo animado. Los colores
+> dejaron de vivir en las hojas de estilo. Decisiones D25, D27, D28.
 
-### Colores
-| Rol | Hex | Uso |
+### Un solo registro de color
+`src/renderer/src/assets/themes.ts` es la única fuente de color de la aplicación.
+Cada tema trae sus tokens, que se aplican como propiedades personalizadas sobre
+`:root` antes del primer render, más un atributo `data-theme` en el elemento
+raíz. **Ningún componente ni hoja de estilo puede llevar un color escrito a
+mano.** Si aparece uno, sube al registro. Esa es la condición para que cambiar de
+tema no sea una cacería por todo el código. Recharts pinta atributos SVG, que no
+aceptan `var()`, así que pide los colores al registro con `useThemeTokens()`.
+
+### Tres temas
+| Tema | Fondo | Para qué |
 |---|---|---|
-| Primario | `#0076ce` `--philips-blue` | Botones, acentos, borde inferior de cabecera |
-| Primario profundo | `#004b93` `--philips-deep-blue` | Títulos, hover, fondo del logo |
-| Cielo | `#eaf6fd` `--philips-sky` | Fondo de cabecera de tabla, badge "100% local" |
-| Tinta | `#162b3d` `--ink` | Texto principal |
-| Apagado | `#5b6f7f` `--muted` | Texto secundario, etiquetas |
-| Línea | `#d8e5ed` `--line` | Bordes |
-| Fondo | `#f5f9fc` | Página |
-| Superficie | `#ffffff` | Tarjetas y secciones |
-| Alerta | `#f5a623` sobre `#fff8e5` | `aside` de pregunta y duplicado (existe en v1) |
-| **Nuevo** Confianza alta | `#1c6b47` sobre `#dcede3` | Badge High |
-| **Nuevo** Confianza media | `#8a5a0c` sobre `#f5e8d2` | Badge Medium |
-| **Nuevo** Confianza baja / evidencia inválida | `#9e362b` sobre `#f5e1de` | Badge Low, fila con cita que no es substring |
-| **Nuevo** Marca de evidencia | `#fff3b0` | Fondo del `<mark>` en EvidenceHighlight |
+| Blanco clásico (por defecto) | `#f5f9fc` | El de v1, el único validado en pantalla desde el principio |
+| Azul oscuro | `#012c53` | Salas con poca luz |
+| Negro | `#000000` | Máximo contraste |
+
+Se eligen en un paso corto la primera vez, y después desde el `Header` cuando se
+quiera, aplicándose al instante y sin reiniciar. Se guarda en `settings.json` de
+`userData`. La aplicación **no** sigue el tema del sistema operativo: la elección
+es explícita.
+
+Cada tema redefine como mínimo: fondo de página, superficie, tinta, apagado,
+línea, primario, primario profundo, cielo, alerta, los tres pares de confianza y
+el fondo del resaltado de evidencia.
+
+### El contraste se mide, no se opina
+`npm run check:contrast` recorre 48 pares por tema, 144 en total, con la fórmula
+de luminancia relativa de WCAG 2.1, y **sale con código distinto de cero** si
+alguno queda bajo su umbral: 4.5:1 texto normal, 3:1 texto grande y el borde o
+relleno que comunica un estado. Está enganchado a `npm run check`. La tabla
+completa, por tema, está en `docs/contraste.md`.
+
+Reglas que salieron de esa medición:
+- **El estado seleccionado nunca baja el contraste del texto.** Si el fondo se
+  oscurece, el texto pasa al par que le corresponde en el mismo cambio.
+- **La selección nunca se comunica solo con color:** además del fondo va un borde
+  de 2 px, una marca de verificación o negrita. El jurado puede estar viendo un
+  proyector malo, y hay daltonismo.
+- **El foco visible no se elimina en el estado seleccionado.** El anillo de v1
+  (`#caecff` sobre blanco) medía 1.16:1, o sea que no existía; ahora es `--focus`
+  a 4.68:1.
+- **Deshabilitado no se hace con opacidad.** `opacity: .55` sobre el botón
+  primario daba 1.59:1 de texto. Ahora tiene tokens propios y se mide como todo
+  lo demás.
+- **El resaltado de evidencia conserva el mismo par amarillo/tinta en los tres
+  temas.** El `<mark>` lleva su propio fondo; lo que cambia por tema es lo que
+  tiene alrededor, y lo que se mide contra ese entorno es su borde de 2 px. Si en
+  un tema no se leyera, ese tema no sale.
 
 ### Tipografía
-Arial / Helvetica, la del sistema, ya definida en v1. No se agregan fuentes: la app corre offline y cargar Google Fonts violaría el espíritu del reto. Escala: h1 36px/700, h2 19px/700, cuerpo 14px, etiquetas 12px/700, tabla 13px.
+Arial / Helvetica, la del sistema, ya definida en v1. No se agregan fuentes: la
+app corre offline y cargar Google Fonts violaría el espíritu del reto. Escala:
+h1 36px/700, h2 19px/700, cuerpo 14px, etiquetas 12px/700, tabla 13px.
 
 ### Componentes
-- Radio 4px controles, 8px tarjetas. Sombra `0 2px 8px rgb(0 75 147 / 6%)`. Ya existe.
+- Radio 4px controles, 8px tarjetas. Sombra `0 2px 8px rgb(var(--shadow-rgb) / 6%)`.
 - Badges: `border-radius: 3px`, `font-size: 11px`, mayúsculas, `letter-spacing: .06em`.
 - Densidad: la actual de v1. Es una herramienta de trabajo, no una landing.
 
+### Logo animado
+Tres variantes del mismo bucle de 30 s viven en
+`src/renderer/src/assets/logo/`, **empaquetadas con la app**: nunca se cargan de
+la red, porque la aplicación corre sin internet y ese es el argumento central del
+producto. `LogoMotion.tsx` las sirve en tres tamaños: `splash` a pantalla
+completa, `mark` de 96 px e `inline` de 40 px.
+
+**El vídeo solo aparece en el arranque y en los momentos de carga.** En el resto
+de la interfaz va la marca fija (`LogoMark`): el bucle tiene fotogramas donde el
+escudo no está, y a 96 px en el encabezado eso se lee como un parpadeo. Decisión
+de Josué el 2026-09-09 viéndolo en pantalla.
+
+En el arranque, el logo ocupa el centro un mínimo de 5 segundos aunque los
+modelos ya estén listos, con el pie legal obligatorio visible: cinco segundos de
+un logo de Philips a pantalla completa es justo el momento donde alguien puede
+confundir el prototipo con un producto de la marca.
+
+Estado medido de las variantes (D25): la pieza clara se ve; las de azul y negro
+no tienen luminancia en ningún fotograma y esos dos temas usan la marca
+vectorial hasta que lleguen piezas visibles sobre fondo oscuro. Evidencia en
+`bench/logo-variantes.json`.
+
 ### Uso del logo de Philips
-Philips es el patrocinador del track y su brief pide un prototipo para Philips. El logo ya está en `assets/philips-logo.svg` y se conserva en la cabecera. **Obligatorio:** pie de página fijo con el texto "Prototipo del equipo Jajanken para el reto Philips · Hackathon ISD Summit 2026 · No es un producto oficial de Philips". Evita que la app se lea como producto de la marca.
+Philips es el patrocinador del track y su brief pide un prototipo para Philips.
+**Obligatorio:** pie de página fijo con el texto "Prototipo del equipo Jajanken
+para el reto Philips · Hackathon ISD Summit 2026 · No es un producto oficial de
+Philips", y también visible durante el arranque. Evita que la app se lea como
+producto de la marca.
 
 ---
 

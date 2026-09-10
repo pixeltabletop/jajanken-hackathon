@@ -1,0 +1,480 @@
+{
+  "set": "anexoF",
+  "hits": 6,
+  "total": 10,
+  "gate": 7,
+  "passes": false,
+  "msMin": 11585,
+  "msMax": 14647,
+  "msMedian": 12985,
+  "context": {
+    "countries": [
+      "Argentina",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Dominican Republic",
+      "Ecuador",
+      "Mexico",
+      "Panama",
+      "Peru"
+    ],
+    "cities": [
+      "Arraiján",
+      "Bogota",
+      "Buenos Aires",
+      "Campinas",
+      "Chitré",
+      "Ciudad de Panamá",
+      "Colón",
+      "David",
+      "La Chorrera",
+      "Lima",
+      "Medellin",
+      "Mexico City",
+      "Monterrey",
+      "Panama City",
+      "Penonomé",
+      "Quito",
+      "San Jose",
+      "San Miguelito",
+      "Santiago",
+      "Santo Domingo",
+      "Sao Paulo"
+    ]
+  },
+  "rows": [
+    {
+      "question": "hospitales en Panamá con resonadores",
+      "ok": false,
+      "problems": [
+        "country=null, se esperaba \"Panama\"",
+        "inventó city=\"Panama City\"",
+        "inventó brand=\"Orion Imaging\""
+      ],
+      "ms": 13185,
+      "raw": {
+        "co": -1,
+        "ci": 13,
+        "m": 0,
+        "b": 3,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": "Panama City",
+          "modality": "MR",
+          "brand": "Orion Imaging",
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (ciudad: Panama City · modalidad: Resonancia magnética · marca: Orion Imaging). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "tomógrafos de más de diez años",
+      "ok": false,
+      "problems": [
+        "minAgeYears=8, se esperaba 10"
+      ],
+      "ms": 14647,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": 1,
+        "b": -1,
+        "amin": 8,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "CT",
+          "brand": null,
+          "minAgeYears": 8,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con modalidad: Tomografía · edad: 8 años o más: 12 equipos registrados en 9 sitios, sobre 9 observaciones. Se enumeran 9 filas de equipo. 1 fila de confianza baja.",
+      "counts": {
+        "equipment": 12,
+        "rows": 9,
+        "sites": 9,
+        "observations": 9
+      }
+    },
+    {
+      "question": "equipos Aurelia Health en Brasil",
+      "ok": true,
+      "problems": [],
+      "ms": 13539,
+      "raw": {
+        "co": 1,
+        "ci": -1,
+        "m": -1,
+        "b": 1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": 4
+      },
+      "plan": {
+        "filter": {
+          "country": "Brazil",
+          "city": null,
+          "modality": null,
+          "brand": "Aurelia Health",
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (país: Brasil · marca: Aurelia Health). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "todo lo que hay en Colón",
+      "ok": true,
+      "problems": [],
+      "ms": 12985,
+      "raw": {
+        "co": -1,
+        "ci": 6,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": "Colón",
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con ciudad: Colón: 3 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 2 filas de equipo.",
+      "counts": {
+        "equipment": 3,
+        "rows": 2,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "ecógrafos nuevos, de menos de tres años",
+      "ok": true,
+      "problems": [],
+      "ms": 11835,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": 2,
+        "b": -1,
+        "amin": null,
+        "amax": 3,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "Ultrasound",
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": 3,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con modalidad: Ecografía · edad: hasta 3 años: 17 equipos registrados en 4 sitios, sobre 4 observaciones. Se enumeran 4 filas de equipo.",
+      "counts": {
+        "equipment": 17,
+        "rows": 4,
+        "sites": 4,
+        "observations": 4
+      }
+    },
+    {
+      "question": "registros con confianza baja",
+      "ok": true,
+      "problems": [],
+      "ms": 11835,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": 2,
+        "t": null,
+        "i": 1,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": "Low",
+          "textSearch": null
+        },
+        "intent": "count",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con confianza: Baja: 1 equipo registrado en 1 sitio, sobre 1 observación. 1 fila es de confianza baja.",
+      "counts": {
+        "equipment": 1,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "equipos estimados, no confirmados",
+      "ok": true,
+      "problems": [],
+      "ms": 11794,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": 2,
+        "c": -1,
+        "t": null,
+        "i": 1,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": "Estimated",
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "count",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con estatus: Estimado: 31 equipos registrados en 12 sitios, sobre 12 observaciones. 1 fila es de confianza baja.",
+      "counts": {
+        "equipment": 31,
+        "rows": 14,
+        "sites": 12,
+        "observations": 12
+      }
+    },
+    {
+      "question": "resonadores viejos en México",
+      "ok": false,
+      "problems": [
+        "inventó city=\"Mexico City\"",
+        "inventó brand=\"NovaMed\""
+      ],
+      "ms": 11585,
+      "raw": {
+        "co": 7,
+        "ci": 11,
+        "m": 0,
+        "b": 0,
+        "amin": 8,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": "Mexico",
+          "city": "Mexico City",
+          "modality": "MR",
+          "brand": "NovaMed",
+          "minAgeYears": 8,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (país: México · ciudad: Mexico City · modalidad: Resonancia magnética · marca: NovaMed · edad: 8 años o más). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "qué tiene el DemoCare Chiriquí",
+      "ok": false,
+      "problems": [
+        "inventó city=\"Chitré\""
+      ],
+      "ms": 12992,
+      "raw": {
+        "co": -1,
+        "ci": 4,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": "DemoCare Chiriquí",
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": "Chitré",
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": "DemoCare Chiriquí"
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (ciudad: Chitré · texto: \"DemoCare Chiriquí\"). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "monitores de paciente",
+      "ok": true,
+      "problems": [],
+      "ms": 12185,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": 4,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 1,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "Patient Monitoring",
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "count",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con modalidad: Monitoreo de paciente: 8 equipos registrados en 1 sitio, sobre 1 observación.",
+      "counts": {
+        "equipment": 8,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    }
+  ]
+}

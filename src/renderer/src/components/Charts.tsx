@@ -3,6 +3,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { MODALITY_SHORT_ES } from '../../../shared/catalog.ts'
 import type { EquipmentRowView } from '../lib/filter.ts'
 import { AGE_BUCKETS, ageBucket, countryLabel } from '../lib/labels.ts'
+import { useThemeTokens } from '../lib/theme.ts'
+import type { ThemeTokens } from '../assets/themes.ts'
 
 interface Point { name: string; value: number }
 
@@ -14,7 +16,7 @@ function sumBy(rows: EquipmentRowView[], keyOf: (r: EquipmentRowView) => string,
   return pts.sort((a, b) => b.value - a.value)
 }
 
-function Chart({ title, data }: { title: string; data: Point[] }): JSX.Element {
+function Chart({ title, data, t }: { title: string; data: Point[]; t: ThemeTokens }): JSX.Element {
   // Etiquetas inclinadas cuando hay muchas o son largas: evita que se pisen.
   const longest = data.reduce((m, d) => Math.max(m, d.name.length), 0)
   const tilt = data.length > 4 || longest > 10
@@ -23,11 +25,11 @@ function Chart({ title, data }: { title: string; data: Point[] }): JSX.Element {
       <h3>{title}</h3>
       <ResponsiveContainer width="100%" height={tilt ? 230 : 200}>
         <BarChart data={data} margin={{ top: 4, right: 8, left: -18, bottom: 0 }}>
-          <CartesianGrid vertical={false} stroke="#e4ecf2" />
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#5b6f7f' }} interval={0} angle={tilt ? -28 : 0} textAnchor={tilt ? 'end' : 'middle'} height={tilt ? 64 : 28} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#5b6f7f' }} />
-          <Tooltip cursor={{ fill: '#eaf6fd' }} formatter={(v) => [`${v} equipos`, '']} />
-          <Bar dataKey="value" fill="#0076ce" radius={[3, 3, 0, 0]} />
+          <CartesianGrid vertical={false} stroke={t.grid} />
+          <XAxis dataKey="name" tick={{ fontSize: 11, fill: t.muted }} interval={0} angle={tilt ? -28 : 0} textAnchor={tilt ? 'end' : 'middle'} height={tilt ? 64 : 28} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: t.muted }} />
+          <Tooltip cursor={{ fill: t.sky }} contentStyle={{ background: t.surface, border: `1px solid ${t.line}`, color: t.ink }} formatter={(v) => [`${v} equipos`, '']} />
+          <Bar dataKey="value" fill={t.barOn} radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -35,12 +37,15 @@ function Chart({ title, data }: { title: string; data: Point[] }): JSX.Element {
 }
 
 export function Charts({ rows }: { rows: EquipmentRowView[] }): JSX.Element | null {
+  // Recharts pinta atributos SVG, que no aceptan var(): los colores se piden al
+  // registro de temas en vez de escribirse a mano.
+  const t = useThemeTokens()
   if (!rows.length) return null
   return (
     <div className="charts">
-      <Chart title="Equipos por modalidad" data={sumBy(rows, (r) => MODALITY_SHORT_ES[r.eq.modality])} />
-      <Chart title="Equipos por país" data={sumBy(rows, (r) => (r.obs.country ? countryLabel(r.obs.country) : 'Sin país'))} />
-      <Chart title="Equipos por antigüedad" data={sumBy(rows, (r) => ageBucket(r.eq.approxAgeYears), AGE_BUCKETS)} />
+      <Chart t={t} title="Equipos por modalidad" data={sumBy(rows, (r) => MODALITY_SHORT_ES[r.eq.modality])} />
+      <Chart t={t} title="Equipos por país" data={sumBy(rows, (r) => (r.obs.country ? countryLabel(r.obs.country) : 'Sin país'))} />
+      <Chart t={t} title="Equipos por antigüedad" data={sumBy(rows, (r) => ageBucket(r.eq.approxAgeYears), AGE_BUCKETS)} />
     </div>
   )
 }

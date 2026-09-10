@@ -1,4 +1,6 @@
 import type { ReportRequest } from '../shared/reports.ts'
+import type { Settings } from '../main/store.ts'
+import type { QueryPlan } from '../shared/query-engine.ts'
 import type { TimingTable } from '../shared/timings.ts'
 import type {
   ApiError,
@@ -7,7 +9,6 @@ import type {
   Language,
   ModelStatus,
   Observation,
-  QueryFilter,
   Source,
   TranscribeResult
 } from '../shared/types.ts'
@@ -25,10 +26,10 @@ export interface EcoApi {
   dedup(facility: string, city: string | null): R<DedupResult>
   save(observation: Observation): R<Observation[]>
   list(): R<Observation[]>
-  settingsGet(): R<{ operator: string }>
-  settingsSet(patch: { operator?: string }): R<{ operator: string }>
+  settingsGet(): R<Settings>
+  settingsSet(patch: Partial<Settings>): R<Settings>
   report(req: ReportRequest, action: 'save' | 'open' | 'mail'): R<{ path: string; action: string }>
-  queryParse(question: string): R<{ filter: QueryFilter; ms: number }>
+  queryParse(question: string): R<{ plan: QueryPlan; ms: number; warnings: string[] }>
 }
 
 declare global {

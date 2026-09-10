@@ -1,0 +1,456 @@
+{
+  "set": "anexoF",
+  "hits": 9,
+  "total": 10,
+  "gate": 7,
+  "passes": true,
+  "msMin": 10995,
+  "msMax": 11890,
+  "msMedian": 11219,
+  "context": {
+    "countries": [
+      "Argentina",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Dominican Republic",
+      "Ecuador",
+      "Mexico",
+      "Panama",
+      "Peru"
+    ],
+    "cities": [
+      "Arraiján",
+      "Bogota",
+      "Buenos Aires",
+      "Campinas",
+      "Chitré",
+      "Ciudad de Panamá",
+      "Colón",
+      "David",
+      "La Chorrera",
+      "Lima",
+      "Medellin",
+      "Mexico City",
+      "Monterrey",
+      "Panama City",
+      "Penonomé",
+      "Quito",
+      "San Jose",
+      "San Miguelito",
+      "Santiago",
+      "Santo Domingo",
+      "Sao Paulo"
+    ]
+  },
+  "rows": [
+    {
+      "question": "hospitales en Panamá con resonadores",
+      "ok": true,
+      "problems": [],
+      "ms": 11480,
+      "raw": {
+        "lugar": "Panamá",
+        "m": 0,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 2,
+        "g": 3
+      },
+      "plan": {
+        "filter": {
+          "country": "Panama",
+          "city": null,
+          "modality": "MR",
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "breakdown",
+        "groupBy": "modality"
+      },
+      "warnings": [],
+      "answer": "Con país: Panamá · modalidad: Resonancia magnética: 8 equipos registrados en 5 sitios, sobre 5 observaciones. Por modalidad: Resonancia magnética 8.",
+      "counts": {
+        "equipment": 8,
+        "rows": 5,
+        "sites": 5,
+        "observations": 5
+      }
+    },
+    {
+      "question": "tomógrafos de más de diez años",
+      "ok": true,
+      "problems": [],
+      "ms": 11022,
+      "raw": {
+        "lugar": null,
+        "m": 1,
+        "b": -1,
+        "amin": 10,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "CT",
+          "brand": null,
+          "minAgeYears": 10,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con modalidad: Tomografía · edad: 10 años o más: 8 equipos registrados en 6 sitios, sobre 6 observaciones. Se enumeran 6 filas de equipo. 1 fila de confianza baja.",
+      "counts": {
+        "equipment": 8,
+        "rows": 6,
+        "sites": 6,
+        "observations": 6
+      }
+    },
+    {
+      "question": "equipos Aurelia Health en Brasil",
+      "ok": true,
+      "problems": [],
+      "ms": 11163,
+      "raw": {
+        "lugar": "Brasil",
+        "m": -1,
+        "b": 1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": 4
+      },
+      "plan": {
+        "filter": {
+          "country": "Brazil",
+          "city": null,
+          "modality": null,
+          "brand": "Aurelia Health",
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (país: Brasil · marca: Aurelia Health). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "todo lo que hay en Colón",
+      "ok": true,
+      "problems": [],
+      "ms": 11465,
+      "raw": {
+        "lugar": "Colón",
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": 1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": "Colón",
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con ciudad: Colón: 3 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 2 filas de equipo.",
+      "counts": {
+        "equipment": 3,
+        "rows": 2,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "ecógrafos nuevos, de menos de tres años",
+      "ok": false,
+      "problems": [
+        "inventó minAgeYears=8",
+        "maxAgeYears=null, se esperaba 3"
+      ],
+      "ms": 11219,
+      "raw": {
+        "lugar": null,
+        "m": 2,
+        "b": -1,
+        "amin": 8,
+        "amax": 3,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "Ultrasound",
+          "brand": null,
+          "minAgeYears": 8,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [
+        "Rango de edad invertido, se conserva solo el mínimo"
+      ],
+      "answer": "Con modalidad: Ecografía · edad: 8 años o más: 4 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 1 fila de equipo.",
+      "counts": {
+        "equipment": 4,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "registros con confianza baja",
+      "ok": true,
+      "problems": [],
+      "ms": 11320,
+      "raw": {
+        "lugar": null,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": 2,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": "Low",
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con confianza: Baja: 1 equipo registrado en 1 sitio, sobre 1 observación. Se enumeran 1 fila de equipo. 1 fila de confianza baja.",
+      "counts": {
+        "equipment": 1,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "equipos estimados, no confirmados",
+      "ok": true,
+      "problems": [],
+      "ms": 11141,
+      "raw": {
+        "lugar": null,
+        "m": -1,
+        "b": -1,
+        "amin": -1,
+        "amax": -1,
+        "s": 2,
+        "c": -1,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": "Estimated",
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con estatus: Estimado: 31 equipos registrados en 12 sitios, sobre 12 observaciones. Se enumeran 14 filas de equipo. 1 fila de confianza baja.",
+      "counts": {
+        "equipment": 31,
+        "rows": 14,
+        "sites": 12,
+        "observations": 12
+      }
+    },
+    {
+      "question": "resonadores viejos en México",
+      "ok": true,
+      "problems": [],
+      "ms": 11048,
+      "raw": {
+        "lugar": "México",
+        "m": 0,
+        "b": -1,
+        "amin": 8,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": "Mexico",
+          "city": null,
+          "modality": "MR",
+          "brand": null,
+          "minAgeYears": 8,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Ningún registro cumple ese filtro (país: México · modalidad: Resonancia magnética · edad: 8 años o más). No hay nada que contar.",
+      "counts": {
+        "equipment": 0,
+        "rows": 0,
+        "sites": 0,
+        "observations": 0
+      }
+    },
+    {
+      "question": "qué tiene el DemoCare Chiriquí",
+      "ok": true,
+      "problems": [],
+      "ms": 11890,
+      "raw": {
+        "lugar": "DemoCare Chiriquí",
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": "DemoCare Chiriquí"
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [
+        "\"DemoCare Chiriquí\" no es un país ni una ciudad de la base: se busca como sitio"
+      ],
+      "answer": "Con texto: \"DemoCare Chiriquí\": 10 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 3 filas de equipo.",
+      "counts": {
+        "equipment": 10,
+        "rows": 3,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "monitores de paciente",
+      "ok": true,
+      "problems": [],
+      "ms": 10995,
+      "raw": {
+        "lugar": null,
+        "m": 4,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "Patient Monitoring",
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con modalidad: Monitoreo de paciente: 8 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 1 fila de equipo.",
+      "counts": {
+        "equipment": 8,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "set": "bloque4b",
+  "hits": 2,
+  "total": 5,
+  "gate": 4,
+  "passes": false,
+  "msMin": 12271,
+  "msMax": 14208,
+  "msMedian": 12623,
+  "context": {
+    "countries": [
+      "Argentina",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Dominican Republic",
+      "Ecuador",
+      "Mexico",
+      "Panama",
+      "Peru"
+    ],
+    "cities": [
+      "Arraiján",
+      "Bogota",
+      "Buenos Aires",
+      "Campinas",
+      "Chitré",
+      "Ciudad de Panamá",
+      "Colón",
+      "David",
+      "La Chorrera",
+      "Lima",
+      "Medellin",
+      "Mexico City",
+      "Monterrey",
+      "Panama City",
+      "Penonomé",
+      "Quito",
+      "San Jose",
+      "San Miguelito",
+      "Santiago",
+      "Santo Domingo",
+      "Sao Paulo"
+    ]
+  },
+  "rows": [
+    {
+      "question": "cuál es el estatus de las unidades en Panamá",
+      "ok": false,
+      "problems": [
+        "country=null, se esperaba \"Panama\"",
+        "inventó city=\"Panama City\"",
+        "intención=count, se esperaba breakdown",
+        "agrupación=null, se esperaba status"
+      ],
+      "ms": 12623,
+      "raw": {
+        "co": -1,
+        "ci": 13,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 1,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": "Panama City",
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "count",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con ciudad: Panama City: 3 equipos registrados en 1 sitio, sobre 1 observación.",
+      "counts": {
+        "equipment": 3,
+        "rows": 2,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "cuántas son de baja confianza",
+      "ok": true,
+      "problems": [],
+      "ms": 12271,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": 2,
+        "t": null,
+        "i": 1,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": "Low",
+          "textSearch": null
+        },
+        "intent": "count",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con confianza: Baja: 1 equipo registrado en 1 sitio, sobre 1 observación. 1 fila es de confianza baja.",
+      "counts": {
+        "equipment": 1,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "cuáles son las de baja confianza",
+      "ok": true,
+      "problems": [],
+      "ms": 12518,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": 2,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": "Low",
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con confianza: Baja: 1 equipo registrado en 1 sitio, sobre 1 observación. Se enumeran 1 fila de equipo. 1 fila de confianza baja.",
+      "counts": {
+        "equipment": 1,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "dame los ecógrafos de más de siete años",
+      "ok": false,
+      "problems": [
+        "minAgeYears=8, se esperaba 7"
+      ],
+      "ms": 13430,
+      "raw": {
+        "co": -1,
+        "ci": -1,
+        "m": 2,
+        "b": -1,
+        "amin": 8,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": null,
+          "modality": "Ultrasound",
+          "brand": null,
+          "minAgeYears": 8,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con modalidad: Ecografía · edad: 8 años o más: 4 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 1 fila de equipo.",
+      "counts": {
+        "equipment": 4,
+        "rows": 1,
+        "sites": 1,
+        "observations": 1
+      }
+    },
+    {
+      "question": "qué marcas hay en Ciudad de Panamá",
+      "ok": false,
+      "problems": [
+        "intención=list, se esperaba breakdown",
+        "agrupación=null, se esperaba brand"
+      ],
+      "ms": 14208,
+      "raw": {
+        "co": -1,
+        "ci": 13,
+        "m": -1,
+        "b": -1,
+        "amin": null,
+        "amax": null,
+        "s": -1,
+        "c": -1,
+        "t": null,
+        "i": 0,
+        "g": -1
+      },
+      "plan": {
+        "filter": {
+          "country": null,
+          "city": "Panama City",
+          "modality": null,
+          "brand": null,
+          "minAgeYears": null,
+          "maxAgeYears": null,
+          "status": null,
+          "confidence": null,
+          "textSearch": null
+        },
+        "intent": "list",
+        "groupBy": null
+      },
+      "warnings": [],
+      "answer": "Con ciudad: Panama City: 3 equipos registrados en 1 sitio, sobre 1 observación. Se enumeran 2 filas de equipo.",
+      "counts": {
+        "equipment": 3,
+        "rows": 2,
+        "sites": 1,
+        "observations": 1
+      }
+    }
+  ]
+}

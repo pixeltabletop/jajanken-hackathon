@@ -1,0 +1,40 @@
+{
+  "at": "2026-09-09",
+  "que": "Si cada variante del logo animado se ve sobre el fondo de su tema",
+  "como": [
+    "1. ffmpeg -c:v libvpx-vp9 -i <archivo> -vf fps=4,scale=24:28 -f rawvideo -pix_fmt rgb24: maximo canal RGB de TODOS los fotogramas.",
+    "2. App viva por el protocolo de depuracion de Chromium: se dibuja el <video> en un canvas y se leen los pixeles, para saber que compone de verdad el navegador que usa el jurado.",
+    "3. Captura de pantalla del encabezado en cada tema."
+  ],
+  "resultado": {
+    "blanco": {
+      "archivo": "philips-logo-30s-loop-light-brand.webm",
+      "bytes": 1464316,
+      "maxCanalGlobal": 255,
+      "fondoPropio": "#f4f8fb",
+      "alfaEnChromium": "opaco (255 en todos los pixeles)",
+      "seVe": true,
+      "nota": "Escudo negro sobre fondo claro. Se ve sobre el tema Blanco clasico."
+    },
+    "azul": {
+      "archivo": "philips-logo-30s-loop-hue-neon.webm",
+      "bytes": 689516,
+      "maxCanalGlobal": 16,
+      "fondoPropio": "#020711",
+      "alfaEnChromium": "opaco (255 en todos los pixeles)",
+      "seVe": false,
+      "nota": "Ningun pixel de ningun fotograma pasa de 16/255. En pantalla es un rectangulo casi negro sobre el azul del tema."
+    },
+    "negro": {
+      "archivo": "philips-logo-30s-loop.webm",
+      "bytes": 323813,
+      "maxCanalGlobal": 0,
+      "fondoPropio": "#000000",
+      "alfaEnChromium": "opaco (255 en todos los pixeles)",
+      "seVe": false,
+      "nota": "Todos los fotogramas son negro puro. En pantalla es un rectangulo negro sobre el negro del tema."
+    }
+  },
+  "decision": "D25. No se reasigna la tabla de temas ni se reanima el archivo: las dos cosas estan fuera de alcance del Bloque 4B. Los temas Azul oscuro y Negro usan la marca vectorial que ya estaba en el repositorio. En cuanto Diego entregue piezas visibles sobre fondo oscuro, se cambia `visible: true` en LogoMotion.tsx y no hay que tocar nada mas.",
+  "pendiente": "Pedir a Diego una exportacion de las variantes azul y negro donde el escudo tenga luminancia sobre su propio fondo, o con alfa que este Chromium componga."
+}

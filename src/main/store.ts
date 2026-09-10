@@ -9,6 +9,12 @@ import { record, type TimingKey, type TimingTable } from '../shared/timings.ts'
 import type { Customer, Equipment, Observation, Revision } from '../shared/types.ts'
 import type { VectorCache } from './qvac/dedup.ts'
 
+/** Preferencias del usuario. `theme` en null = todavía no eligió (primera vez). */
+export interface Settings {
+  operator: string
+  theme: string | null
+}
+
 export interface StoreOptions {
   /** Dónde persistir. En Electron, app.getPath('userData'). */
   userDataDir: string
@@ -70,7 +76,7 @@ export function createStore(opts: StoreOptions) {
   const setPath = join(opts.userDataDir, 'settings.json')
   let observations: Observation[] | null = null
   let timings: TimingTable | null = null
-  let settings: { operator: string } | null = null
+  let settings: Settings | null = null
 
   async function loadSeeds(): Promise<Observation[]> {
     const out: Observation[] = []
@@ -127,12 +133,13 @@ export function createStore(opts: StoreOptions) {
       return [...all]
     },
 
-    async getSettings(): Promise<{ operator: string }> {
-      settings ??= await readJson<{ operator: string }>(setPath, { operator: 'Técnico de campo' })
+    async getSettings(): Promise<Settings> {
+      const raw = settings ?? (await readJson<Partial<Settings>>(setPath, {}))
+      settings = { operator: raw.operator ?? 'Técnico de campo', theme: raw.theme ?? null }
       return settings
     },
 
-    async setSettings(patch: Partial<{ operator: string }>): Promise<{ operator: string }> {
+    async setSettings(patch: Partial<Settings>): Promise<Settings> {
       const current = await this.getSettings()
       settings = { ...current, ...patch }
       await mkdir(opts.userDataDir, { recursive: true })
@@ -179,6 +186,18 @@ export function createStore(opts: StoreOptions) {
         if (hay.includes(key) && (!best || o.city.length > best.length)) best = o.city
       }
       return best
+    },
+
+    /**
+     * Listas cerradas con las que se construye el prompt de la pregunta en
+     * español y se resuelven sus índices. Ordenadas siempre igual: el banco de
+     * mediciones tiene que ver exactamente el mismo orden que la app.
+     */
+    async queryContext(): Promise<{ countries: string[]; cities: string[] }> {
+      const all = await ensureLoaded()
+      const countries = [...new Set(all.map((o) => o.country).filter((c): c is string => !!c))].sort()
+      const cities = [...new Set(all.map((o) => o.city).filter((c): c is string => !!c))].sort()
+      return { countries, cities }
     },
 
     /** Ciudades ya registradas, agrupadas por país. Alimenta el desplegable. */

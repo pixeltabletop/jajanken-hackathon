@@ -1,0 +1,341 @@
+{
+  "ok": true,
+  "total": 60,
+  "failed": 0,
+  "results": [
+    {
+      "ok": true,
+      "label": "la app abre con el arranque de marca",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el logo ocupa el centro de la pantalla",
+      "detail": "VIDEO de 240 px"
+    },
+    {
+      "ok": true,
+      "label": "el pie legal se lee durante el arranque",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el nombre aparece junto al logo",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "Esc antes del segundo 5 no salta el arranque",
+      "detail": "1.7 s desde la recarga"
+    },
+    {
+      "ok": true,
+      "label": "el arranque dura al menos 5 segundos",
+      "detail": "6.6 s"
+    },
+    {
+      "ok": true,
+      "label": "nada se descarga de la red: el vídeo viaja en el paquete",
+      "detail": "ninguna petición externa"
+    },
+    {
+      "ok": true,
+      "label": "el tema ya estaba elegido y no se vuelve a preguntar",
+      "detail": "settings.json guardado"
+    },
+    {
+      "ok": true,
+      "label": "la app abre en el selector con dos tarjetas",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "las dos tarjetas son botones alcanzables con Tab",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la tarjeta recibe foco de teclado",
+      "detail": "contorno 1.6px"
+    },
+    {
+      "ok": true,
+      "label": "la fila de métricas se ve antes de elegir",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "entrar a Registrar lleva a la captura",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "Registrar abre SIN la tabla de la base",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el control \"Ver la base registrada\" existe",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la tabla se abre cuando se pide",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "y se puede volver a cerrar",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el botón de interpretar responde",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la espera muestra fases y progreso, no un spinner mudo",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la evidencia queda resaltada sobre la nota",
+      "detail": "1 citas"
+    },
+    {
+      "ok": true,
+      "label": "guarda con un clic",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la tabla creció tras guardar",
+      "detail": "46 → 47 filas"
+    },
+    {
+      "ok": true,
+      "label": "volver al inicio con un borrador pide confirmación",
+      "detail": "Tienes una observación sin guardar. Si vuelves al inicio se "
+    },
+    {
+      "ok": true,
+      "label": "y al decir que no, se queda en Registrar",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "al confirmar, vuelve al selector",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "entrar a Seguimiento lleva a la barra de pregunta",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el foco aterriza en el primer control del modo nuevo",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el cambio se anuncia en la región viva",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "hay preguntas de ejemplo pulsables",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el botón Preguntar responde",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el chip dice en palabras qué entendió",
+      "detail": "país: Panamá · desglose por estatus"
+    },
+    {
+      "ok": true,
+      "label": "el chip declara el desglose",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la frase redactada responde con cifras",
+      "detail": "Con país: Panamá: 58 equipos registrados en 15 sitios, sobre 15 observaciones. Por estatus: Reportado 30, Conf"
+    },
+    {
+      "ok": true,
+      "label": "los números del desglose suman el total de equipos",
+      "detail": "30+16+12 = 58 · KPI 58"
+    },
+    {
+      "ok": true,
+      "label": "dos pestañas, cada una declara cuántas filas trae",
+      "detail": "Resultados 29 filas | Gráficos 58 equipos"
+    },
+    {
+      "ok": true,
+      "label": "las pestañas se recorren con las flechas del teclado",
+      "detail": "activa la 1"
+    },
+    {
+      "ok": true,
+      "label": "la pestaña de gráficos trae varias dimensiones",
+      "detail": "6 gráficos"
+    },
+    {
+      "ok": true,
+      "label": "las barras son controles con aria-pressed",
+      "detail": "5 barras"
+    },
+    {
+      "ok": true,
+      "label": "un clic en una barra recalcula los KPI",
+      "detail": "58/15/15/1 → 20/6/6/0"
+    },
+    {
+      "ok": true,
+      "label": "y también la frase redactada",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el gráfico donde hiciste clic conserva todas sus categorías",
+      "detail": "5 barras"
+    },
+    {
+      "ok": true,
+      "label": "la elegida se marca y las demás se atenúan",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el chip distingue lo que vino de un clic en el gráfico",
+      "detail": "de la pregunta · de un clic en el gráfico"
+    },
+    {
+      "ok": true,
+      "label": "un segundo clic lo deshace: es un interruptor",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "una combinación sin resultados muestra el estado vacío explicado",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "lo dice con esas palabras, no una tabla en blanco",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "y ofrece quitar la condición",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "cada fila del resultado abre su nota original",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la nota se abre con la cita resaltada",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el PDF de la consulta se genera",
+      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-00-33.pdf"
+    },
+    {
+      "ok": true,
+      "label": "el tema negro se puede elegir desde el encabezado",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el tema negro se aplica al instante",
+      "detail": "data-theme=negro"
+    },
+    {
+      "ok": true,
+      "label": "el tema azul se puede elegir desde el encabezado",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el tema azul se aplica al instante",
+      "detail": "data-theme=azul"
+    },
+    {
+      "ok": true,
+      "label": "el tema blanco se puede elegir desde el encabezado",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el tema blanco se aplica al instante",
+      "detail": "data-theme=blanco"
+    },
+    {
+      "ok": true,
+      "label": "cambiar de tema no pierde el filtro ni el resultado",
+      "detail": "48 → 48 filas"
+    },
+    {
+      "ok": true,
+      "label": "con movimiento reducido la app sigue siendo usable",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "la transición queda en un fundido corto, sin desplazamiento",
+      "detail": "{\"nombre\":\"fadeOnly\",\"dur\":\"0.08s\"}"
+    },
+    {
+      "ok": true,
+      "label": "sin errores ni avisos en consola",
+      "detail": "ninguno"
+    }
+  ],
+  "summary": {
+    "stamp": "73352",
+    "site": "Policlínica DemoCare Prueba 73352",
+    "splashMs": 6567,
+    "doorsHome": [
+      "Registrar equipos",
+      "Seguimiento y reportes"
+    ],
+    "extractMs": 14185,
+    "queryMs": 21594,
+    "breakdown": {
+      "desglose": [
+        30,
+        16,
+        12
+      ],
+      "suma": 58,
+      "kpi": 58
+    },
+    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-00-33.pdf",
+    "tema_negro": {
+      "fondo": "rgb(20, 22, 25)",
+      "texto": "rgb(244, 246, 248)"
+    },
+    "tema_azul": {
+      "fondo": "rgb(1, 58, 107)",
+      "texto": "rgb(242, 248, 253)"
+    },
+    "tema_blanco": {
+      "fondo": "rgb(255, 255, 255)",
+      "texto": "rgb(22, 43, 61)"
+    },
+    "consoleErrors": []
+  }
+}

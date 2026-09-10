@@ -7,7 +7,16 @@ import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { COLUMN_BY_KEY, countryLabel, type ColumnKey } from '../shared/columns.ts'
-import { CONFIDENCE_LABEL_ES, MODALITY_LABEL_ES, STATUS_LABEL_ES } from '../shared/catalog.ts'
+import { CONFIDENCE_LABEL_ES, MODALITY_LABEL_ES } from '../shared/catalog.ts'
+import {
+  ageBand,
+  applyFilter as engineFilter,
+  describeFilter as engineDescribe,
+  flatten as engineFlatten,
+  groupByLabel,
+  redact,
+  runPlan
+} from '../shared/query-engine.ts'
 import { REPORT_BY_KIND, type ReportRequest } from '../shared/reports.ts'
 import type { Equipment, Observation, QueryFilter } from '../shared/types.ts'
 
@@ -19,40 +28,30 @@ const norm = (s: string | null | undefined): string =>
 
 interface Row { o: Observation; e: Equipment }
 
+// Las cifras del PDF salen del MISMO motor que las de la pantalla. Tener aquí
+// una segunda copia del filtrado fue lo que permitió que un reporte dijera algo
+// distinto de la tabla que lo originó.
 function flatten(obs: Observation[]): Row[] {
-  return obs.flatMap((o) => o.equipment.map((e) => ({ o, e })))
+  return engineFlatten(obs).map((h) => ({ o: h.obs, e: h.eq }))
 }
 
 function applyFilter(rows: Row[], f: QueryFilter): Row[] {
-  return rows.filter(({ o, e }) => {
-    if (f.country && norm(o.country) !== norm(f.country)) return false
-    if (f.city && !norm(o.city).includes(norm(f.city))) return false
-    if (f.modality && e.modality !== f.modality) return false
-    if (f.brand && e.brand !== f.brand) return false
-    if (f.minAgeYears !== null && (e.approxAgeYears === null || e.approxAgeYears < f.minAgeYears)) return false
-    if (f.maxAgeYears !== null && (e.approxAgeYears === null || e.approxAgeYears > f.maxAgeYears)) return false
-    if (f.status && e.status !== f.status) return false
-    if (f.confidence && e.confidence !== f.confidence) return false
-    if (f.textSearch) {
-      const hay = norm(`${o.facilityCanonical ?? o.facility} ${o.city ?? ''} ${e.brand ?? ''} ${e.model ?? ''} ${o.rawText}`)
-      if (!hay.includes(norm(f.textSearch))) return false
-    }
-    return true
-  })
+  const hits = engineFilter(rows.map((r) => ({
+    obs: r.o,
+    eq: r.e,
+    key: '',
+    site: r.o.facilityCanonical ?? r.o.facility,
+    city: r.o.city,
+    country: r.o.country,
+    ageBand: ageBand(r.e.approxAgeYears)
+  })), f)
+  return hits.map((h) => ({ o: h.obs, e: h.eq }))
 }
 
+const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)
+
 function describeFilter(f: QueryFilter): string[] {
-  const out: string[] = []
-  if (f.country) out.push(`País: ${countryLabel(f.country)}`)
-  if (f.city) out.push(`Ciudad: ${f.city}`)
-  if (f.modality) out.push(`Modalidad: ${MODALITY_LABEL_ES[f.modality]}`)
-  if (f.brand) out.push(`Marca: ${f.brand}`)
-  if (f.minAgeYears !== null) out.push(`Edad mínima: ${f.minAgeYears} años`)
-  if (f.maxAgeYears !== null) out.push(`Edad máxima: ${f.maxAgeYears} años`)
-  if (f.status) out.push(`Estado: ${STATUS_LABEL_ES[f.status]}`)
-  if (f.confidence) out.push(`Confianza: ${CONFIDENCE_LABEL_ES[f.confidence]}`)
-  if (f.textSearch) out.push(`Texto: "${f.textSearch}"`)
-  return out
+  return engineDescribe(f).map(cap)
 }
 
 const CSS = `
@@ -147,6 +146,28 @@ function bodyFor(req: ReportRequest, all: Observation[], rows: Row[]): string {
       ${barTable('Por antigüedad', sumBy(rows, (r) => r.e.approxAgeYears === null ? 'Sin dato' : r.e.approxAgeYears <= 3 ? '0–3 años' : r.e.approxAgeYears <= 7 ? '4–7 años' : '8+ años'))}
       <h2>Clientes con equipo de 7 años o más (${oldSites.length})</h2>
       ${oldSites.length ? `<p>${oldSites.map(esc).join(' · ')}</p>` : '<p class="empty">Ninguno con este filtro.</p>'}`
+  }
+
+  if (req.kind === 'consulta') {
+    // La frase y el desglose se recalculan aquí con el mismo motor que la
+    // pantalla, a partir del plan. Nada de texto que venga hecho desde fuera.
+    const plan = { filter: req.filter, intent: req.intent ?? 'list', groupBy: req.groupBy ?? null }
+    const r = runPlan(all, plan)
+    return `
+      <div class="note"><b>Pregunta:</b> “${esc(req.question ?? '')}”</div>
+      <h2>Respuesta</h2>
+      <p style="font-size:13px">${esc(redact(plan, r))}</p>
+      <div class="kpis">
+        <div class="kpi"><span>Equipos</span><b>${r.equipment}</b></div>
+        <div class="kpi"><span>Sitios</span><b>${r.sites}</b></div>
+        <div class="kpi"><span>Observaciones</span><b>${r.observations}</b></div>
+        <div class="kpi"><span>Confianza baja</span><b>${r.lowConfidence}</b></div>
+      </div>
+      ${r.groups.length ? `<h2>Desglose por ${esc(groupByLabel(plan.groupBy))}</h2>${barTable('', r.groups.map((g) => [g.label, g.equipment] as [string, number]))}` : ''}
+      ${r.missing.length ? `<p class="note">Fuera del filtro por falta de dato: ${esc(r.missing.map((m) => `${m.rows} fila(s) ${m.field} (${m.equipment} equipos)`).join(' · '))}.</p>` : ''}
+      <h2>Registros que sostienen la respuesta (${rows.length} filas)</h2>
+      ${tableOf(rows, cols)}
+      <p class="empty">Cada cifra de arriba se calculó sobre estos registros. El modelo de lenguaje solo tradujo la pregunta a un filtro.</p>`
   }
 
   if (req.kind === 'validacion') {

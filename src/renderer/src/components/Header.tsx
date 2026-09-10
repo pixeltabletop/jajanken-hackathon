@@ -1,23 +1,44 @@
 import type { JSX } from 'react'
 import type { ModelKey, ModelStatus } from '../../../shared/types.ts'
 import { fmt, type TimingTable } from '../../../shared/timings.ts'
-import philipsLogo from '../assets/philips-logo.svg'
+import type { ThemeId } from '../assets/themes.ts'
 import { HelpTip } from './HelpTip.tsx'
+import { LogoMark } from './LogoMotion.tsx'
+import { ThemeSwitch } from './ThemePicker.tsx'
 
 const LABEL: Record<ModelKey, string> = { gemma: 'Extracción', whisper: 'Voz', embed: 'Dedup' }
 const STATE_ES = { idle: 'en espera', loading: 'cargando', ready: 'listo', error: 'error' } as const
 
-export function Header({ status, timings }: { status: ModelStatus | null; timings: TimingTable }): JSX.Element {
+interface Props {
+  status: ModelStatus | null
+  timings: TimingTable
+  theme: ThemeId
+  onTheme: (t: ThemeId) => void
+  /** null en el inicio: desde ahí no hay a dónde volver. */
+  onHome: (() => void) | null
+  modeLabel: string | null
+}
+
+export function Header({ status, timings, theme, onTheme, onHome, modeLabel }: Props): JSX.Element {
   const keys: ModelKey[] = ['whisper', 'embed', 'gemma']
   const loading = keys.filter((k) => status?.[k].state === 'loading').length
   return (
     <header>
       <div className="brand">
-        <img className="philips-logo" src={philipsLogo} alt="Philips" />
-        <h1>Eco</h1>
-        <p className="tagline">De la voz al dato, sin salir de esta computadora</p>
+        <LogoMark size="mark" label="Logo de la aplicación" />
+        <div>
+          <h1>Eco</h1>
+          <p className="tagline">De la voz al dato, sin salir de esta computadora</p>
+        </div>
+        {modeLabel && <span className="mode-badge">{modeLabel}</span>}
       </div>
       <div className="pills" aria-live="polite" aria-label="Estado de los modelos locales">
+        {onHome && (
+          <button type="button" className="ghost small home-btn" onClick={onHome}>
+            ← Volver al inicio
+          </button>
+        )}
+        <ThemeSwitch value={theme} onChange={onTheme} />
         {keys.map((k) => {
           const s = status?.[k]
           const st = s?.state ?? 'idle'

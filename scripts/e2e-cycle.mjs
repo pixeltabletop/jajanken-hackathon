@@ -24,12 +24,12 @@ async function findPage() {
   for (let i = 0; i < 30; i++) {
     try {
       const targets = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const page = targets.find((t) => t.type === 'page' && /localhost:5173|FieldLens/i.test(`${t.url} ${t.title}`))
+      const page = targets.find((t) => t.type === 'page' && /localhost:5173|Eco/i.test(`${t.url} ${t.title}`))
       if (page) return page
     } catch { /* aún no escucha */ }
     await sleep(1000)
   }
-  throw new Error(`No encontré la ventana de FieldLens en el puerto ${PORT}. ¿Está corriendo npm run dev con --remote-debugging-port?`)
+  throw new Error(`No encontré la ventana de Eco en el puerto ${PORT}. ¿Está corriendo npm run dev con --remote-debugging-port?`)
 }
 
 const page = await findPage()
@@ -65,6 +65,23 @@ const clickByText = (text) => js(`(() => { const b = [...document.querySelectorA
 
 const summary = { note: NOTE, steps: {} }
 try {
+  // 0. Bloque 4B: la app abre en el arranque de marca y luego en el selector de
+  // dos puertas. El ciclo de registro vive detrás de la puerta izquierda, y la
+  // tabla de la base ya no se pinta de entrada: hay que pedirla.
+  console.log('--- 0. arranque y puerta izquierda ---')
+  // Recargar el renderer hace el ciclo repetible: deja la interfaz en el mismo
+  // punto de partida sin tocar los modelos, que viven en el proceso principal.
+  await send('Page.reload', { ignoreCache: false })
+  await sleep(1500)
+  await waitFor(`!document.querySelector('.splash')`, 'que termine el arranque de marca', 60000, 500)
+  await js(`(() => { const b=document.querySelector('.theme-first button.primary'); if (b) b.click() })()`)
+  await sleep(500)
+  await js(`(() => { const d=document.getElementById('door-capture'); if (d) d.click() })()`)
+  await sleep(800)
+  check(await js(`!!document.querySelector('#note')`), 'la puerta izquierda lleva a la captura')
+  await js(`(() => { const b=[...document.querySelectorAll('button')].find(x=>/Ver la base registrada/.test(x.textContent)); if (b) b.click() })()`)
+  await sleep(600)
+
   // 1. Modelos listos
   console.log('--- 1. modelos ---')
   const msReady = await waitFor(`document.querySelectorAll('.pill.ready').length === 3`, 'los tres modelos en listo', 180000, 2000)

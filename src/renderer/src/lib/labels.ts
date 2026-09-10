@@ -2,29 +2,10 @@
 
 import type { Language } from '../../../shared/types.ts'
 
-export const COUNTRY_ES: Record<string, string> = {
-  Panama: 'Panamá',
-  Brazil: 'Brasil',
-  Mexico: 'México',
-  Peru: 'Perú',
-  'Dominican Republic': 'República Dominicana',
-  Chile: 'Chile',
-  Argentina: 'Argentina',
-  Colombia: 'Colombia',
-  'Costa Rica': 'Costa Rica',
-  Ecuador: 'Ecuador'
-}
-
-export const countryLabel = (c: string | null | undefined): string => (c ? COUNTRY_ES[c] ?? c : '—')
-
-export const AGE_BUCKETS = ['0–3 años', '4–7 años', '8+ años', 'Sin dato'] as const
-
-export function ageBucket(a: number | null): (typeof AGE_BUCKETS)[number] {
-  if (a === null) return 'Sin dato'
-  if (a <= 3) return '0–3 años'
-  if (a <= 7) return '4–7 años'
-  return '8+ años'
-}
+// Los catálogos de etiquetas viven en shared/: aquí solo el puente y lo que
+// es propio del renderer.
+export { COUNTRY_ES, countryLabel } from '../../../shared/columns.ts'
+export { AGE_BANDS as AGE_BUCKETS, ageBand as ageBucket } from '../../../shared/query-engine.ts'
 
 // Heurística barata. El prompt de extracción entiende ambos idiomas; esto solo
 // etiqueta la observación y decide la fuente del texto.

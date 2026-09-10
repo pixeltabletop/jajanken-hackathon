@@ -1,14 +1,11 @@
+/* Tipografía y reglas de caja. Los colores NO viven aquí: los inyecta
+   applyTheme() desde assets/themes.ts sobre :root, antes del primer render.
+   Un color escrito a mano en cualquier hoja rompe el cambio de tema. */
 :root {
-  --philips-blue: #0076ce;
-  --philips-deep-blue: #004b93;
-  --philips-sky: #eaf6fd;
-  --ink: #162b3d;
-  --muted: #5b6f7f;
-  --line: #d8e5ed;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--ink);
-  background: #f5f9fc;
+  background: var(--page);
 }
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 980px; min-height: 100vh; line-height: 1.45; }
+body { margin: 0; min-width: 980px; min-height: 100vh; line-height: 1.45; color: var(--ink); }
 button, input, select, textarea { font: inherit; }
