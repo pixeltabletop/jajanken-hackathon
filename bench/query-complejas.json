@@ -4,9 +4,9 @@
   "total": 5,
   "gate": 4,
   "passes": true,
-  "msMin": 11517,
-  "msMax": 12389,
-  "msMedian": 11962,
+  "msMin": 11741,
+  "msMax": 13169,
+  "msMedian": 12331,
   "context": {
     "countries": [
       "Argentina",
@@ -49,7 +49,7 @@
       "question": "equipos de Panamá, en San Francisco, con confianza baja o media",
       "ok": true,
       "problems": [],
-      "ms": 12389,
+      "ms": 12514,
       "raw": {
         "lugares": [
           "Panamá",
@@ -100,7 +100,7 @@
       "question": "ecógrafos reportados o estimados en Panamá de más de cuatro años",
       "ok": true,
       "problems": [],
-      "ms": 12075,
+      "ms": 12331,
       "raw": {
         "lugares": [
           "Panamá"
@@ -150,7 +150,7 @@
       "question": "cuántos equipos hay en Brasil y en México",
       "ok": true,
       "problems": [],
-      "ms": 11614,
+      "ms": 11741,
       "raw": {
         "lugares": [
           "Brasil",
@@ -196,7 +196,7 @@
       "question": "tomógrafos NovaMed de confianza alta o media",
       "ok": true,
       "problems": [],
-      "ms": 11962,
+      "ms": 13169,
       "raw": {
         "lugares": [],
         "m": [
@@ -246,7 +246,7 @@
       "question": "equipos confirmados o reportados de menos de tres años",
       "ok": true,
       "problems": [],
-      "ms": 11517,
+      "ms": 12306,
       "raw": {
         "lugares": [],
         "m": [],

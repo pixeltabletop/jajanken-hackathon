@@ -82,16 +82,16 @@ const summary = {}
 try {
   // ---- 1. arranque y marca -------------------------------------------------
   console.log('\n--- 1. arranque, marca y tiempos ---')
-  const readyMs = await waitFor(`document.querySelectorAll('.pill.ready').length === 3`, 'tres modelos listos', 240000, 2000)
+  const readyMs = await waitFor(`document.querySelectorAll('.dot.ready').length === 3`, 'tres modelos listos', 240000, 2000)
   summary.modelsReadyMs = readyMs
   check(true, 'los tres modelos quedan listos', `${(readyMs / 1000).toFixed(0)} s desde que abrió la ventana`)
   check(await js(`document.title === 'Eco'`), 'la ventana se llama Eco')
   check(await js(`document.querySelector('h1').textContent.trim() === 'Eco'`), 'el encabezado dice Eco')
   check(!(await js(`document.body.textContent.includes('INSTALLED BASE INTELLIGENCE')`)), 'se quitó "INSTALLED BASE INTELLIGENCE"')
   check(!(await js(`document.body.textContent.includes('FieldLens')`)), 'no queda ningún rastro de FieldLens')
-  const pillText = await js(`[...document.querySelectorAll('.pill')].map(p=>p.textContent.trim())`)
-  check(pillText.every((t) => /\d/.test(t)), 'cada modelo muestra su tiempo de carga', pillText.join(' | '))
-  summary.pills = pillText
+  const dotsTitle = await js(`(document.querySelector('.dots')||{}).title || ''`)
+  check(/listo|Voz/.test(dotsTitle), 'el semáforo dice el estado de cada modelo al pasar el cursor', dotsTitle.slice(0, 80))
+  summary.pills = dotsTitle
   await shot('01-arranque')
 
   // ---- 2. guía de campo ----------------------------------------------------

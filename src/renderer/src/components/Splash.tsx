@@ -21,7 +21,7 @@ import { LogoMotion } from './LogoMotion.tsx'
  */
 export const SPLASH_MIN_MS = 5000
 /** Salida en fundido, para que no sea un corte seco. */
-const FADE_MS = 220
+const FADE_MS = 420
 
 interface Props {
   theme: ThemeId

@@ -4,9 +4,9 @@
   "total": 10,
   "gate": 7,
   "passes": true,
-  "msMin": 11208,
-  "msMax": 11962,
-  "msMedian": 11479,
+  "msMin": 10798,
+  "msMax": 13505,
+  "msMedian": 12548,
   "context": {
     "countries": [
       "Argentina",
@@ -49,7 +49,7 @@
       "question": "hospitales en Panamá con resonadores",
       "ok": true,
       "problems": [],
-      "ms": 11661,
+      "ms": 11600,
       "raw": {
         "lugares": [
           "Panamá"
@@ -81,7 +81,7 @@
         "groupBy": "modality"
       },
       "warnings": [],
-      "answer": "Con país: Panamá · modalidad: Resonancia magnética: 8 equipos registrados en 5 sitios, sobre 5 observaciones. Por modalidad: Resonancia magnética 8.",
+      "answer": "Con país: Panamá · modalidad: Resonancia magnética: 8 equipos registrados en 5 sitios, sobre 5 observaciones. Por modalidad: Resonancia magnética 8, Tomografía 0, Ecografía 0, Rayos X 0, Monitoreo de paciente 0, Terapia guiada por imagen 0, Otro 0.",
       "counts": {
         "equipment": 8,
         "rows": 5,
@@ -93,7 +93,7 @@
       "question": "tomógrafos de más de diez años",
       "ok": true,
       "problems": [],
-      "ms": 11208,
+      "ms": 12561,
       "raw": {
         "lugares": [],
         "m": [
@@ -135,7 +135,7 @@
       "question": "equipos Aurelia Health en Brasil",
       "ok": true,
       "problems": [],
-      "ms": 11656,
+      "ms": 13505,
       "raw": {
         "lugares": [
           "Brasil"
@@ -179,7 +179,7 @@
       "question": "todo lo que hay en Colón",
       "ok": true,
       "problems": [],
-      "ms": 11962,
+      "ms": 11780,
       "raw": {
         "lugares": [
           "Colón"
@@ -221,7 +221,7 @@
       "question": "ecógrafos nuevos, de menos de tres años",
       "ok": true,
       "problems": [],
-      "ms": 11479,
+      "ms": 10798,
       "raw": {
         "lugares": [],
         "m": [
@@ -263,7 +263,7 @@
       "question": "registros con confianza baja",
       "ok": true,
       "problems": [],
-      "ms": 11229,
+      "ms": 11253,
       "raw": {
         "lugares": [],
         "m": [],
@@ -305,7 +305,7 @@
       "question": "equipos estimados, no confirmados",
       "ok": true,
       "problems": [],
-      "ms": 11312,
+      "ms": 12548,
       "raw": {
         "lugares": [],
         "m": [],
@@ -347,7 +347,7 @@
       "question": "resonadores viejos en México",
       "ok": true,
       "problems": [],
-      "ms": 11454,
+      "ms": 12730,
       "raw": {
         "lugares": [
           "México"
@@ -391,7 +391,7 @@
       "question": "qué tiene el DemoCare Chiriquí",
       "ok": true,
       "problems": [],
-      "ms": 11690,
+      "ms": 12153,
       "raw": {
         "lugares": [
           "DemoCare Chiriquí"
@@ -435,7 +435,7 @@
       "question": "monitores de paciente",
       "ok": true,
       "problems": [],
-      "ms": 11395,
+      "ms": 13170,
       "raw": {
         "lugares": [],
         "m": [

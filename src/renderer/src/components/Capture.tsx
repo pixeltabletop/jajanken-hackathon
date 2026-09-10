@@ -1,6 +1,8 @@
 import type { JSX } from 'react'
 import type { TranscriptFix } from '../../../shared/transcript.ts'
 import { fmt, type TimingTable } from '../../../shared/timings.ts'
+import type { ThemeId } from '../assets/themes.ts'
+import { BusyOverlay } from './BusyOverlay.tsx'
 import { FieldGuide } from './FieldGuide.tsx'
 import { Progress } from './Progress.tsx'
 import { Waveform } from './Waveform.tsx'
@@ -24,6 +26,7 @@ interface Props {
   onStop: () => void
   onExtract: () => void
   message: string
+  theme: ThemeId
 }
 
 export function Capture(p: Props): JSX.Element {
@@ -34,6 +37,8 @@ export function Capture(p: Props): JSX.Element {
 
       <FieldGuide onUseExample={p.onText} />
 
+      {/* El recuadro del dictado: es lo único que se sombrea mientras trabaja. */}
+      <div className="cap-box">
       {p.recording ? (
         <Waveform level={p.level} seconds={p.seconds} />
       ) : p.transcribing ? (
@@ -58,6 +63,13 @@ export function Capture(p: Props): JSX.Element {
           />
         </>
       )}
+        <BusyOverlay
+          active={p.recording || p.transcribing}
+          theme={p.theme}
+          label={p.recording ? 'Escuchando el dictado' : 'Pasando la voz a texto'}
+          hint={p.recording ? 'Pulsa Detener cuando termines' : 'En esta computadora, sin red'}
+        />
+      </div>
 
       {p.fixes.length > 0 && !p.recording && !p.transcribing && (
         <div className="fixes" role="note">
@@ -106,6 +118,7 @@ export function Capture(p: Props): JSX.Element {
       </div>
 
       <p className="status-line" role="status" aria-live="polite">{p.message}</p>
+
     </section>
   )
 }

@@ -84,7 +84,7 @@ try {
 
   // 1. Modelos listos
   console.log('--- 1. modelos ---')
-  const msReady = await waitFor(`document.querySelectorAll('.pill.ready').length === 3`, 'los tres modelos en listo', 180000, 2000)
+  const msReady = await waitFor(`document.querySelectorAll('.dot.ready').length === 3`, 'los tres modelos en listo', 180000, 2000)
   summary.steps.modelsReadyMs = msReady
   check(true, `tres modelos listos en ${(msReady / 1000).toFixed(0)} s`)
   const before = await js(`document.querySelectorAll('tbody tr').length`)

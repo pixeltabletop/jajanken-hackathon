@@ -49,11 +49,15 @@ export function ThemeFirstRun({ value, onChange, onDone }: Props & { onDone: () 
   )
 }
 
-/** Selector compacto del encabezado. Se aplica al instante, sin reiniciar. */
+/**
+ * Selector compacto del encabezado. Lleva la etiqueta "Tema" a la vista: un
+ * desplegable que solo muestra el valor elegido no dice para qué sirve, y hay
+ * que abrirlo para averiguarlo.
+ */
 export function ThemeSwitch({ value, onChange }: Props): JSX.Element {
   return (
     <label className="theme-switch">
-      <span className="sr-only">Tema de la aplicación</span>
+      <span className="theme-switch-label">Tema</span>
       <select value={value} onChange={(e) => onChange(e.target.value as ThemeId)} aria-label="Tema de la aplicación">
         {THEMES.map((t) => (
           <option key={t.id} value={t.id}>{t.label}</option>

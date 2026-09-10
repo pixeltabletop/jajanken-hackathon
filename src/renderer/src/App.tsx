@@ -14,6 +14,7 @@ import { Footer } from './components/Footer.tsx'
 import { GuideSection } from './components/GuideSection.tsx'
 import { Header } from './components/Header.tsx'
 import { Home } from './components/Home.tsx'
+import { ModeFlash } from './components/ModeFlash.tsx'
 import { ReportsSection } from './components/ReportsSection.tsx'
 import { Review } from './components/Review.tsx'
 import { Splash } from './components/Splash.tsx'
@@ -69,9 +70,14 @@ export default function App(): JSX.Element {
   const [mode, setMode] = useState<Mode>('home')
   /** Registrar abre sin lista. La tabla solo aparece si se pide. */
   const [showBase, setShowBase] = useState(false)
+  /** Contador que dispara el destello de marca al entrar a un modo. */
+  const [flash, setFlash] = useState(0)
   const theme = useThemeId()
 
   const recorder = useRef(new WavRecorder())
+  /** A dónde va el texto transcrito: la nota de campo o la pregunta. */
+  const dictado = useRef<'nota' | 'pregunta'>('nota')
+  const [question, setQuestion] = useState('')
   const textFromVoice = useRef(false)
   const cancelled = useRef(false)
 
@@ -167,6 +173,10 @@ export default function App(): JSX.Element {
   const hasUnsaved = draft !== null || text.trim().length > 0
 
   const go = useCallback((next: Mode): void => {
+    // Cada cambio de pantalla lleva su cruce con la marca. Josué lo pidió así:
+    // "cada vez que cambias de una pestaña a otra, siempre aparezca el logo de
+    // carga, así sea por un poco, para que se vea más fluido".
+    setFlash((n) => n + 1)
     transitionTo(
       () => {
         setMode(next)
@@ -176,6 +186,24 @@ export default function App(): JSX.Element {
     )
     announce(`Modo ${MODE_LABEL[next]}`)
   }, [])
+
+  /**
+   * Cerrar sesión devuelve a la pantalla de acceso. No borra nada: los registros
+   * son del equipo, no del usuario. Si hay un borrador sin guardar, pregunta,
+   * igual que al volver al inicio.
+   */
+  const logout = useCallback((): void => {
+    if (mode === 'capture' && hasUnsaved) {
+      const ok = window.confirm(
+        'Tienes una observación sin guardar. Si cierras sesión se descarta.\n\n¿Cerrar sesión de todos modos?'
+      )
+      if (!ok) return
+    }
+    resetDraft(); setText(''); setFixes([]); textFromVoice.current = false
+    setQuestion('')
+    transitionTo(() => { setMode('home'); setShowBase(false); setEntered(false) }, 'acc-user')
+    announce('Sesión cerrada')
+  }, [mode, hasUnsaved])
 
   const goHome = useCallback((): void => {
     if (mode === 'capture' && hasUnsaved) {
@@ -264,7 +292,8 @@ export default function App(): JSX.Element {
     document.getElementById('rev-h')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
-  async function onRecord(): Promise<void> {
+  async function onRecord(destino: 'nota' | 'pregunta' = 'nota'): Promise<void> {
+    dictado.current = destino
     try {
       await recorder.current.start()
       setRecording(true); setSeconds(0); setLevel(0); setFixes([])
@@ -284,8 +313,16 @@ export default function App(): JSX.Element {
       setRecording(false)
       setMessage(`Transcribiendo ${dur.toFixed(0)} s de audio, localmente…`)
       const t = await call(window.api.transcribe(wav))
-      setText(t.text); setFixes(t.fixes); textFromVoice.current = true
       refreshTimings()
+      if (dictado.current === 'pregunta') {
+        // La pregunta dictada se queda en el cuadro para poder corregirla antes
+        // de lanzarla: transcribir no es entender, y una palabra mal oída
+        // cambiaría el filtro entero.
+        setQuestion(t.text)
+        setMessage('Pregunta transcrita. Revísala y pulsa Preguntar.')
+        return
+      }
+      setText(t.text); setFixes(t.fixes); textFromVoice.current = true
       setMessage(t.fixes.length
         ? `Transcrito y corregidos ${t.fixes.length} términos. Revisa el texto y pulsa Interpretar.`
         : 'Transcrito. Revisa el texto y pulsa Interpretar.')
@@ -295,7 +332,7 @@ export default function App(): JSX.Element {
   if (!hasApi) {
     return (
       <main>
-        <Header status={null} timings={{}} theme={theme} onTheme={onTheme} onHome={null} modeLabel={null} />
+        <Header status={null} timings={{}} theme={theme} onTheme={onTheme} onHome={null} modeLabel={null} onLogout={() => undefined} operator={operator} />
         <section><p className="empty">Esta interfaz solo funciona dentro de la aplicación Eco, porque los modelos corren en el proceso principal de Electron. Ábrela con <code>npm run dev</code> o desde el instalador.</p></section>
       </main>
     )
@@ -306,7 +343,11 @@ export default function App(): JSX.Element {
       <Access
         initialName={operator}
         observations={observations.length}
-        onEnter={(n) => { onOperator(n); setEntered(true) }}
+        onEnter={(n) => {
+          onOperator(n)
+          setFlash((f) => f + 1)
+          transitionTo(() => setEntered(true), 'door-capture')
+        }}
       />
     )
   }
@@ -324,10 +365,13 @@ export default function App(): JSX.Element {
   return (
     <main className={`mode-${mode}`}>
       <span id="mode-live" className="sr-only" aria-live="polite" />
+      <ModeFlash show={flash} theme={theme} />
       <Header
         status={status} timings={timings} theme={theme} onTheme={onTheme}
         onHome={mode === 'home' ? null : goHome}
         modeLabel={mode === 'home' ? null : MODE_LABEL[mode]}
+        onLogout={logout}
+        operator={operator}
       />
 
       {askTheme ? (
@@ -351,6 +395,9 @@ export default function App(): JSX.Element {
             columns={columns} onColumns={setColumns}
             modelsReady={gemmaReady} timings={timings}
             operator={operator} onOperator={onOperator}
+            theme={theme} question={question} onQuestion={setQuestion}
+            voiceEnabled={VOICE_ENABLED} recording={recording} transcribing={transcribing}
+            seconds={seconds} onRecord={() => void onRecord('pregunta')} onStop={onStop}
           />
           <GuideSection timings={timings} />
         </div>
@@ -362,7 +409,8 @@ export default function App(): JSX.Element {
               text={text} onText={onText} busy={busy} transcribing={transcribing} recording={recording}
               seconds={seconds} level={level} fixes={fixes}
               voiceEnabled={VOICE_ENABLED} modelsReady={gemmaReady} whisperReady={whisperReady} timings={timings}
-              onRecord={onRecord} onStop={onStop} onExtract={onExtract} message={message}
+              onRecord={() => void onRecord('nota')} onStop={onStop} onExtract={onExtract} message={message}
+              theme={theme}
             />
             <Review
               draft={draft} editing={editingId !== null} extracting={busy && !draft && !recording && !transcribing}
@@ -370,6 +418,7 @@ export default function App(): JSX.Element {
               dedup={dedup} dedupLoading={dedupLoading} chosenCustomer={chosen} onChooseCustomer={setChosen}
               citiesByCountry={cities}
               onChange={setDraft} onSave={onSave} onDiscard={onDiscard} onCancelWait={onCancelWait}
+              theme={theme}
             />
           </div>
 

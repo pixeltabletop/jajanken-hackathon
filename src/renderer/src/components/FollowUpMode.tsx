@@ -22,7 +22,9 @@ import {
 } from '../../../shared/query-engine.ts'
 import type { TimingTable } from '../../../shared/timings.ts'
 import type { Observation, QueryFilter } from '../../../shared/types.ts'
+import type { ThemeId } from '../assets/themes.ts'
 import { call } from '../lib/api.ts'
+import { BusyOverlay } from './BusyOverlay.tsx'
 import { DataTable } from './DataTable.tsx'
 import { ExportBar } from './ExportBar.tsx'
 import { FilterBar } from './FilterBar.tsx'
@@ -40,14 +42,24 @@ interface Props {
   timings: TimingTable
   operator: string
   onOperator: (v: string) => void
+  theme: ThemeId
+  /** Dictado de la pregunta. Lo gobierna App, que ya tiene la grabadora. */
+  question: string
+  onQuestion: (q: string) => void
+  voiceEnabled: boolean
+  recording: boolean
+  transcribing: boolean
+  seconds: number
+  onRecord: () => void
+  onStop: () => void
 }
 
 type Tab = 'result' | 'charts'
 
 export function FollowUpMode({
-  observations, columns, onColumns, modelsReady, timings, operator, onOperator
+  observations, columns, onColumns, modelsReady, timings, operator, onOperator,
+  theme, question, onQuestion, voiceEnabled, recording, transcribing, seconds, onRecord, onStop
 }: Props): JSX.Element {
-  const [question, setQuestion] = useState('')
   const [asked, setAsked] = useState<string | null>(null)
   const [plan, setPlan] = useState<QueryPlan>({ filter: EMPTY_FILTER, intent: 'list', groupBy: null })
   const [origin, setOrigin] = useState<Partial<Record<keyof QueryFilter, PartOrigin>>>({})
@@ -56,6 +68,8 @@ export function FollowUpMode({
   const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<Tab>('result')
   const [openKey, setOpenKey] = useState<string | null>(null)
+  /** Cambio de pestaña: el área de datos se sombrea un momento mientras cambia. */
+  const [cambiandoPanel, setCambiandoPanel] = useState(false)
   const lastAdded = useRef<keyof QueryFilter | null>(null)
 
   const all = useMemo(() => flatten(observations), [observations])
@@ -126,11 +140,21 @@ export function FollowUpMode({
     { id: 'charts', label: 'Gráficos', count: `${result.equipment} equipos` }
   ]
 
+  /** Cambiar de pestaña avisa: el área que cambia se sombrea medio segundo. */
+  const irA = useCallback((id: Tab) => {
+    setTab((actual) => {
+      if (actual === id) return actual
+      setCambiandoPanel(true)
+      setTimeout(() => setCambiandoPanel(false), 380)
+      return id
+    })
+  }, [])
+
   function onTabKey(e: React.KeyboardEvent, i: number): void {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
     e.preventDefault()
     const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]
-    setTab(next.id)
+    irA(next.id)
     document.getElementById(`tab-${next.id}`)?.focus()
   }
 
@@ -138,11 +162,13 @@ export function FollowUpMode({
     <section className="follow" aria-labelledby="follow-h">
       <h2 id="follow-h">Seguimiento y reportes</h2>
 
-      <QueryGuide onUseExample={(q) => { setQuestion(q); void onAsk(q) }} />
+      <QueryGuide onUseExample={(q) => { onQuestion(q); void onAsk(q) }} />
 
       <QueryBar
-        value={question} onValue={setQuestion} onAsk={onAsk}
-        busy={busy} ready={modelsReady} ms={ms} error={error} timings={timings}
+        value={question} onValue={onQuestion} onAsk={onAsk}
+        busy={busy} ready={modelsReady} ms={ms} error={error} timings={timings} theme={theme}
+        voiceEnabled={voiceEnabled} recording={recording} transcribing={transcribing}
+        seconds={seconds} onRecord={onRecord} onStop={onStop}
       />
 
       <InterpretChip
@@ -156,7 +182,7 @@ export function FollowUpMode({
       <p className="answer" aria-live="polite">{answer}</p>
 
       <ExportBar
-        plan={plan} result={result} question={asked ?? ''}
+        plan={plan} result={result} question={asked ?? ''} theme={theme}
         columns={columns} operator={operator} onOperator={onOperator}
       />
 
@@ -171,7 +197,7 @@ export function FollowUpMode({
             aria-controls={`panel-${t.id}`}
             tabIndex={tab === t.id ? 0 : -1}
             className={tab === t.id ? 'on' : undefined}
-            onClick={() => setTab(t.id)}
+            onClick={() => irA(t.id)}
             onKeyDown={(e) => onTabKey(e, i)}
           >
             {t.label} <span className="tab-count">{t.count}</span>
@@ -179,6 +205,13 @@ export function FollowUpMode({
         ))}
       </div>
 
+      <div className="panel-datos">
+      <BusyOverlay
+        active={cambiandoPanel}
+        theme={theme}
+        label="Preparando la vista"
+        soft
+      />
       {tab === 'result' ? (
         <div id="panel-result" role="tabpanel" aria-labelledby="tab-result">
           <KpiRow r={result} />
@@ -240,6 +273,7 @@ export function FollowUpMode({
           )}
         </div>
       )}
+      </div>
     </section>
   )
 }

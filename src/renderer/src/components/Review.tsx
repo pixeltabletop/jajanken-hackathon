@@ -1,4 +1,6 @@
 import type { JSX } from 'react'
+import type { ThemeId } from '../assets/themes.ts'
+import { BusyOverlay } from './BusyOverlay.tsx'
 import type { DedupResult, Equipment, Observation } from '../../../shared/types.ts'
 import { fmt, type TimingTable } from '../../../shared/timings.ts'
 import { DuplicateAlert } from './DuplicateAlert.tsx'
@@ -26,6 +28,7 @@ interface Props {
   onSave: () => void
   onDiscard: () => void
   onCancelWait: () => void
+  theme: ThemeId
 }
 
 export function Review(p: Props): JSX.Element {
@@ -49,7 +52,7 @@ export function Review(p: Props): JSX.Element {
   }
 
   return (
-    <section aria-labelledby="rev-h">
+    <section className="rev-panel" aria-labelledby="rev-h">
       <h2 id="rev-h">
         2 · {p.editing ? 'Editar registro guardado' : 'Resultado para confirmar'}
         <HelpTip termKey="evidencia" />
@@ -142,6 +145,14 @@ export function Review(p: Props): JSX.Element {
           </div>
         </>
       )}
+
+      {/* El panel de revisión queda ocupado mientras el modelo lee la nota. */}
+      <BusyOverlay
+        active={p.extracting && !d}
+        theme={p.theme}
+        label="Leyendo la nota"
+        hint="En esta computadora, sin red"
+      />
     </section>
   )
 }

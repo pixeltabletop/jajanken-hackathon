@@ -8,7 +8,9 @@
 import { useState, type JSX } from 'react'
 import type { ColumnKey } from '../../../shared/columns.ts'
 import type { QueryPlan, QueryResult } from '../../../shared/query-engine.ts'
+import type { ThemeId } from '../assets/themes.ts'
 import { call } from '../lib/api.ts'
+import { BusyOverlay } from './BusyOverlay.tsx'
 
 interface Props {
   plan: QueryPlan
@@ -17,9 +19,10 @@ interface Props {
   columns: ColumnKey[]
   operator: string
   onOperator: (v: string) => void
+  theme: ThemeId
 }
 
-export function ExportBar({ plan, result, question, columns, operator, onOperator }: Props): JSX.Element {
+export function ExportBar({ plan, result, question, columns, operator, onOperator, theme }: Props): JSX.Element {
   const [busy, setBusy] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const enabled = result.rows > 0
@@ -97,6 +100,13 @@ export function ExportBar({ plan, result, question, columns, operator, onOperato
         no envía nada ni se conecta a ningún servidor.
       </p>
       {msg && <p className="rep-msg" aria-live="polite">{msg}</p>}
+
+      <BusyOverlay
+        active={busy !== null}
+        theme={theme}
+        label="Preparando el reporte"
+        hint="Se arma dentro de la aplicación, sin red"
+      />
     </div>
   )
 }

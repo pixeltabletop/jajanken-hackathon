@@ -1,12 +1,12 @@
 {
   "set": "bloque4b",
-  "hits": 4,
+  "hits": 5,
   "total": 5,
   "gate": 4,
   "passes": true,
-  "msMin": 11404,
-  "msMax": 12245,
-  "msMedian": 11644,
+  "msMin": 11452,
+  "msMax": 13032,
+  "msMedian": 11561,
   "context": {
     "countries": [
       "Argentina",
@@ -49,7 +49,7 @@
       "question": "cuál es el estatus de las unidades en Panamá",
       "ok": true,
       "problems": [],
-      "ms": 11644,
+      "ms": 11769,
       "raw": {
         "lugares": [
           "Panamá"
@@ -79,7 +79,7 @@
         "groupBy": "status"
       },
       "warnings": [],
-      "answer": "Con país: Panamá: 50 equipos registrados en 11 sitios, sobre 11 observaciones. Por estatus: Reportado 30, Estimado 12, Confirmado 8.",
+      "answer": "Con país: Panamá: 50 equipos registrados en 11 sitios, sobre 11 observaciones. Por estatus: Confirmado 8, Reportado 30, Estimado 12, Desconocido 0.",
       "counts": {
         "equipment": 50,
         "rows": 25,
@@ -91,7 +91,7 @@
       "question": "cuántas son de baja confianza",
       "ok": true,
       "problems": [],
-      "ms": 11476,
+      "ms": 11456,
       "raw": {
         "lugares": [],
         "m": [],
@@ -133,7 +133,7 @@
       "question": "cuáles son las de baja confianza",
       "ok": true,
       "problems": [],
-      "ms": 11404,
+      "ms": 11452,
       "raw": {
         "lugares": [],
         "m": [],
@@ -175,7 +175,7 @@
       "question": "dame los ecógrafos de más de siete años",
       "ok": true,
       "problems": [],
-      "ms": 11797,
+      "ms": 11561,
       "raw": {
         "lugares": [],
         "m": [
@@ -215,12 +215,9 @@
     },
     {
       "question": "qué marcas hay en Ciudad de Panamá",
-      "ok": false,
-      "problems": [
-        "intención=list, se esperaba breakdown",
-        "agrupación=null, se esperaba brand"
-      ],
-      "ms": 12245,
+      "ok": true,
+      "problems": [],
+      "ms": 13032,
       "raw": {
         "lugares": [
           "Ciudad de Panamá"
@@ -246,11 +243,13 @@
           "confidence": null,
           "textSearch": null
         },
-        "intent": "list",
-        "groupBy": null
+        "intent": "breakdown",
+        "groupBy": "brand"
       },
-      "warnings": [],
-      "answer": "Con ciudad: Ciudad de Panamá: 7 equipos registrados en 2 sitios, sobre 2 observaciones. Se enumeran 4 filas de equipo.",
+      "warnings": [
+        "La pregunta pide un desglose por brand: se responde así"
+      ],
+      "answer": "Con ciudad: Ciudad de Panamá: 7 equipos registrados en 2 sitios, sobre 2 observaciones. Por marca: HelixCare 3, NovaMed 2, Aurelia Health 1, Sin dato 1.",
       "counts": {
         "equipment": 7,
         "rows": 4,

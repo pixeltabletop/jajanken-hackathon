@@ -81,6 +81,7 @@ const PAIRS = [
   ['Aviso ámbar', 'normal', 'alertBg', 'alertInk', AA],
   ['Aviso ámbar, borde', 'relleno', 'alertBg', 'alert', AA_LARGE],
   ['Resaltado de evidencia', 'resaltado', 'mark', 'markInk', AA],
+  ['Texto seleccionado con el ratón', 'selección', 'mark', 'markInk', AA],
   ['Borde del resaltado, dentro', 'relleno', 'mark', 'markEdge', AA_LARGE],
   ['Borde del resaltado sobre el texto de la nota', 'relleno', 'sky', 'markEdge', AA_LARGE],
   ['Borde del resaltado sobre la tarjeta', 'relleno', 'surface', 'markEdge', AA_LARGE],

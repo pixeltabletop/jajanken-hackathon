@@ -71,6 +71,34 @@ const uniq = <T>(xs: T[]): T[] => [...new Set(xs)]
 /** Ninguno, uno o varios: así lo espera QueryFilter. */
 const one = <T>(xs: T[]): T | T[] | null => (xs.length === 0 ? null : xs.length === 1 ? xs[0] : xs)
 
+/**
+ * Frases que piden un desglose, con la dimensión por la que se pide. Es una
+ * regla determinista ENCIMA del modelo: "qué marcas hay en Ciudad de Panamá" le
+ * salía como lista una y otra vez, y ninguna redacción del prompt lo arregló.
+ * El modelo propone, el código decide, igual que con el lugar.
+ */
+const DESGLOSE: Array<[RegExp, Exclude<GroupBy, null>]> = [
+  [/\b(cu[aá]l|qu[eé])\s+es\s+el\s+(estatus|estado)\b/i, 'status'],
+  [/\bqu[eé]\s+(marcas|fabricantes)\b/i, 'brand'],
+  [/\bqu[eé]\s+(modalidades|tipos de equipo)\b/i, 'modality'],
+  [/\bqu[eé]\s+pa[ií]ses\b/i, 'country'],
+  [/\bqu[eé]\s+ciudades\b/i, 'city'],
+  [/\bqu[eé]\s+(sitios|hospitales|clientes)\b/i, 'facility'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+pa[ií]s/i, 'country'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+ciudad/i, 'city'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+modalidad/i, 'modality'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+marca/i, 'brand'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+(estado|estatus)/i, 'status'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+confianza/i, 'confidence'],
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+antig/i, 'ageBand']
+]
+
+/** La dimensión de desglose que pide la frase, o null si no pide ninguna. */
+export function desgloseDe(question: string): Exclude<GroupBy, null> | null {
+  for (const [re, dim] of DESGLOSE) if (re.test(question)) return dim
+  return null
+}
+
 export type PlaceKind = 'country' | 'city' | 'site' | 'none'
 
 export interface ResolvedPlace {
@@ -107,7 +135,7 @@ export function resolvePlace(raw: string | null, ctx: QueryContext): ResolvedPla
  * ejercita sin cargar el modelo. Un índice fuera de rango se descarta en vez de
  * inventar un valor, y se deja constancia en `warnings`.
  */
-export function resolvePlan(raw: unknown, ctx: QueryContext): { plan: QueryPlan; warnings: string[] } {
+export function resolvePlan(raw: unknown, ctx: QueryContext, question = ''): { plan: QueryPlan; warnings: string[] } {
   const p = CompactPlan.parse(raw)
   const warnings: string[] = []
 
@@ -137,6 +165,17 @@ export function resolvePlan(raw: unknown, ctx: QueryContext): { plan: QueryPlan;
 
   let intent = INTENTS[p.i] ?? 'list'
   let groupBy: GroupBy = p.g >= 0 ? (GROUPS[p.g] ?? null) : null
+
+  // La frase manda sobre el modelo cuando pide un desglose sin lugar a dudas.
+  const pedido = desgloseDe(question)
+  if (pedido) {
+    if (intent !== 'breakdown' || groupBy !== pedido) {
+      warnings.push(`La pregunta pide un desglose por ${pedido}: se responde así`)
+    }
+    intent = 'breakdown'
+    groupBy = pedido
+  }
+
   if (intent === 'breakdown' && groupBy === null) {
     warnings.push('Desglose sin grupo: se responde como lista')
     intent = 'list'
@@ -212,6 +251,6 @@ export async function parseQuestion(
   } catch {
     throw new Error(`El modelo no devolvió JSON válido tras ${ms} ms`)
   }
-  const { plan, warnings } = resolvePlan(raw, ctx)
+  const { plan, warnings } = resolvePlan(raw, ctx, question)
   return { plan, ms, warnings, stats: pickStats(fin as { stats?: Record<string, unknown> }), raw }
 }

@@ -121,8 +121,25 @@ async function auditar(etiqueta) {
   if (malas.length > 8) console.log(`      … y ${malas.length - 8} más`)
 }
 
-const setTheme = (id) =>
-  js(`(() => { const s=document.querySelector('.theme-switch select'); if(!s) return false; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s, ${JSON.stringify(id)}); s.dispatchEvent(new Event('change',{bubbles:true})); return true })()`)
+const setTheme = async (id) => {
+  // El tema ya no es un desplegable sino un interruptor de un clic entre los dos.
+  for (let i = 0; i < 3; i++) {
+    if ((await js(`document.documentElement.dataset.theme`)) === id) return true
+    await js(`(() => { const b=document.querySelector('.theme-toggle'); if (b) b.click() })()`)
+    await sleep(500)
+  }
+  return (await js(`document.documentElement.dataset.theme`)) === id
+}
+
+// Volver al inicio y cerrar sesión viven dentro del menú de opciones.
+const menu = async (texto) => {
+  await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+  await sleep(260)
+  const r = await js(`(() => { const b=[...document.querySelectorAll('.menu-list button')].find(x=>x.textContent.includes(${JSON.stringify(texto)})); if(!b) return 'no-existe'; if(b.disabled) return 'deshabilitado'; b.click(); return true })()`)
+  await sleep(260)
+  return r
+}
+
 
 try {
   await send('Page.enable')
@@ -144,6 +161,12 @@ try {
     await sleep(900)
     await auditar(`${tema} · inicio y registro`)
 
+    await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+    await sleep(350)
+    await auditar(`${tema} · menú de opciones abierto`)
+    await js(`document.body.click()`)
+    await sleep(250)
+
     // Estados elegidos del registro: columnas, y la base abierta.
     await js(`(() => { const b=[...document.querySelectorAll('button')].find(x=>/Ver la base registrada/.test(x.textContent)); if (b) b.click() })()`)
     await sleep(700)
@@ -151,7 +174,7 @@ try {
     await sleep(500)
     await auditar(`${tema} · base abierta y selector de columnas`)
 
-    await js(`(() => { const b=[...document.querySelectorAll('button')].find(x=>/Volver al inicio/.test(x.textContent)); if (b) b.click() })()`)
+    await menu('Volver al inicio')
     await sleep(900)
     await js(`(() => { const d=document.getElementById('door-follow'); if (d) d.click() })()`)
     await sleep(900)
@@ -178,7 +201,7 @@ try {
     await sleep(600)
     await auditar(`${tema} · nota abierta con la evidencia`)
 
-    await js(`(() => { const b=[...document.querySelectorAll('button')].find(x=>/Volver al inicio/.test(x.textContent)); if (b) b.click() })()`)
+    await menu('Volver al inicio')
     await sleep(900)
   }
 } catch (e) {

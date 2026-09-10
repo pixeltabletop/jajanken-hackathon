@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "total": 72,
+  "total": 80,
   "failed": 0,
   "results": [
     {
@@ -11,7 +11,7 @@
     {
       "ok": true,
       "label": "el logo ocupa el centro de la pantalla",
-      "detail": "IMG de 200 px"
+      "detail": "VIDEO de 200 px"
     },
     {
       "ok": true,
@@ -26,7 +26,7 @@
     {
       "ok": true,
       "label": "Esc antes del segundo 5 no salta el arranque",
-      "detail": "1.8 s desde la recarga"
+      "detail": "3 s desde la recarga"
     },
     {
       "ok": true,
@@ -41,7 +41,7 @@
     {
       "ok": true,
       "label": "aparece la pantalla de acceso",
-      "detail": "4 ms tras el arranque"
+      "detail": "5 ms tras el arranque"
     },
     {
       "ok": true,
@@ -61,6 +61,21 @@
     {
       "ok": true,
       "label": "se entra con el nombre escrito",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el menú ofrece cerrar sesión, distinta de volver al inicio",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "en el inicio, volver al inicio sale deshabilitado",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el menú se cierra con Escape",
       "detail": ""
     },
     {
@@ -90,8 +105,18 @@
     },
     {
       "ok": true,
+      "label": "el estado de los modelos son tres puntos, no tres píldoras",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el tema se cambia con un icono, sin etiqueta de texto",
+      "detail": ""
+    },
+    {
+      "ok": true,
       "label": "el nombre del acceso llega al selector",
-      "detail": "Entraste como Auditoría 02255. Todo lo que registres queda a"
+      "detail": "Entraste como Auditoría 67627. Todo lo que registres queda a"
     },
     {
       "ok": true,
@@ -116,6 +141,11 @@
     {
       "ok": true,
       "label": "la tabla se abre cuando se pide",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "el control de cerrar la base responde",
       "detail": ""
     },
     {
@@ -146,7 +176,7 @@
     {
       "ok": true,
       "label": "la tabla creció tras guardar",
-      "detail": "45 → 46 filas"
+      "detail": "48 → 49 filas"
     },
     {
       "ok": true,
@@ -185,6 +215,11 @@
     },
     {
       "ok": true,
+      "label": "la pregunta se puede dictar, igual que la nota de campo",
+      "detail": "🎙 Dictar"
+    },
+    {
+      "ok": true,
       "label": "la pregunta espera a Gemma sin bloquear el resto",
       "detail": "lista 0 s después de entrar"
     },
@@ -206,12 +241,12 @@
     {
       "ok": true,
       "label": "la frase redactada responde con cifras",
-      "detail": "Con país: Panamá: 56 equipos registrados en 14 sitios, sobre 14 observaciones. Por estatus: Reportado 36, Esti"
+      "detail": "Con país: Panamá: 62 equipos registrados en 17 sitios, sobre 17 observaciones. Por estatus: Confirmado 16, Rep"
     },
     {
       "ok": true,
       "label": "los números del desglose suman el total de equipos",
-      "detail": "36+12+8 = 56 · KPI 56"
+      "detail": "16+34+12+0 = 62 · KPI 62"
     },
     {
       "ok": true,
@@ -246,12 +281,17 @@
     {
       "ok": true,
       "label": "dos pestañas, cada una declara cuántas filas trae",
-      "detail": "Resultados 28 filas | Gráficos 56 equipos"
+      "detail": "Resultados 31 filas | Gráficos 62 equipos"
     },
     {
       "ok": true,
       "label": "las pestañas se recorren con las flechas del teclado",
       "detail": "activa la 1"
+    },
+    {
+      "ok": true,
+      "label": "el gráfico de antigüedad muestra sus cuatro bandas, aunque alguna esté en cero",
+      "detail": "0–3 años · 4–7 años · 8+ años · Sin dato"
     },
     {
       "ok": true,
@@ -261,12 +301,12 @@
     {
       "ok": true,
       "label": "las barras son controles con aria-pressed",
-      "detail": "5 barras"
+      "detail": "7 barras"
     },
     {
       "ok": true,
       "label": "un clic en una barra recalcula los KPI",
-      "detail": "56/14/14/1 → 20/6/6/0"
+      "detail": "62/17/17/1 → 20/11/11/0"
     },
     {
       "ok": true,
@@ -276,7 +316,7 @@
     {
       "ok": true,
       "label": "el gráfico donde hiciste clic conserva todas sus categorías",
-      "detail": "5 barras"
+      "detail": "7 barras"
     },
     {
       "ok": true,
@@ -321,11 +361,11 @@
     {
       "ok": true,
       "label": "el PDF de la consulta se genera",
-      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-02-13.pdf"
+      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-03-20.pdf"
     },
     {
       "ok": true,
-      "label": "el tema negro se puede elegir desde el encabezado",
+      "label": "el tema negro se puede elegir con el icono",
       "detail": ""
     },
     {
@@ -335,7 +375,7 @@
     },
     {
       "ok": true,
-      "label": "el tema blanco se puede elegir desde el encabezado",
+      "label": "el tema blanco se puede elegir con el icono",
       "detail": ""
     },
     {
@@ -346,7 +386,7 @@
     {
       "ok": true,
       "label": "cambiar de tema no pierde el filtro ni el resultado",
-      "detail": "47 → 47 filas"
+      "detail": "50 → 50 filas"
     },
     {
       "ok": true,
@@ -365,31 +405,32 @@
     }
   ],
   "summary": {
-    "stamp": "02255",
-    "site": "Policlínica DemoCare Prueba 02255",
-    "splashMs": 5866,
+    "stamp": "67627",
+    "site": "Policlínica DemoCare Prueba 67627",
+    "splashMs": 5896,
     "doorsHome": [
       "Registrar equipos",
       "Seguimiento y reportes"
     ],
-    "extractMs": 15662,
-    "gemmaReadyMs": 3,
-    "queryMs": 24822,
+    "extractMs": 17346,
+    "gemmaReadyMs": 4,
+    "queryMs": 53353,
     "breakdown": {
       "desglose": [
-        36,
+        16,
+        34,
         12,
-        8
+        0
       ],
-      "suma": 56,
-      "kpi": 56
+      "suma": 62,
+      "kpi": 62
     },
     "chipComplejo": [
       "país: Panamá",
       "confianza: Media o Baja",
       "texto: \"San Francisco\""
     ],
-    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-02-13.pdf",
+    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-03-20.pdf",
     "tema_negro": {
       "fondo": "rgb(20, 22, 25)",
       "texto": "rgb(244, 246, 248)"

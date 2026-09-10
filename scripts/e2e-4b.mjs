@@ -85,8 +85,25 @@ const clickText = (t, sel = 'button') =>
   js(`(() => { const b=[...document.querySelectorAll(${JSON.stringify(sel)})].find(x=>x.textContent.trim().startsWith(${JSON.stringify(t)})); if(!b) return 'no-existe'; if(b.disabled) return 'deshabilitado'; b.click(); return true })()`)
 const setInput = (sel, val) =>
   js(`(() => { const el=document.querySelector(${JSON.stringify(sel)}); if(!el) return false; const proto = el.tagName==='TEXTAREA'?HTMLTextAreaElement:el.tagName==='SELECT'?HTMLSelectElement:HTMLInputElement; Object.getOwnPropertyDescriptor(proto.prototype,'value').set.call(el, ${JSON.stringify(val)}); el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true})); return true })()`)
-const setTheme = (id) =>
-  js(`(() => { const s=document.querySelector('.theme-switch select'); if(!s) return false; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s, ${JSON.stringify(id)}); s.dispatchEvent(new Event('change',{bubbles:true})); return true })()`)
+const setTheme = async (id) => {
+  // El tema ya no es un desplegable sino un interruptor de un clic entre los dos.
+  for (let i = 0; i < 3; i++) {
+    if ((await js(`document.documentElement.dataset.theme`)) === id) return true
+    await js(`(() => { const b=document.querySelector('.theme-toggle'); if (b) b.click() })()`)
+    await sleep(500)
+  }
+  return (await js(`document.documentElement.dataset.theme`)) === id
+}
+
+// Volver al inicio y cerrar sesión viven dentro del menú de opciones.
+const menu = async (texto) => {
+  await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+  await sleep(260)
+  const r = await js(`(() => { const b=[...document.querySelectorAll('.menu-list button')].find(x=>x.textContent.includes(${JSON.stringify(texto)})); if(!b) return 'no-existe'; if(b.disabled) return 'deshabilitado'; b.click(); return true })()`)
+  await sleep(260)
+  return r
+}
+
 
 const summary = { stamp: STAMP, site: SITE }
 
@@ -132,7 +149,16 @@ try {
     await setInput('#acc-user', `Auditoría ${STAMP}`)
     await sleep(300)
     check((await clickText('Entrar')) === true, 'se entra con el nombre escrito')
-    await sleep(900)
+    await sleep(1400)
+    await js(`(() => { const b=document.querySelector('.menu .icon-btn'); if (b) b.click() })()`)
+    await sleep(300)
+    const opciones = await js(`[...document.querySelectorAll('.menu-list button')].map(b => ({ t: b.textContent.trim().slice(0, 30), dis: b.disabled }))`)
+    check(opciones.some((o) => /Cerrar sesión/.test(o.t)), 'el menú ofrece cerrar sesión, distinta de volver al inicio')
+    check(opciones.some((o) => /Volver al inicio/.test(o.t) && o.dis), 'en el inicio, volver al inicio sale deshabilitado')
+    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 })
+    await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 })
+    await sleep(300)
+    check(!(await js(`!!document.querySelector('.menu-list')`)), 'el menú se cierra con Escape')
   }
 
   // el paso de tema solo sale en un perfil limpio; si sale, se cierra
@@ -154,6 +180,8 @@ try {
   check(focusRing.foco, 'la tarjeta recibe foco de teclado', `contorno ${focusRing.outline}`)
   await shot('4b-03-selector-foco')
   check(await js(`document.querySelectorAll('.stats article').length === 4`), 'la fila de métricas se ve antes de elegir')
+  check(await js(`document.querySelectorAll('.dots .dot').length === 3`), 'el estado de los modelos son tres puntos, no tres píldoras')
+  check(await js(`!!document.querySelector('.theme-toggle svg')`), 'el tema se cambia con un icono, sin etiqueta de texto')
   const saludo = await js(`(document.querySelector('.home-quien')||{}).textContent||''`)
   check(saludo.includes(STAMP), 'el nombre del acceso llega al selector', saludo.trim().slice(0, 60))
   check(await js(`document.querySelectorAll('.door-list li').length >= 6`), 'cada puerta dice qué se hace dentro')
@@ -170,8 +198,8 @@ try {
   await sleep(600)
   check(await js(`document.querySelectorAll('table').length > 0`), 'la tabla se abre cuando se pide')
   const rowsBefore = await js(`document.querySelectorAll('tbody tr').length`)
-  await clickText('Ocultar la base registrada')
-  await sleep(400)
+  check((await clickText('Ocultar la base registrada')) === true, 'el control de cerrar la base responde')
+  await sleep(500)
   check(await js(`document.querySelectorAll('table').length === 0`), 'y se puede volver a cerrar')
 
   await setInput('#note', NOTE)
@@ -197,13 +225,13 @@ try {
   console.log('\n--- 4. volver al inicio con un borrador ---')
   await setInput('#note', 'Nota a medias que no se ha guardado')
   await js(`window.__confirmAsked = null; window.__origConfirm = window.confirm; window.confirm = (m) => { window.__confirmAsked = m; return false }`)
-  await clickText('← Volver al inicio')
+  await menu('Volver al inicio')
   await sleep(400)
   const asked = await js(`window.__confirmAsked`)
   check(!!asked && /sin guardar/i.test(asked), 'volver al inicio con un borrador pide confirmación', String(asked).slice(0, 60))
   check(await js(`!!document.querySelector('#note')`), 'y al decir que no, se queda en Registrar')
   await js(`window.confirm = () => true`)
-  await clickText('← Volver al inicio')
+  await menu('Volver al inicio')
   await sleep(700)
   await js(`window.confirm = window.__origConfirm`)
   check(await js(`document.querySelectorAll('.door').length === 2`), 'al confirmar, vuelve al selector')
@@ -216,6 +244,8 @@ try {
   check(await js(`document.activeElement === document.getElementById('q-input')`), 'el foco aterriza en el primer control del modo nuevo')
   check(/Seguimiento/.test(await js(`(document.getElementById('mode-live')||{}).textContent||''`)), 'el cambio se anuncia en la región viva')
   check(await js(`document.querySelectorAll('.qbar-examples button').length >= 3`), 'hay preguntas de ejemplo pulsables')
+  const dictar = await js(`(() => { const b=[...document.querySelectorAll('.qbar-row button')].find(x=>/Dictar/.test(x.textContent)); return b ? { t: b.textContent.trim(), dis: b.disabled } : null })()`)
+  check(!!dictar && dictar.dis === false, 'la pregunta se puede dictar, igual que la nota de campo', dictar ? dictar.t : 'sin botón')
 
   // El arranque ya no espera a los modelos, así que aquí sí hay que esperar a
   // Gemma: es lo único que necesita la pregunta en español.
@@ -294,6 +324,13 @@ try {
   await js(`(() => { const t=[...document.querySelectorAll('[role=tab]')].find(x=>/Gráficos/.test(x.textContent)); if (t) t.click() })()`)
   await sleep(500)
   const chartsN = await js(`document.querySelectorAll('.chart').length`)
+  // Las dimensiones de catálogo cerrado se muestran completas: un gráfico de
+  // antigüedad con una sola barra no sirve para nada.
+  const bandas = await js(`(() => {
+    const c = [...document.querySelectorAll('.chart')].find(x => /antig/i.test(x.querySelector('h3').textContent))
+    return c ? [...c.querySelectorAll('.bar-btn .bar-label')].map(b => b.textContent.trim()) : []
+  })()`)
+  check(bandas.length === 4, 'el gráfico de antigüedad muestra sus cuatro bandas, aunque alguna esté en cero', bandas.join(' · '))
   check(chartsN >= 3, 'la pestaña de gráficos trae varias dimensiones', `${chartsN} gráficos`)
   const before = await js(`(() => ({ kpi: [...document.querySelectorAll('.stats strong')].map(s=>s.textContent.trim()), answer: document.querySelector('.answer').textContent.trim() }))()`)
   const barInfo = await js(`(() => {
@@ -399,8 +436,8 @@ try {
   console.log('\n--- 11. temas ---')
   const filtroAntes = await js(`document.querySelectorAll('tbody tr').length`)
   for (const th of ['negro', 'blanco']) {
-    check((await setTheme(th)) === true, `el tema ${th} se puede elegir desde el encabezado`)
-    await sleep(900)
+    check((await setTheme(th)) === true, `el tema ${th} se puede elegir con el icono`)
+    await sleep(700)
     const applied = await js(`document.documentElement.dataset.theme`)
     check(applied === th, `el tema ${th} se aplica al instante`, `data-theme=${applied}`)
     const legible = await js(`(() => {

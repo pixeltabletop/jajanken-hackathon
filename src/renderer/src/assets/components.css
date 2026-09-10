@@ -272,13 +272,44 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
    Ningún color escrito a mano: todo sale de assets/themes.ts.
    ========================================================================= */
 
+/* ---------- destello de marca entre pantallas ---------- */
+/* No bloquea: deja pasar el ratón y el modo nuevo ya está montado debajo. */
+.mode-flash {
+  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  background: rgb(var(--shadow-rgb) / 20%);
+  animation: flashInOut .9s cubic-bezier(.33, 0, .2, 1) both;
+}
+/* La marca entra creciendo un poco y sale encogiendo: el cambio de tamaño es lo
+   que hace que se lea como una transición y no como un fotograma suelto. */
+.mode-flash .logo { animation: flashMark .9s cubic-bezier(.33, 0, .2, 1) both; }
+@keyframes flashInOut {
+  0% { opacity: 0; }
+  26% { opacity: 1; }
+  68% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes flashMark {
+  0% { opacity: 0; transform: scale(.86); }
+  26% { opacity: 1; transform: scale(1); }
+  68% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) { .mode-flash { display: none !important; } }
+
 /* ---------- marca ---------- */
 /* Vectorial y sobre el azul profundo del tema. No hay vídeo en ningún tamaño:
    ver la cabecera de LogoMotion.tsx y D43. */
-.logo { display: block; height: auto; background: var(--primary-deep); border-radius: 6px; padding: 9px 11px; }
-.logo-splash { margin: 0 auto; padding: 16px 20px; border-radius: 10px; }
+/* El logo es el logo, no una imagen dentro de una caja. Las piezas traen su
+   fondo plano (#f4f8fb la clara, negro la monocroma), así que se funde con lo
+   que tiene detrás: `multiply` borra el claro en el tema claro y `screen` borra
+   el negro en el oscuro. El fotograma fijo ya viene con transparencia real. */
+.logo { display: block; height: auto; background: transparent; }
+video.logo { mix-blend-mode: multiply; }
+:root[data-theme='negro'] video.logo { mix-blend-mode: screen; }
+.logo-splash { margin: 0 auto; }
 .logo-mark { flex: none; }
-.logo-inline { flex: none; padding: 5px 7px; border-radius: 4px; }
+.logo-inline { flex: none; }
 /* Entrada del arranque: la marca aparece, no salta. Es el único movimiento del
    logo en toda la aplicación, y lo controlamos nosotros. */
 .logo-enter { animation: marcaIn .8s cubic-bezier(.16, .84, .44, 1) both; }
@@ -295,7 +326,7 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
 }
 .splash[role='button'] { cursor: pointer; }
 /* Salida en fundido: el arranque no desaparece de golpe. */
-.splash { transition: opacity .22s var(--ease); }
+.splash { transition: opacity .42s cubic-bezier(.4, 0, .7, 1); }
 .splash.leaving { opacity: 0; pointer-events: none; }
 /* Ópticamente centrado: la marca sube un poco para compensar el texto de abajo. */
 .splash-center { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; transform: translateY(-4%); }
@@ -335,7 +366,17 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
   border: 1px solid var(--primary); border-radius: 12px; padding: 4px 10px;
 }
 .home-btn { margin: 0; }
+.theme-switch { display: inline-flex; align-items: center; gap: 6px; }
+.theme-switch-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .theme-switch select { font-size: 12px; padding: 5px 7px; border-color: var(--field-line); }
+/* Grabando o transcribiendo la pregunta: ocupa el sitio del cuadro de texto. */
+.qbar-rec {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  padding: 11px 13px; font-size: 14px; font-weight: 700;
+  border: 1px solid var(--field-line); border-radius: 6px;
+  background: var(--sky); color: var(--on-sky);
+}
+.qbar-rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); animation: pulse 1.2s ease-in-out infinite; }
 
 /* ---------- elección de tema ---------- */
 .theme-first { padding: 28px; }
@@ -498,15 +539,24 @@ select { color-scheme: inherit; }
 option { background: var(--surface); color: var(--ink); }
 option:checked, option:hover { background: var(--sky); color: var(--on-sky); font-weight: 700; }
 
-/* Selección de texto con el ratón. */
-::selection { background: var(--primary-deep); color: var(--on-primary); }
-:root[data-theme='negro'] ::selection, :root[data-theme='azul'] ::selection { background: var(--primary); color: var(--on-primary); }
+/* Selección de texto con el ratón.
+   Usa el MISMO par que el resaltado de evidencia, y por una razón: es el único
+   par de la aplicación que está medido y pasa 4.5:1 en los dos temas, y su
+   amarillo no puede colisionar con ningún azul de la interfaz. Con el azul
+   profundo, seleccionar una tarjeta borraba su título, porque el título es de
+   ese mismo azul. Un color de selección no puede depender de qué texto caiga
+   dentro de la selección. */
+::selection { background: var(--mark); color: var(--mark-ink); }
 
 /* Presionado: se oscurece el relleno, nunca el texto. */
 button.primary:active:not(:disabled) { background: var(--primary-deep); color: var(--on-primary); }
 button.ghost:active:not(:disabled), .door:active, .rep-kind:active, .theme-card:active, .bar-btn:active {
   background: var(--sky); color: var(--on-sky);
 }
+/* Y los hijos con color propio siguen al padre mientras esta presionado: si no,
+   el titulo de la tarjeta se queda con su azul sobre el fondo nuevo. */
+.door:active b, .door:active .door-sub, .door:active .door-list li,
+.rep-kind:active b, .rep-kind:active span, .theme-card:active b { color: var(--on-sky); }
 
 /* =========================================================================
    Acceso y selector rediseñado
@@ -583,3 +633,109 @@ button.ghost:active:not(:disabled), .door:active, .rep-kind:active, .theme-card:
 .door-listo { font-size: 11.5px; flex: 1; text-align: right; line-height: 1.4; }
 .door:hover .door-top, .door:hover .door-foot { background: var(--sky); }
 .door:hover .door-num { background: var(--primary-deep); }
+
+
+/* =========================================================================
+   Capa de trabajo sobre el panel que trabaja
+   ========================================================================= */
+/* Solo los recuadros que de verdad trabajan son marco de la capa. La sección
+   entera NO: sombrear media pantalla para decir que un cuadro está ocupado es
+   justo lo contrario de lo que se pidió. */
+.qbar, .exportbar, .cap-box, .panel-datos, .rep-form, .rev-panel { position: relative; }
+
+.busy {
+  position: absolute; inset: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  /* Deja ver el panel: tapa lo justo para que se entienda que está ocupado. */
+  background: rgb(var(--shadow-rgb) / 12%);
+  backdrop-filter: blur(1px);
+  animation: busyIn .26s cubic-bezier(.33, 0, .2, 1) both;
+}
+.busy.saliendo { animation: busyOut .28s cubic-bezier(.4, 0, .7, 1) both; }
+@keyframes busyIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes busyOut { from { opacity: 1; } to { opacity: 0; } }
+.busy .busy-box { animation: busyBox .3s cubic-bezier(.16, .84, .44, 1) both; }
+.busy.saliendo .busy-box { animation: none; }
+@keyframes busyBox { from { opacity: 0; transform: translateY(6px) scale(.97); } to { opacity: 1; transform: none; } }
+/* El texto va DEBAJO del logo, centrado. */
+.busy-box {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 14px 20px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgb(var(--shadow-rgb) / 22%);
+  max-width: 88%; text-align: center;
+}
+.busy-box b { font-size: 13px; color: var(--ink); }
+.busy-box span { font-size: 12px; }
+/* Capa suave: solo sombrea un área que se recalcula, sin caja ni texto grande. */
+.busy.suave { background: rgb(var(--shadow-rgb) / 7%); backdrop-filter: none; }
+.busy.suave .busy-box { background: transparent; border: 0; box-shadow: none; padding: 0; }
+@media (prefers-reduced-motion: reduce) { .busy { animation: none !important; } }
+
+
+/* =========================================================================
+   Encabezado compacto: semáforo al centro, iconos a la derecha
+   ========================================================================= */
+header { gap: 18px; }
+.head-centro { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top: 6px; }
+.head-acciones { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+
+/* Semáforo de modelos. */
+.dots {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--surface-2);
+  cursor: default;
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); border: 1px solid var(--field-line); }
+.dot.ready { background: var(--ok); border-color: var(--ok); }
+.dot.loading { background: var(--warn); border-color: var(--warn); animation: pulse 1.2s ease-in-out infinite; }
+.dot.error { background: var(--bad); border-color: var(--bad); }
+.dots-label { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--muted); margin-left: 3px; }
+.dots-nota { font-size: 11.5px; }
+
+/* Botones de icono. */
+.icon-btn {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  width: 32px; height: 32px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary-deep); border: 1px solid var(--line); background: var(--surface);
+  transition: background .18s var(--ease), border-color .18s var(--ease);
+}
+.icon-btn:hover { background: var(--sky); color: var(--on-sky); border-color: var(--primary); }
+.icon-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.icon-btn[aria-expanded='true'] { background: var(--sky); color: var(--on-sky); border-color: var(--primary); }
+
+/* Menú de opciones. */
+.menu { position: relative; }
+.menu-list {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 50; min-width: 210px;
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 9px;
+  box-shadow: 0 10px 30px rgb(var(--shadow-rgb) / 20%); overflow: hidden;
+  animation: tipIn .16s var(--ease);
+}
+.menu-quien {
+  padding: 9px 13px; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.menu-list button {
+  all: unset; box-sizing: border-box; cursor: pointer; padding: 11px 13px;
+  font-size: 13px; color: var(--ink); background: var(--surface);
+}
+.menu-list button:hover:not(:disabled) { background: var(--sky); color: var(--on-sky); }
+.menu-list button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.menu-list button:disabled { color: var(--muted); cursor: default; background: var(--surface-2); }
+.menu-salir { border-top: 1px solid var(--line); font-weight: 700; }
+.local-badge {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  color: var(--on-sky); background: var(--sky);
+  border: 1px solid var(--primary); border-radius: 14px; padding: 5px 10px;
+}
+@media (max-width: 1180px) {
+  header { flex-wrap: wrap; }
+  .head-centro { order: 3; width: 100%; align-items: flex-start; }
+}

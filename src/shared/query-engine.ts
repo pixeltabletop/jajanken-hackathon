@@ -7,7 +7,10 @@
 // Ninguna cifra de la pantalla la escribe un modelo.
 
 import {
+  CONFIDENCE,
   CONFIDENCE_LABEL_ES,
+  MODALITIES,
+  STATUSES,
   MODALITY_LABEL_ES,
   MODALITY_SHORT_ES,
   STATUS_LABEL_ES,
@@ -278,6 +281,20 @@ export function groupShortLabelOf(by: Exclude<GroupBy, null>, key: string): stri
 
 export const SIN_DATO = 'Sin dato'
 
+/**
+ * Dimensiones con catálogo cerrado: siempre se muestran completas, aunque una
+ * categoría esté en cero. Un gráfico de antigüedad con una sola barra no dice
+ * nada; con las cuatro bandas se ve dónde está y dónde no está el parque.
+ * Las abiertas (país, ciudad, sitio) solo muestran lo que existe: una lista de
+ * ciudades con ceros sería ruido.
+ */
+const ESCALA_FIJA: Partial<Record<Exclude<GroupBy, null>, readonly string[]>> = {
+  ageBand: AGE_BANDS,
+  confidence: CONFIDENCE,
+  status: STATUSES,
+  modality: MODALITIES
+}
+
 export function groupHits(hits: EquipmentHit[], by: Exclude<GroupBy, null>): GroupCount[] {
   const m = new Map<string, { equipment: number; rows: number; sites: Set<string> }>()
   for (const h of hits) {
@@ -288,15 +305,24 @@ export function groupHits(hits: EquipmentHit[], by: Exclude<GroupBy, null>): Gro
     cur.sites.add(h.site)
     m.set(key, cur)
   }
-  return [...m.entries()]
-    .map(([key, v]) => ({
-      key,
-      label: key === SIN_DATO ? SIN_DATO : groupLabelOf(by, key),
-      equipment: v.equipment,
-      rows: v.rows,
-      sites: v.sites.size
-    }))
-    .sort((a, b) => b.equipment - a.equipment || a.label.localeCompare(b.label, 'es'))
+  const fija = ESCALA_FIJA[by]
+  if (fija) for (const k of fija) if (!m.has(k)) m.set(k, { equipment: 0, rows: 0, sites: new Set<string>() })
+
+  const out = [...m.entries()].map(([key, v]) => ({
+    key,
+    label: key === SIN_DATO ? SIN_DATO : groupLabelOf(by, key),
+    equipment: v.equipment,
+    rows: v.rows,
+    sites: v.sites.size
+  }))
+
+  // Con escala fija manda el orden del catálogo, que es el que el usuario ya
+  // conoce; sin ella, de mayor a menor.
+  if (fija) {
+    const orden = new Map(fija.map((k, i) => [k, i]))
+    return out.sort((a, b) => (orden.get(a.key) ?? 99) - (orden.get(b.key) ?? 99))
+  }
+  return out.sort((a, b) => b.equipment - a.equipment || a.label.localeCompare(b.label, 'es'))
 }
 
 export function summarize(
