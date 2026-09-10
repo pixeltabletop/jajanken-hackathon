@@ -423,7 +423,10 @@ export function redact(plan: QueryPlan, r: QueryResult): string {
   }
 
   const base = `${plural(r.equipment, 'equipo registrado', 'equipos registrados')} en ${plural(r.sites, 'sitio', 'sitios')}, sobre ${plural(r.observations, 'observación', 'observaciones')}`
-  const head = parts.length ? `Con ${scope}: ${base}.` : `En toda la base: ${base}.`
+  // El alcance ya viene con sus propios dos puntos ("pais: Panama"), asi que
+  // encadenarlo con otro daba "Con pais: Panama: 58 equipos...". Entre
+  // parentesis, igual que en la frase de "ningun registro" de mas arriba.
+  const head = parts.length ? `${base} (${scope}).` : `En toda la base: ${base}.`
 
   if (plan.intent === 'breakdown' && r.groups.length) {
     const detail = r.groups.map((g) => `${g.label} ${g.equipment}`).join(', ')

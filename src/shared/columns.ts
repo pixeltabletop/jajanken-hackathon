@@ -53,7 +53,7 @@ export const COLUMNS: ColumnDef[] = [
   { key: 'age', label: 'Edad', help: 'edad', numeric: true, base: true, text: (_, e) => e.approxAgeYears !== null ? `${e.approxAgeYears} a` : e.ageQualitative ? (AGE_WORD_ES[e.ageQualitative] ?? e.ageQualitative) : '—' },
   { key: 'installYear', label: 'Año instalación', numeric: true, base: false, text: (_, e) => e.installYearEstimate !== null ? String(e.installYearEstimate) : '—' },
   { key: 'confidence', label: 'Confianza', help: 'confianza', base: true, text: (_, e) => CONFIDENCE_LABEL_ES[e.confidence] },
-  { key: 'status', label: 'Estado', help: 'estado', base: true, text: (_, e) => STATUS_LABEL_ES[e.status] },
+  { key: 'status', label: 'Estatus', help: 'estado', base: true, text: (_, e) => STATUS_LABEL_ES[e.status] },
   { key: 'visitDate', label: 'Fecha de visita', base: true, text: (o) => o.createdAt },
   { key: 'observer', label: 'Observador', base: false, text: (o) => o.observer },
   { key: 'source', label: 'Fuente', base: false, text: (o) => SOURCE_ES[o.source] ?? o.source },

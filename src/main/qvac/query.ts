@@ -9,7 +9,16 @@
 
 import * as sdk from '@qvac/sdk'
 import { z } from 'zod'
-import { BRANDS, CONFIDENCE, MODALITIES, STATUSES } from '../../shared/catalog.ts'
+import {
+  BRANDS,
+  CONFIDENCE,
+  CONFIDENCE_LABEL_ES,
+  MODALITIES,
+  MODALITY_LABEL_ES,
+  MODALITY_SHORT_ES,
+  STATUS_LABEL_ES,
+  STATUSES
+} from '../../shared/catalog.ts'
 import { COUNTRY_ES, EMPTY_FILTER, norm, type GroupBy, type QueryIntent, type QueryPlan } from '../../shared/query-engine.ts'
 import type { InferenceStats } from '../../shared/types.ts'
 import { PROMPT_QUERY_ES } from './prompts.ts'
@@ -91,6 +100,18 @@ const DESGLOSE: Array<[RegExp, Exclude<GroupBy, null>]> = [
   [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+(estado|estatus)/i, 'status'],
   [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+confianza/i, 'confidence'],
   [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+antig/i, 'ageBand'],
+  // "por modalidad" a secas es la forma en que pregunta cualquiera, y era el
+  // hueco de esta tabla: "cuantos equipos hay en Panama por modalidad" salia
+  // como un total, sin reparto y sin avisar de que se habia contestado otra
+  // cosa. Van despues de las frases de arriba, que son mas especificas.
+  [/\bpor\s+modalidad(es)?\b/i, 'modality'],
+  [/\bpor\s+marca(s)?\b/i, 'brand'],
+  [/\bpor\s+(pa[ií]s|pa[ií]ses)\b/i, 'country'],
+  [/\bpor\s+ciudad(es)?\b/i, 'city'],
+  [/\bpor\s+(estado|estatus)\b/i, 'status'],
+  [/\bpor\s+confianza\b/i, 'confidence'],
+  [/\bpor\s+antig[uü]edad\b/i, 'ageBand'],
+  [/\bpor\s+(sitio|hospital|cliente|centro)s?\b/i, 'facility'],
   // El brief de Philips esta escrito en ingles y sus ejemplos de consulta
   // tambien. Un juez va a teclear la frase de su propio documento.
   [/\b(what|which)\s+(brands|manufacturers)\b/i, 'brand'],
@@ -214,18 +235,28 @@ export function resolvePlan(raw: unknown, ctx: QueryContext, question = ''): { p
   }
   if (intent !== 'breakdown' && groupBy !== null) groupBy = null
 
+  // El modelo mete a veces un filtro por la MISMA dimension que se esta
+  // agrupando: a "dame el desglose por modalidad" le anadia modality "MR" y la
+  // respuesta salia restringida a resonancias sin que nadie lo hubiera pedido.
+  // Un valor que no aparece en la pregunta no lo pidio nadie. Se descarta y se
+  // avisa; el modelo propone, el codigo decide, igual que con el lugar.
+  const modalidades = descartarInventado(question, groupBy, 'modality', uniq(p.m).map((i) => MODALITIES[i]), (v) => [v, MODALITY_LABEL_ES[v], MODALITY_SHORT_ES[v]], warnings)
+  const marcas = descartarInventado(question, groupBy, 'brand', uniq(p.b).map((i) => BRANDS[i]), (v) => [v], warnings)
+  const estadosFinal = descartarInventado(question, groupBy, 'status', estados, (v) => [v, STATUS_LABEL_ES[v]], warnings)
+  const confianzas = descartarInventado(question, groupBy, 'confidence', uniq(p.c).map((i) => CONFIDENCE[i]), (v) => [v, CONFIDENCE_LABEL_ES[v]], warnings)
+
   return {
     plan: {
       filter: {
         ...EMPTY_FILTER,
         country: one(countries),
         city: one(cities),
-        modality: one(uniq(p.m).map((i) => MODALITIES[i])),
-        brand: one(uniq(p.b).map((i) => BRANDS[i])),
+        modality: one(modalidades),
+        brand: one(marcas),
         minAgeYears,
         maxAgeYears,
-        status: one(estados),
-        confidence: one(uniq(p.c).map((i) => CONFIDENCE[i])),
+        status: one(estadosFinal),
+        confidence: one(confianzas),
         textSearch: sites[0] ?? null
       },
       intent,
@@ -233,6 +264,39 @@ export function resolvePlan(raw: unknown, ctx: QueryContext, question = ''): { p
     },
     warnings
   }
+}
+
+/**
+ * Quita del filtro los valores de la dimension por la que se agrupa cuando la
+ * pregunta no los nombra.
+ *
+ * Solo actua sobre la dimension del desglose: filtrar por marca mientras se
+ * agrupa por ciudad es legitimo y no se toca. Lo que no tiene sentido es pedir
+ * el reparto por modalidad y quedarse con una sola modalidad.
+ */
+function descartarInventado<T extends string>(
+  question: string,
+  groupBy: GroupBy,
+  dimension: Exclude<GroupBy, null>,
+  valores: T[],
+  formasDe: (v: T) => Array<string | undefined>,
+  warnings: string[]
+): T[] {
+  if (groupBy !== dimension || valores.length === 0) return valores
+  const q = norm(question)
+  const nombrado = (v: T): boolean =>
+    formasDe(v).some((f) => {
+      const t = norm(f ?? '')
+      if (!t) return false
+      // Un valor de dos o tres letras ("MR", "CT") tiene que aparecer como
+      // palabra suelta: "ct" esta dentro de "conducta".
+      return t.length <= 3 ? new RegExp(`(^|[^a-z0-9])${t}([^a-z0-9]|$)`).test(q) : q.includes(t)
+    })
+  const quedan = valores.filter(nombrado)
+  for (const v of valores) {
+    if (!nombrado(v)) warnings.push(`La pregunta no nombra "${v}": se desglosa por ${dimension} sin ese filtro`)
+  }
+  return quedan
 }
 
 function pickStats(fin: { stats?: Record<string, unknown> } | undefined): InferenceStats {
