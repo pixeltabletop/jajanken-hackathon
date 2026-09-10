@@ -21,6 +21,8 @@
     "build:linux": "electron-vite build && electron-builder --linux",
     "qvac:doctor": "qvac doctor",
     "smoke": "node scripts/smoke-engine.mjs",
+    "smoke:semaforo": "node scripts/smoke-semaforo.mjs",
+    "smoke:semaforo:vivo": "node scripts/smoke-semaforo-vivo.mjs",
     "bench:extract": "node bench/bench7.js GEMMA4_2B_MULTIMODAL_Q4_K_M es nocache",
     "bench:asr": "node bench/bench_asr.js WHISPER_BASE_Q8_0 es+prompt",
     "bench:embed": "node bench/bench_embed.js EMBEDDINGGEMMA_300M_Q8_0",

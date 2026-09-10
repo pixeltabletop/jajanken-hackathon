@@ -117,7 +117,9 @@ export default function App(): JSX.Element {
     refreshCities()
   }, [hasApi, refreshTimings, refreshCities])
 
-  // Estado de modelos: cada 2 s hasta que los tres estén listos, luego cada 15 s.
+  // Estado de modelos: cada 2 s hasta que los tres estén listos, luego cada 6 s.
+  // Con los tres verdes el sondeo no es cosmético: es lo que destapa un worker
+  // muerto. Cada segundo de más aquí es un segundo de semáforo mintiendo.
   useEffect(() => {
     if (!hasApi) return
     let alive = true
@@ -128,7 +130,7 @@ export default function App(): JSX.Element {
       } catch { /* el siguiente tick reintenta */ }
     }
     void tick()
-    const id = setInterval(tick, allReady ? 15000 : 2000)
+    const id = setInterval(tick, allReady ? 6000 : 2000)
     return () => { alive = false; clearInterval(id) }
   }, [hasApi, allReady])
 

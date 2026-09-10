@@ -42,12 +42,21 @@ function safe<A extends unknown[], R>(code: string, fn: Handler<A, R>) {
 }
 
 export function registerIpc(store: Store): void {
-  ipcMain.handle('models:status', safe<[], ModelStatus>('MODELS_STATUS', () => models.getModelStatus()))
+  // Whisper lleva el catálogo en su prompt, así que quien recarga necesita los
+  // nombres. Se piden solo cuando hacen falta: `models:status` se sondea cada
+  // pocos segundos y no vamos a releer la base en cada sondeo.
+  const nombresDeClientes = async (): Promise<string[]> =>
+    (await store.customers()).map((c) => c.name)
+
+  // El estado de los modelos no se cree, se comprueba. Ver `verifyStatus`.
+  ipcMain.handle(
+    'models:status',
+    safe<[], ModelStatus>('MODELS_STATUS', () => models.verifyStatus(nombresDeClientes))
+  )
 
   ipcMain.handle('models:warmup', safe<[], ModelStatus>('MODELS_WARMUP', async () => {
-    const customers = await store.customers()
     const t0 = Date.now()
-    const st = await models.warmup(customers.map((c) => c.name))
+    const st = await models.warmup(await nombresDeClientes())
     if (st.gemma.state === 'ready' && st.whisper.state === 'ready' && st.embed.state === 'ready') {
       await store.recordTiming('load:all', Date.now() - t0)
       if (st.gemma.ms) await store.recordTiming('load:gemma', st.gemma.ms)

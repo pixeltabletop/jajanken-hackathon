@@ -151,6 +151,34 @@ O sea que el archivo no contiene una animación: contiene una imagen fija que pa
 
 **D60 · Licencia y limpieza del repositorio.** Se añadió `LICENSE` (MIT) declarando además lo que NO cubre: Electron, el SDK de QVAC, los modelos Apache-2.0 y la marca Philips. Salieron del control de versiones el brief y el workbook de Philips, `docs/briefing.html` (artefacto muerto que además cargaba tipografías de Google por red) y `resources/seed-observations.json`.
 
+**D61 · El semáforo no se cree el estado: lo comprueba contra el worker.** La D51 dejó el arreglo a medias. `withModel` recarga un modelo muerto cuando alguien tropieza con él, pero hasta que alguien tropezaba, `models:status` seguía devolviendo tres verdes. Ahora cada sondeo pasa por `verifyStatus`, que le pregunta al SDK con dos llamadas que no cargan nada: `heartbeat()` y `getLoadedModelInfo()` por cada identificador. Lo que se perdió se olvida, el semáforo lo refleja, y se recarga solo en segundo plano.
+
+Tres guardas, porque un semáforo que miente en gris no es mejor que uno que miente en verde:
+
+- **No se pregunta mientras hay una inferencia en curso.** El worker es de un solo hilo: razonando no atiende ni un latido. Declarar la muerte ahí tiraría los tres modelos en mitad del trabajo, que es peor que el fallo original.
+- **Un latido que tarda más de 4 s es "no puedo afirmarlo", no "está muerto".** Solo un rechazo explícito cuenta como muerte.
+- **Solo se olvida lo que el SDK declara ausente por su código de error** (`MODEL_NOT_FOUND`, `MODEL_NOT_LOADED`). Un tropiezo de RPC no apaga nada.
+
+Hallazgo de la medición, que cambia cuál de las dos llamadas sostiene el arreglo. Al matar `bare.exe`, el latido solo delata la muerte durante el primer segundo; después el SDK levanta un worker nuevo por su cuenta y contesta que todo va bien, con los modelos ya descargados:
+
+| Momento tras matarlo | `heartbeat()` | `getLoadedModelInfo()` |
+|---|---|---|
+| +0,5 s | rechaza, WorkerCrashed | ausente, 52002 |
+| +2 s, +5 s, +10 s | responde vivo | ausente, 52002 |
+
+La que aguanta es la pregunta por identificador. El latido queda como red para el caso en que ni siquiera se pueda levantar un worker nuevo.
+
+**La prueba se sondea, no se dispara una vez.** El primer intento afirmaba en un único instante cronometrado contra una función que solo revisa una vez cada 5 s, y pasó una vez de tres. Un aserto de un disparo contra algo con ventana de refresco mide la caché, no el sistema. Ahora sondea hasta 24 s y de paso reporta cuánto tardó en enterarse: entre 7 y 9 s sin interfaz, tres corridas seguidas en verde.
+
+Medido en la app viva matando `bare.exe` con la ventana abierta (`npm run smoke:semaforo:vivo`):
+
+| Qué | Antes | Ahora |
+|---|---|---|
+| Tiempo en verde siendo mentira | para siempre | 14,9 s |
+| Vuelta a los tres verdes | nunca sin reabrir | 70,9 s, sola |
+
+El sondeo del renderer con los tres listos baja de 15 s a 6 s, porque con este cambio dejó de ser cosmético: es lo que destapa un worker muerto. Verificado sin regresión: humo del motor OK, 80/80 en vivo, contraste 98/98 y en vivo sin fallos.
+
 ## Pendientes de decisión
 
 - **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.

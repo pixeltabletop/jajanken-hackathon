@@ -10,7 +10,7 @@
     },
     {
       "estado": "blanco · inicio y registro",
-      "medidos": 53,
+      "medidos": 51,
       "fallos": 0,
       "malas": []
     },
@@ -46,7 +46,7 @@
     },
     {
       "estado": "blanco · nota abierta con la evidencia",
-      "medidos": 579,
+      "medidos": 578,
       "fallos": 0,
       "malas": []
     },
@@ -88,7 +88,7 @@
     },
     {
       "estado": "negro · nota abierta con la evidencia",
-      "medidos": 579,
+      "medidos": 578,
       "fallos": 0,
       "malas": []
     }

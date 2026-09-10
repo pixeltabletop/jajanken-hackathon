@@ -13,6 +13,11 @@ const ids: Partial<Record<ModelKey, string>> = {}
 // dos cargas: el dictado que llega antes de que termine el calentamiento
 // duplicaría 150 MB de Whisper, o peor, 3.4 GB de Gemma.
 const inflight: Partial<Record<ModelKey, Promise<string>>> = {}
+// Inferencias en curso. El worker es de un solo hilo: mientras razona no atiende
+// nada más, ni siquiera un latido. Si el semáforo preguntara en ese momento y
+// tomara el silencio por muerte, tiraría los tres modelos EN MITAD del trabajo.
+// Ese sería un fallo peor que el que este archivo arregla.
+let enUso = 0
 const status: ModelStatus = {
   gemma: { state: 'idle' },
   whisper: { state: 'idle' },
@@ -40,6 +45,11 @@ export function requireModel(key: ModelKey): string {
  * caducidad.
  */
 export function isStaleModelError(e: unknown): boolean {
+  // El SDK numera sus errores y ese numero es la senal fiable. El texto queda de
+  // respaldo por si el error llega envuelto y pierde el codigo por el camino.
+  const code = (e as { code?: number })?.code
+  if (code === sdk.SDK_SERVER_ERROR_CODES.MODEL_NOT_FOUND) return true
+  if (code === sdk.SDK_SERVER_ERROR_CODES.MODEL_NOT_LOADED) return true
   const msg = e instanceof Error ? e.message : String(e)
   return /not found|no such model|unknown model|invalid model|model .* not loaded/i.test(msg)
 }
@@ -68,6 +78,7 @@ export async function withModel<T>(
   fn: (modelId: string) => Promise<T>
 ): Promise<T> {
   const id = await LOADER[key](customerNames)
+  enUso += 1
   try {
     return await fn(id)
   } catch (e) {
@@ -79,7 +90,139 @@ export async function withModel<T>(
     for (const k of ['gemma', 'whisper', 'embed'] as ModelKey[]) forget(k)
     const fresco = await LOADER[key](customerNames)
     return fn(fresco)
+  } finally {
+    enUso -= 1
   }
+}
+
+/**
+ * Cuánto puede pasar entre dos comprobaciones REALES contra el worker. El
+ * renderer sondea `models:status` cada 2 s mientras carga y cada 15 s después;
+ * preguntarle al worker en cada sondeo sería ruido de RPC sin ninguna ganancia.
+ */
+const MS_ENTRE_REVISIONES = 5000
+let ultimaRevision = 0
+let revision: Promise<ModelStatus> | null = null
+
+/**
+ * Devuelve el estado de los modelos DESPUÉS de contrastarlo con el worker.
+ *
+ * El estado en memoria puede mentir. Si el worker de QVAC se reinicia o muere,
+ * los identificadores que guardamos dejan de existir, y el semáforo se queda en
+ * verde mientras toda inferencia falla. Pasó exactamente así: tres puntos
+ * verdes en pantalla y ni una sola respuesta.
+ *
+ * `withModel` repara eso cuando alguien tropieza. Esto lo detecta ANTES de que
+ * nadie tropiece, con dos preguntas al SDK que no cargan nada:
+ *
+ * - `heartbeat()`: ¿sigue respondiendo el worker?
+ * - `getLoadedModelInfo()`: ¿sigue existiendo ESTE identificador?
+ *
+ * Medido matando `bare.exe` (`npm run smoke:semaforo`), y el resultado decide cuál
+ * de las dos llamadas sostiene esto:
+ *
+ * | Momento tras matarlo | `heartbeat()`        | `getLoadedModelInfo()` |
+ * |----------------------|----------------------|------------------------|
+ * | +0,5 s               | rechaza, WorkerCrashed | ausente, 52002       |
+ * | +2 s, +5 s, +10 s    | responde VIVO        | ausente, 52002         |
+ *
+ * El latido solo delata la muerte durante el primer segundo: el SDK levanta un
+ * worker nuevo por su cuenta y a partir de ahí contesta que todo va bien, con los
+ * modelos ya sin cargar. La que aguanta es la pregunta por identificador. Si algún
+ * día se recorta este archivo, `getLoadedModelInfo` es la que no se puede quitar.
+ *
+ * No se pregunta si no hay nada que verificar, ni mientras haya una carga en
+ * curso: durante el calentamiento el worker ya está ocupado, y un identificador
+ * que todavía no ha nacido no puede estar muerto.
+ */
+export async function verifyStatus(customerNames: () => Promise<string[]>): Promise<ModelStatus> {
+  if (revision) return revision
+  const cargando = Object.values(inflight).some(Boolean)
+  const listos = (Object.keys(status) as ModelKey[]).filter((k) => status[k].state === 'ready' && ids[k])
+  if (enUso > 0 || cargando || listos.length === 0 || Date.now() - ultimaRevision < MS_ENTRE_REVISIONES) {
+    return getModelStatus()
+  }
+  ultimaRevision = Date.now()
+  revision = revisar(listos, customerNames).finally(() => {
+    revision = null
+  })
+  return revision
+}
+
+async function revisar(listos: ModelKey[], customerNames: () => Promise<string[]>): Promise<ModelStatus> {
+  const latido = await latir()
+  if (latido === 'muerto') {
+    // El worker rechazó el latido. No se llevó un modelo: se llevó los tres.
+    console.error('[qvac] el worker no responde al latido; se olvidan los tres modelos')
+    for (const k of ['gemma', 'whisper', 'embed'] as ModelKey[]) forget(k)
+    recalentar(customerNames)
+    return getModelStatus()
+  }
+  // 'mudo' es que tardó más de la cuenta, y eso NO prueba nada. Se deja el estado
+  // como está y se vuelve a preguntar en la siguiente ronda.
+  if (latido === 'mudo') return getModelStatus()
+
+  let perdido = false
+  for (const k of listos) {
+    const id = ids[k]
+    if (!id) continue
+    try {
+      await sdk.getLoadedModelInfo({ modelId: id })
+    } catch (e) {
+      // Un error de otro tipo (un RPC lento, un tropiezo puntual) NO es prueba de
+      // que el modelo haya muerto. Solo se olvida lo que el SDK declara ausente.
+      if (!isStaleModelError(e)) continue
+      console.error(`[qvac] ${k} ya no existe en el worker; el semáforo lo refleja`)
+      forget(k)
+      perdido = true
+    }
+  }
+  if (perdido) recalentar(customerNames)
+  return getModelStatus()
+}
+
+/** Cuánto se espera un latido antes de darlo por no contestado. */
+const MS_LATIDO = 4000
+
+/**
+ * Tres respuestas posibles, y la del medio es la que importa: un latido que
+ * tarda demasiado significa "no puedo afirmarlo", nunca "está muerto". Declarar
+ * la muerte por un silencio es cambiar un semáforo que miente en verde por uno
+ * que miente en gris.
+ */
+async function latir(): Promise<'vivo' | 'muerto' | 'mudo'> {
+  let temporizador: NodeJS.Timeout | undefined
+  const reloj = new Promise<'mudo'>((resolve) => {
+    temporizador = setTimeout(() => resolve('mudo'), MS_LATIDO)
+  })
+  try {
+    return await Promise.race([sdk.heartbeat().then((): 'vivo' => 'vivo'), reloj])
+  } catch {
+    return 'muerto'
+  } finally {
+    if (temporizador) clearTimeout(temporizador)
+  }
+}
+
+let recalentando = false
+
+/**
+ * Vuelve a cargar en segundo plano lo que se perdió, uno a la vez.
+ *
+ * Sin esto el semáforo sería honesto pero inútil: las luces se apagarían y ahí
+ * se quedarían hasta que alguien intentara dictar. Si la recarga vuelve a
+ * fallar, ningún modelo queda en `ready`, `verifyStatus` deja de preguntar y no
+ * hay bucle.
+ */
+function recalentar(customerNames: () => Promise<string[]>): void {
+  if (recalentando) return
+  recalentando = true
+  void customerNames()
+    .then((names) => warmup(names))
+    .catch((e) => console.error('[qvac] no se pudo recalentar tras perder el worker', e))
+    .finally(() => {
+      recalentando = false
+    })
 }
 
 export function isReady(key: ModelKey): boolean {
