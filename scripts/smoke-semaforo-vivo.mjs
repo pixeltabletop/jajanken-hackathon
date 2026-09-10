@@ -1,7 +1,7 @@
 // El semáforo, en la app de verdad. Mata el worker de QVAC con la ventana
 // abierta y cronometra cuánto tarda la pantalla en dejar de mentir.
 //
-//   npm run dev -- -- --remote-debugging-port=9222
+//   npm run dev -- -- --remote-debugging-port=9222   (o el de MAM_DEBUG_PORT)
 //   node scripts/smoke-semaforo-vivo.mjs
 //
 // Cuidado: el recargado en caliente NO cubre el proceso principal. Si tocaste
@@ -9,12 +9,16 @@
 
 import { execSync } from 'node:child_process'
 
-const PUERTO = 9222
+// El puerto de depuracion se puede mover: en una maquina donde el 9222 este
+// ocupado por otro programa (el widget de Lenovo Vantage, por ejemplo) este
+// script no encuentra la ventana y falla entero. MAM_DEBUG_PORT lo cambia,
+// aqui y en el arranque de la app.
+const PUERTO = Number(process.env.MAM_DEBUG_PORT ?? 9222)
 
 const objetivos = await (await fetch(`http://127.0.0.1:${PUERTO}/json/list`)).json()
 const pagina = objetivos.find((t) => t.type === 'page')
 if (!pagina) {
-  console.error('No hay ventana. Levanta la app con --remote-debugging-port=9222')
+  console.error('No hay ventana. Levanta la app con --remote-debugging-port=' + PUERTO)
   process.exit(1)
 }
 

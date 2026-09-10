@@ -1,6 +1,6 @@
-// Auditoría profunda de Eco contra la app en ejecución.
+// Auditoría profunda de MAM contra la app en ejecución.
 //
-//   1. npm run dev -- -- --remote-debugging-port=9222
+//   1. npm run dev -- -- --remote-debugging-port=9222   (o el de MAM_DEBUG_PORT)
 //   2. node scripts/audit.mjs
 //
 // Cubre: arranque y tiempos, guía de campo, ayuda contextual, ciclo completo,
@@ -9,7 +9,11 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 
-const PORT = 9222
+// El puerto de depuracion se puede mover: en una maquina donde el 9222 este
+// ocupado por otro programa (el widget de Lenovo Vantage, por ejemplo) este
+// script no encuentra la ventana y falla entero. MAM_DEBUG_PORT lo cambia,
+// aqui y en el arranque de la app.
+const PORT = Number(process.env.MAM_DEBUG_PORT ?? 9222)
 const OUT = 'bench/audit'
 mkdirSync(OUT, { recursive: true })
 
@@ -24,12 +28,12 @@ async function findPage() {
   for (let i = 0; i < 40; i++) {
     try {
       const t = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const p = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
+      const p = t.find((x) => x.type === 'page' && /^https?:\/\/(localhost|127\.0\.0\.1)[:/]|MAM/i.test(`${x.url} ${x.title}`))
       if (p) return p
     } catch { /* aún no */ }
     await sleep(1000)
   }
-  throw new Error('No encontré la ventana de MAM en el puerto 9222')
+  throw new Error(`No encontré la ventana de MAM en el puerto ${PORT}`)
 }
 
 const page = await findPage()

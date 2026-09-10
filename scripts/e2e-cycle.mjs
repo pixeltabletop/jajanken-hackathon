@@ -1,7 +1,7 @@
 // Ciclo completo de usuario contra la app REAL en ejecución, vía el protocolo de
 // depuración de Chromium. Sin dependencias: fetch y WebSocket nativos de Node.
 //
-//   1. npm run dev -- -- --remote-debugging-port=9222
+//   1. npm run dev -- -- --remote-debugging-port=9222   (o el de MAM_DEBUG_PORT)
 //   2. node scripts/e2e-cycle.mjs
 //
 // Verifica el criterio del Bloque 4 del blueprint: teclear una nota, extraer,
@@ -10,7 +10,11 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 
-const PORT = 9222
+// El puerto de depuracion se puede mover: en una maquina donde el 9222 este
+// ocupado por otro programa (el widget de Lenovo Vantage, por ejemplo) este
+// script no encuentra la ventana y falla entero. MAM_DEBUG_PORT lo cambia,
+// aqui y en el arranque de la app.
+const PORT = Number(process.env.MAM_DEBUG_PORT ?? 9222)
 const NOTE = 'Estoy en la Clínica DemoCare Costa del Este, en Ciudad de Panamá. Vi dos resonadores Zenith MedTech de unos cinco años y tres ecógrafos, la marca no la vi.'
 const OUT = 'bench/e2e'
 mkdirSync(OUT, { recursive: true })
@@ -24,7 +28,7 @@ async function findPage() {
   for (let i = 0; i < 30; i++) {
     try {
       const targets = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const page = targets.find((t) => t.type === 'page' && /localhost:5173|MAM/i.test(`${t.url} ${t.title}`))
+      const page = targets.find((t) => t.type === 'page' && /^https?:\/\/(localhost|127\.0\.0\.1)[:/]|MAM/i.test(`${t.url} ${t.title}`))
       if (page) return page
     } catch { /* aún no escucha */ }
     await sleep(1000)

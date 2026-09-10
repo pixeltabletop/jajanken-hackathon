@@ -1,7 +1,7 @@
 // Verificación del Bloque 4B contra la app REAL en ejecución, por el protocolo
 // de depuración de Chromium. Sin dependencias: fetch y WebSocket de Node.
 //
-//   1. npm run dev -- -- --remote-debugging-port=9222
+//   1. npm run dev -- -- --remote-debugging-port=9222   (o el de MAM_DEBUG_PORT)
 //   2. node scripts/e2e-4b.mjs
 //
 // Cubre los 21 puntos de la verificación del bloque: arranque con logo, selector
@@ -19,7 +19,11 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 
-const PORT = 9222
+// El puerto de depuracion se puede mover: en una maquina donde el 9222 este
+// ocupado por otro programa (el widget de Lenovo Vantage, por ejemplo) este
+// script no encuentra la ventana y falla entero. MAM_DEBUG_PORT lo cambia,
+// aqui y en el arranque de la app.
+const PORT = Number(process.env.MAM_DEBUG_PORT ?? 9222)
 const OUT = 'bench/e2e'
 mkdirSync(OUT, { recursive: true })
 
@@ -38,7 +42,7 @@ async function findPage() {
   for (let i = 0; i < 40; i++) {
     try {
       const t = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const p = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
+      const p = t.find((x) => x.type === 'page' && /^https?:\/\/(localhost|127\.0\.0\.1)[:/]|MAM/i.test(`${x.url} ${x.title}`))
       if (p) return p
     } catch { /* aún no */ }
     await sleep(1000)
@@ -143,7 +147,14 @@ try {
   const splashMs = await waitFor(`!document.querySelector('.splash')`, 'el arranque termina', 40000, 400)
   summary.splashMs = Date.now() - t0
   check(summary.splashMs >= 5000, 'el arranque dura al menos 5 segundos', `${(summary.splashMs / 1000).toFixed(1)} s`)
-  const net = await js(`performance.getEntriesByType('resource').filter(r => !/^(file|data|blob)/.test(r.name) && !/localhost:5173/.test(r.name)).map(r => r.name).slice(0,5)`)
+  // Lo local se reconoce por el HOST, no por un puerto escrito a mano. Con el
+  // 5173 fijo, una maquina donde Vite arranque en el 5174 contaba el propio
+  // servidor de desarrollo como trafico externo y esta comprobacion fallaba
+  // sin que la aplicacion hubiera salido a ningun sitio.
+  const net = await js(`performance.getEntriesByType('resource')
+    .filter(r => !/^(file|data|blob)/.test(r.name))
+    .filter(r => { try { const h = new URL(r.name).hostname; return h !== 'localhost' && h !== '127.0.0.1' && h !== '::1' } catch { return true } })
+    .map(r => r.name).slice(0,5)`)
   check(net.length === 0, 'nada se descarga de la red: todo viaja en el paquete', net.join(' ') || 'ninguna petición externa')
 
   // ---- 1b. acceso -------------------------------------------------------
