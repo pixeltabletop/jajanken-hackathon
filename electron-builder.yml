@@ -4,6 +4,33 @@ asar: false
 directories:
   buildResources: build
 files:
+  # Lo que NO viaja dentro del instalador. `bench/` son 3,5 MB de mediciones,
+  # `reference/` contiene el brief y el workbook de Philips (su documento, no el
+  # nuestro: no se redistribuye dentro de nuestro artefacto), `audio/` son
+  # pruebas de dictado y `docs/` es documentación del repositorio.
+  # Motores de QVAC que la aplicación NO usa. El SDK trae backends para difusión,
+  # traducción, OCR, texto a voz, audio generativo, BCI, clasificación y VLA;
+  # nosotros solo llamamos a tres: LLM (llamacpp), embeddings y ASR. Son 2,1 GB
+  # de binarios que no se ejecutan nunca. Excluirlos es lo que baja el instalador
+  # de 1,01 GB a la mitad, y está VERIFICADO arrancando el empaquetado después.
+  - '!node_modules/@qvac/diffusion-cpp'
+  - '!node_modules/@qvac/translation-nmtcpp'
+  - '!node_modules/@qvac/ocr-ggml'
+  - '!node_modules/@qvac/tts-ggml'
+  - '!node_modules/@qvac/audiogen-ggml'
+  - '!node_modules/@qvac/bci-whispercpp'
+  - '!node_modules/@qvac/vla-ggml'
+  - '!node_modules/@qvac/classification-ggml'
+  # El workbook de Philips es su documento: no se redistribuye dentro del nuestro.
+  - '!data/Dummy_Installed_Base_Hackathon.xlsx'
+  - '!bench'
+  - '!reference'
+  - '!audio'
+  - '!docs'
+  - '!scripts'
+  - '!schema.js'
+  - '!DECISIONES.md'
+  - '!DEMO.md'
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
@@ -39,7 +66,8 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates
+# Sin actualización automática: la aplicación se entrega como instalador y no
+# habla con ningún servidor. El bloque `publish` del andamiaje apuntaba a
+# example.com, que es exactamente el tipo de detalle que un jurado encuentra.
+publish: null
 

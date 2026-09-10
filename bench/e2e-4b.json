@@ -26,12 +26,12 @@
     {
       "ok": true,
       "label": "Esc antes del segundo 5 no salta el arranque",
-      "detail": "3 s desde la recarga"
+      "detail": "1.7 s desde la recarga"
     },
     {
       "ok": true,
       "label": "el arranque dura al menos 5 segundos",
-      "detail": "5.9 s"
+      "detail": "5.8 s"
     },
     {
       "ok": true,
@@ -41,7 +41,7 @@
     {
       "ok": true,
       "label": "aparece la pantalla de acceso",
-      "detail": "5 ms tras el arranque"
+      "detail": "14 ms tras el arranque"
     },
     {
       "ok": true,
@@ -116,7 +116,7 @@
     {
       "ok": true,
       "label": "el nombre del acceso llega al selector",
-      "detail": "Entraste como Auditoría 67627. Todo lo que registres queda a"
+      "detail": "Entraste como Auditoría 03657. Todo lo que registres queda a"
     },
     {
       "ok": true,
@@ -176,7 +176,7 @@
     {
       "ok": true,
       "label": "la tabla creció tras guardar",
-      "detail": "48 → 49 filas"
+      "detail": "44 → 45 filas"
     },
     {
       "ok": true,
@@ -241,12 +241,12 @@
     {
       "ok": true,
       "label": "la frase redactada responde con cifras",
-      "detail": "Con país: Panamá: 62 equipos registrados en 17 sitios, sobre 17 observaciones. Por estatus: Confirmado 16, Rep"
+      "detail": "Con país: Panamá: 54 equipos registrados en 13 sitios, sobre 13 observaciones. Por estatus: Confirmado 8, Repo"
     },
     {
       "ok": true,
       "label": "los números del desglose suman el total de equipos",
-      "detail": "16+34+12+0 = 62 · KPI 62"
+      "detail": "8+34+12+0 = 54 · KPI 54"
     },
     {
       "ok": true,
@@ -281,7 +281,7 @@
     {
       "ok": true,
       "label": "dos pestañas, cada una declara cuántas filas trae",
-      "detail": "Resultados 31 filas | Gráficos 62 equipos"
+      "detail": "Resultados 27 filas | Gráficos 54 equipos"
     },
     {
       "ok": true,
@@ -306,7 +306,7 @@
     {
       "ok": true,
       "label": "un clic en una barra recalcula los KPI",
-      "detail": "62/17/17/1 → 20/11/11/0"
+      "detail": "54/13/13/1 → 12/7/7/0"
     },
     {
       "ok": true,
@@ -361,7 +361,7 @@
     {
       "ok": true,
       "label": "el PDF de la consulta se genera",
-      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-03-20.pdf"
+      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-04-29.pdf"
     },
     {
       "ok": true,
@@ -386,7 +386,7 @@
     {
       "ok": true,
       "label": "cambiar de tema no pierde el filtro ni el resultado",
-      "detail": "50 → 50 filas"
+      "detail": "46 → 46 filas"
     },
     {
       "ok": true,
@@ -405,32 +405,32 @@
     }
   ],
   "summary": {
-    "stamp": "67627",
-    "site": "Policlínica DemoCare Prueba 67627",
-    "splashMs": 5896,
+    "stamp": "03657",
+    "site": "Policlínica DemoCare Prueba 03657",
+    "splashMs": 5827,
     "doorsHome": [
       "Registrar equipos",
       "Seguimiento y reportes"
     ],
-    "extractMs": 17346,
-    "gemmaReadyMs": 4,
-    "queryMs": 53353,
+    "extractMs": 15982,
+    "gemmaReadyMs": 3,
+    "queryMs": 16500,
     "breakdown": {
       "desglose": [
-        16,
+        8,
         34,
         12,
         0
       ],
-      "suma": 62,
-      "kpi": 62
+      "suma": 54,
+      "kpi": 54
     },
     "chipComplejo": [
       "país: Panamá",
       "confianza: Media o Baja",
       "texto: \"San Francisco\""
     ],
-    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-03-20.pdf",
+    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-04-29.pdf",
     "tema_negro": {
       "fondo": "rgb(20, 22, 25)",
       "texto": "rgb(244, 246, 248)"

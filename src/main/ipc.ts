@@ -67,8 +67,9 @@ export function registerIpc(store: Store): void {
     // El dictado se puede empezar desde que abre la app. Si el audio llega antes
     // de que Whisper termine de cargar, se espera aquí en vez de fallar: grabar
     // no necesita ningún modelo, y transcribir solo necesita este.
-    const whisper = await models.whisperReady(customers)
-    const r = await transcribeWav(whisper, bytes, { brands: BRANDS, customers })
+    const r = await models.withModel('whisper', customers, (id) =>
+      transcribeWav(id, bytes, { brands: BRANDS, customers })
+    )
     await store.recordTiming('transcribe', r.ms)
     return r
   }))
@@ -76,11 +77,9 @@ export function registerIpc(store: Store): void {
   ipcMain.handle('obs:extract', safe<[{ text: string; language: Language; source?: Observation['source'] }], ExtractResult>(
     'EXTRACT',
     async ({ text, language, source }) => {
-      const r = await extractObservation(models.requireModel('gemma'), {
-        rawText: text,
-        language,
-        source: source ?? 'Text'
-      })
+      const r = await models.withModel('gemma', [], (id) =>
+        extractObservation(id, { rawText: text, language, source: source ?? 'Text' })
+      )
       // El modelo a veces omite la ciudad aunque esté literal en la nota. Si es
       // una ciudad ya conocida, se recupera por coincidencia exacta (auditable);
       // el país nunca se adivina, se infiere del catálogo por ciudad.
@@ -100,11 +99,13 @@ export function registerIpc(store: Store): void {
 
   ipcMain.handle('obs:dedup', safe<[{ facility: string; city: string | null }], DedupResult>('DEDUP', async ({ facility, city }) => {
     const t0 = Date.now()
-    const embedId = models.requireModel('embed')
     const customers = await store.customers()
-    const { canonical, cache, embedded } = await buildCanonical(embedId, customers, await store.getVectors())
-    if (embedded > 0) await store.setVectors(cache)
-    const r = await rankCandidates(embedId, facility, city, canonical)
+    const vectores = await store.getVectors()
+    const r = await models.withModel('embed', [], async (embedId) => {
+      const { canonical, cache, embedded } = await buildCanonical(embedId, customers, vectores)
+      if (embedded > 0) await store.setVectors(cache)
+      return rankCandidates(embedId, facility, city, canonical)
+    })
     await store.recordTiming('dedup', Date.now() - t0)
     return r
   }))
@@ -189,7 +190,7 @@ Generado: ${new Date().toLocaleString('es-PA')}
       const q = (question ?? '').trim()
       if (!q) throw new Error('La pregunta está vacía')
       const ctx = await store.queryContext()
-      const r = await parseQuestion(models.requireModel('gemma'), q, ctx)
+      const r = await models.withModel('gemma', [], (id) => parseQuestion(id, q, ctx))
       await store.recordTiming('query', r.ms)
       return { plan: r.plan, ms: r.ms, warnings: r.warnings }
     })

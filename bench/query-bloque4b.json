@@ -4,9 +4,9 @@
   "total": 5,
   "gate": 4,
   "passes": true,
-  "msMin": 11452,
-  "msMax": 13032,
-  "msMedian": 11561,
+  "msMin": 10651,
+  "msMax": 11025,
+  "msMedian": 10721,
   "context": {
     "countries": [
       "Argentina",
@@ -49,7 +49,7 @@
       "question": "cuál es el estatus de las unidades en Panamá",
       "ok": true,
       "problems": [],
-      "ms": 11769,
+      "ms": 10951,
       "raw": {
         "lugares": [
           "Panamá"
@@ -91,7 +91,7 @@
       "question": "cuántas son de baja confianza",
       "ok": true,
       "problems": [],
-      "ms": 11456,
+      "ms": 10651,
       "raw": {
         "lugares": [],
         "m": [],
@@ -133,7 +133,7 @@
       "question": "cuáles son las de baja confianza",
       "ok": true,
       "problems": [],
-      "ms": 11452,
+      "ms": 10710,
       "raw": {
         "lugares": [],
         "m": [],
@@ -175,7 +175,7 @@
       "question": "dame los ecógrafos de más de siete años",
       "ok": true,
       "problems": [],
-      "ms": 11561,
+      "ms": 10721,
       "raw": {
         "lugares": [],
         "m": [
@@ -217,7 +217,7 @@
       "question": "qué marcas hay en Ciudad de Panamá",
       "ok": true,
       "problems": [],
-      "ms": 13032,
+      "ms": 11025,
       "raw": {
         "lugares": [
           "Ciudad de Panamá"

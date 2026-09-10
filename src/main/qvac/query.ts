@@ -90,8 +90,30 @@ const DESGLOSE: Array<[RegExp, Exclude<GroupBy, null>]> = [
   [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+marca/i, 'brand'],
   [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+(estado|estatus)/i, 'status'],
   [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+confianza/i, 'confidence'],
-  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+antig/i, 'ageBand']
+  [/\b(distribuci[oó]n|reparto|se reparte)\b[^.]*\bpor\s+antig/i, 'ageBand'],
+  // El brief de Philips esta escrito en ingles y sus ejemplos de consulta
+  // tambien. Un juez va a teclear la frase de su propio documento.
+  [/\b(what|which)\s+(brands|manufacturers)\b/i, 'brand'],
+  [/\b(what|which)\s+(modalities|equipment types)\b/i, 'modality'],
+  [/\b(what|which)\s+countries\b/i, 'country'],
+  [/\b(what|which)\s+cities\b/i, 'city'],
+  [/\b(status|state)\s+of\s+(the\s+)?(equipment|units|systems)\b/i, 'status'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+countr/i, 'country'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+cit/i, 'city'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+modalit/i, 'modality'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+brand/i, 'brand'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+status/i, 'status'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+confidence/i, 'confidence'],
+  [/\b(breakdown|distribution)\b[^.]*\bby\s+age/i, 'ageBand']
 ]
+
+/**
+ * "estimated to be around eight years old" habla de la EDAD, no del estado
+ * Estimated del catalogo. El ejemplo de consulta que trae el propio brief de
+ * Philips cae justo en esa trampa, asi que se desarma en codigo: si la frase
+ * usa "estimated" pegado a una edad, el estado no cuenta como pedido.
+ */
+const EDAD_ESTIMADA = /\bestimated\b[^.]{0,24}\b(years?|age|old)\b|\b(years?|age|old)\b[^.]{0,24}\bestimated\b/i
 
 /** La dimensión de desglose que pide la frase, o null si no pide ninguna. */
 export function desgloseDe(question: string): Exclude<GroupBy, null> | null {
@@ -167,6 +189,16 @@ export function resolvePlan(raw: unknown, ctx: QueryContext, question = ''): { p
   let groupBy: GroupBy = p.g >= 0 ? (GROUPS[p.g] ?? null) : null
 
   // La frase manda sobre el modelo cuando pide un desglose sin lugar a dudas.
+  // El estado "Estimated" solo cuenta si la pregunta habla del estado, no de
+  // una edad estimada.
+  const estadoPorEdad = EDAD_ESTIMADA.test(question)
+  const estados = uniq(p.s)
+    .map((i) => STATUSES[i])
+    .filter((v) => !(estadoPorEdad && v === 'Estimated'))
+  if (estadoPorEdad && uniq(p.s).map((i) => STATUSES[i]).includes('Estimated')) {
+    warnings.push('"estimated" aquí describe la edad, no el estado: no se filtra por estado')
+  }
+
   const pedido = desgloseDe(question)
   if (pedido) {
     if (intent !== 'breakdown' || groupBy !== pedido) {
@@ -192,7 +224,7 @@ export function resolvePlan(raw: unknown, ctx: QueryContext, question = ''): { p
         brand: one(uniq(p.b).map((i) => BRANDS[i])),
         minAgeYears,
         maxAgeYears,
-        status: one(uniq(p.s).map((i) => STATUSES[i])),
+        status: one(estados),
         confidence: one(uniq(p.c).map((i) => CONFIDENCE[i])),
         textSearch: sites[0] ?? null
       },

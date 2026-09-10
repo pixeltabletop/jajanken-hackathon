@@ -29,6 +29,59 @@ export function requireModel(key: ModelKey): string {
   return id
 }
 
+/**
+ * El identificador de un modelo puede morir con la aplicación abierta: si el
+ * worker de QVAC se reinicia, los handles que guardamos en memoria dejan de
+ * existir y el SDK responde `Model with ID "..." not found`.
+ *
+ * Pasó, y de la peor manera posible: `models:status` seguía diciendo que los
+ * tres estaban listos, la pantalla pintaba tres puntos verdes, y TODA inferencia
+ * fallaba. Un estado en memoria que nadie revalida es una mentira con fecha de
+ * caducidad.
+ */
+export function isStaleModelError(e: unknown): boolean {
+  const msg = e instanceof Error ? e.message : String(e)
+  return /not found|no such model|unknown model|invalid model|model .* not loaded/i.test(msg)
+}
+
+/** Olvida el modelo: el siguiente uso lo vuelve a cargar y el estado lo dice. */
+export function forget(key: ModelKey): void {
+  ids[key] = undefined
+  inflight[key] = undefined
+  status[key] = { state: 'idle' }
+}
+
+const LOADER: Record<ModelKey, (names: string[]) => Promise<string>> = {
+  gemma: () => loadGemma(),
+  whisper: (names) => loadWhisper(names),
+  embed: () => loadEmbed()
+}
+
+/**
+ * Ejecuta algo que usa un modelo y, si el handle estaba muerto, lo recarga y lo
+ * intenta UNA vez más. Un reintento y no más: si vuelve a fallar, el problema no
+ * es el handle y hay que verlo, no esconderlo detrás de un bucle.
+ */
+export async function withModel<T>(
+  key: ModelKey,
+  customerNames: string[],
+  fn: (modelId: string) => Promise<T>
+): Promise<T> {
+  const id = await LOADER[key](customerNames)
+  try {
+    return await fn(id)
+  } catch (e) {
+    if (!isStaleModelError(e)) throw e
+    // Si el worker se reinició, se llevó a los TRES por delante. Olvidarlos a
+    // todos hace que el semáforo diga la verdad de inmediato, en vez de seguir
+    // en verde hasta que alguien tropiece con el siguiente.
+    console.error(`[qvac] el modelo ${key} ya no existía en el worker; se recargan y se reintenta`)
+    for (const k of ['gemma', 'whisper', 'embed'] as ModelKey[]) forget(k)
+    const fresco = await LOADER[key](customerNames)
+    return fn(fresco)
+  }
+}
+
 export function isReady(key: ModelKey): boolean {
   return status[key].state === 'ready'
 }

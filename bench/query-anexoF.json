@@ -4,9 +4,9 @@
   "total": 10,
   "gate": 7,
   "passes": true,
-  "msMin": 10798,
-  "msMax": 13505,
-  "msMedian": 12548,
+  "msMin": 10562,
+  "msMax": 11255,
+  "msMedian": 10717,
   "context": {
     "countries": [
       "Argentina",
@@ -49,7 +49,7 @@
       "question": "hospitales en Panamá con resonadores",
       "ok": true,
       "problems": [],
-      "ms": 11600,
+      "ms": 11255,
       "raw": {
         "lugares": [
           "Panamá"
@@ -93,7 +93,7 @@
       "question": "tomógrafos de más de diez años",
       "ok": true,
       "problems": [],
-      "ms": 12561,
+      "ms": 10966,
       "raw": {
         "lugares": [],
         "m": [
@@ -135,7 +135,7 @@
       "question": "equipos Aurelia Health en Brasil",
       "ok": true,
       "problems": [],
-      "ms": 13505,
+      "ms": 10757,
       "raw": {
         "lugares": [
           "Brasil"
@@ -179,7 +179,7 @@
       "question": "todo lo que hay en Colón",
       "ok": true,
       "problems": [],
-      "ms": 11780,
+      "ms": 10717,
       "raw": {
         "lugares": [
           "Colón"
@@ -221,7 +221,7 @@
       "question": "ecógrafos nuevos, de menos de tres años",
       "ok": true,
       "problems": [],
-      "ms": 10798,
+      "ms": 10640,
       "raw": {
         "lugares": [],
         "m": [
@@ -263,7 +263,7 @@
       "question": "registros con confianza baja",
       "ok": true,
       "problems": [],
-      "ms": 11253,
+      "ms": 10562,
       "raw": {
         "lugares": [],
         "m": [],
@@ -305,7 +305,7 @@
       "question": "equipos estimados, no confirmados",
       "ok": true,
       "problems": [],
-      "ms": 12548,
+      "ms": 10697,
       "raw": {
         "lugares": [],
         "m": [],
@@ -347,7 +347,7 @@
       "question": "resonadores viejos en México",
       "ok": true,
       "problems": [],
-      "ms": 12730,
+      "ms": 10703,
       "raw": {
         "lugares": [
           "México"
@@ -391,7 +391,7 @@
       "question": "qué tiene el DemoCare Chiriquí",
       "ok": true,
       "problems": [],
-      "ms": 12153,
+      "ms": 10987,
       "raw": {
         "lugares": [
           "DemoCare Chiriquí"
@@ -435,7 +435,7 @@
       "question": "monitores de paciente",
       "ok": true,
       "problems": [],
-      "ms": 13170,
+      "ms": 10574,
       "raw": {
         "lugares": [],
         "m": [

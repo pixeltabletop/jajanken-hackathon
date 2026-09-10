@@ -127,8 +127,28 @@ O sea que el archivo no contiene una animación: contiene una imagen fija que pa
 
 **D50 · El modo Seguimiento tiene su guía de cómo pedirlo.** Igual que la nota tiene la suya. Dice qué entiende (lugar, modalidad, marca, edad, estatus, confianza, y qué tipo de respuesta se quiere), qué **no** entiende todavía (comparar dos periodos, fechas de visita, opiniones, datos que no están en la base) y trae un ejemplo completo pulsable. Existe para que nadie escriba a ciegas: cuando algo no entra en parámetros la aplicación no inventa, pero es mejor decirlo antes que después.
 
+## 2026-09-10 · Abogado del diablo y bloque 7
+
+**D51 · El identificador de un modelo puede morir con la aplicación abierta, y el estado mentía.** Reproducido: `models:status` devolvía los tres en `ready`, la pantalla pintaba tres puntos verdes, y **toda** inferencia fallaba con `Model with ID "826f40296d485aa6" not found`. La causa es que `models.ts` guardaba el handle en memoria para siempre y nadie lo revalidaba; si el worker de QVAC se reinicia, los handles mueren y el estado en memoria se queda contando una historia vieja. Arreglo: `withModel()` envuelve las cuatro rutas de inferencia (extraer, transcribir, deduplicar, preguntar), detecta el error de handle muerto, olvida **los tres** modelos porque el worker se los llevó juntos, recarga y reintenta **una** vez. Verificado matando `bare.exe` a mano con la aplicación abierta: la siguiente pregunta se recuperó sola en 30,6 s y la de después funcionó normal; el semáforo pasó a decir la verdad. Antes de esto, el mismo escenario dejaba la app muerta con tres luces verdes, que es exactamente lo que habría pasado en mitad de la demo.
+
+**D52 · El instalador existe y arranca. El bloque 7 deja de ser un desconocido.** `npm run build:win` nunca se había ejecutado. Se ejecutó: construye a la primera. El empaquetado se verificó en ejecución, no solo compilando: arranca, carga los tres modelos, responde una pregunta en 11,1 s, no hace ni una petición de red y no deja un solo error de consola.
+
+**D53 · El instalador baja de 1,01 GB a 602 MB quitando los motores de QVAC que no usamos.** El SDK trae backends para difusión, traducción, OCR, texto a voz, audio generativo, BCI, clasificación y VLA. Nosotros llamamos a tres: LLM, embeddings y ASR. Son 2,1 GB de binarios que no se ejecutan nunca. Excluidos en `electron-builder.yml` y **verificado arrancando el empaquetado después**: sigue funcionando igual. Instalado pasa de 5,1 GB a 3,0 GB.
+
+**D54 · El brief y el workbook de Philips ya no viajan dentro de nuestro artefacto.** `electron-builder.yml` no excluía `reference/`, `bench/`, `audio/`, `docs/` ni `scripts/`, así que el instalador redistribuía el documento del reto y su workbook. Corregido. También se quitó `publish.url: https://example.com/auto-updates`, que venía del andamiaje.
+
+**D55 · El README lleva ya la declaración de bases preexistentes.** Era el punto que el propio blueprint marca como descalificante y solo había una nota diciendo que el bloque 8 lo escribiría. Ahora está escrito, con una tabla de qué había antes y qué se hizo durante, por cada una de las dos bases.
+
+**D56 · Respaldo del repositorio fuera de esta laptop.** El repositorio **no tiene remoto**: doce commits vivían en un solo disco. Hasta que Diego dé acceso al repositorio del jurado, hay un `git bundle` completo en `Contexto-IA/proyectos-personales/jajanken-hackathon/respaldo-repo/`, que OneDrive sincroniza fuera del equipo, con instrucciones de restauración. **Un bundle es una foto y no se actualiza solo: no sustituye al remoto.**
+
+**D57 · La pregunta funciona también en inglés, y el ejemplo del propio brief se atiende.** El brief está escrito en inglés y su consulta de ejemplo es literal: "Show me customers in Brazil with MR systems estimated to be more than seven years old". Sale correcta (país Brasil, modalidad MR, edad ≥ 7). Se añadieron dos guardas deterministas: las frases de desglose en inglés ("what brands", "breakdown by…"), y que **"estimated" pegado a una edad no se lea como el estado Estimated**, que es la trampa en la que caía justo el ejemplo del brief.
+
+**Pendiente que no puedo cerrar yo:** el remoto del repositorio, la instalación en un perfil de Windows limpio, y la decisión del interruptor de la voz con el audio real de Diego.
+
 ## Pendientes de decisión
 
+- **Remoto del repositorio.** Sin él, todo vive en una laptop. Mientras tanto hay respaldo en OneDrive (D56).
+- **Instalación en un perfil de Windows limpio.** El instalador está construido y verificado en esta máquina; en una limpia, no.
 - Voz vive o muere (Anexo G del blueprint), con el audio real de Diego.
 - Pieza de logo con movimiento real y cadencia constante, si Diego quiere animación en el arranque (D43).
 - Nombre definitivo de la aplicación.

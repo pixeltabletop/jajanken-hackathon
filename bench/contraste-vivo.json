@@ -10,85 +10,85 @@
     },
     {
       "estado": "blanco · inicio y registro",
-      "medidos": 52,
+      "medidos": 51,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · menú de opciones abierto",
-      "medidos": 55,
+      "medidos": 54,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · base abierta y selector de columnas",
-      "medidos": 694,
+      "medidos": 649,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · seguimiento",
-      "medidos": 609,
+      "medidos": 564,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · guía de cómo pedirlo",
-      "medidos": 642,
+      "medidos": 597,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · gráfico con una barra elegida",
-      "medidos": 123,
+      "medidos": 122,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · nota abierta con la evidencia",
-      "medidos": 613,
+      "medidos": 568,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · inicio y registro",
-      "medidos": 53,
+      "medidos": 52,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · menú de opciones abierto",
-      "medidos": 56,
+      "medidos": 55,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · base abierta y selector de columnas",
-      "medidos": 694,
+      "medidos": 649,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · seguimiento",
-      "medidos": 609,
+      "medidos": 564,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · guía de cómo pedirlo",
-      "medidos": 642,
+      "medidos": 597,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · gráfico con una barra elegida",
-      "medidos": 123,
+      "medidos": 122,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · nota abierta con la evidencia",
-      "medidos": 613,
+      "medidos": 568,
       "fallos": 0,
       "malas": []
     }
