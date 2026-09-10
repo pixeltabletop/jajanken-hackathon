@@ -1,4 +1,4 @@
-appId: com.jajanken.eco
+appId: com.jajanken.mam
 productName: MAM
 asar: false
 directories:
@@ -42,7 +42,9 @@ asarUnpack:
 win:
   executableName: MAM
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  # ${productName}, no ${name}: el paquete se llama 'mam' en minusculas y el
+  # producto MAM. El README promete MAM-1.0.0-setup.exe y tiene que cumplirlo.
+  artifactName: ${productName}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always

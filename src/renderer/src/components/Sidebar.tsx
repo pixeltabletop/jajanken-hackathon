@@ -195,11 +195,36 @@ export function Sidebar({
   theme, onTheme, status, timings, operator, onCambiarUsuario, onLogout
 }: Props): JSX.Element {
   const [menu, setMenu] = useState(false)
+  /**
+   * Dónde pintar el menú de sesión, en coordenadas de ventana.
+   *
+   * Tiene que ser `position: fixed` calculado a mano, y no un absoluto dentro de
+   * la barra. La barra recorta lo que se sale (`overflow`), así que el menú se
+   * quedaba escondido detrás del panel: se abría, pero no se veía. Con la barra
+   * estrecha era peor, porque el menú abre hacia la derecha y ahí el recorte lo
+   * cortaba entero.
+   *
+   * Un elemento fijo no lo recorta ningún antepasado ni lo tapa ningún contexto
+   * de apilamiento intermedio.
+   */
+  const [donde, setDonde] = useState<{ left: number; bottom: number } | null>(null)
   const caja = useRef<HTMLDivElement>(null)
+  const boton = useRef<HTMLButtonElement>(null)
   const claro = theme === 'blanco'
 
   useEffect(() => {
-    if (!menu) return
+    if (!menu) {
+      setDonde(null)
+      return
+    }
+    const situar = (): void => {
+      const r = boton.current?.getBoundingClientRect()
+      if (!r) return
+      // Justo encima del botón y alineado con su borde izquierdo. Se recorta a
+      // la ventana para que no se salga por arriba en pantallas bajas.
+      setDonde({ left: Math.round(r.left), bottom: Math.round(window.innerHeight - r.top + 6) })
+    }
+    situar()
     const fuera = (e: MouseEvent): void => {
       if (caja.current && !caja.current.contains(e.target as Node)) setMenu(false)
     }
@@ -207,10 +232,14 @@ export function Sidebar({
     document.addEventListener('mousedown', fuera)
     document.addEventListener('click', fuera)
     document.addEventListener('keydown', esc)
+    window.addEventListener('resize', situar)
+    window.addEventListener('scroll', situar, true)
     return () => {
       document.removeEventListener('mousedown', fuera)
       document.removeEventListener('click', fuera)
       document.removeEventListener('keydown', esc)
+      window.removeEventListener('resize', situar)
+      window.removeEventListener('scroll', situar, true)
     }
   }, [menu])
 
@@ -303,6 +332,7 @@ export function Sidebar({
             menu. Ahora es una fila propia, siempre a la vista. */}
         <div className="lat-usuario" ref={caja}>
           <button
+            ref={boton}
             type="button"
             id="lat-quien"
             className="lat-item lat-quien"
@@ -315,8 +345,12 @@ export function Sidebar({
             <span className="lat-avatar" aria-hidden="true">{iniciales(operator)}</span>
             {abierta && <span className="lat-txt lat-nombre-usuario">{operator}</span>}
           </button>
-          {menu && (
-            <div className="menu-list lat-menu" role="menu">
+          {menu && donde && (
+            <div
+              className="menu-list lat-menu"
+              role="menu"
+              style={{ left: donde.left, bottom: donde.bottom }}
+            >
               <span className="menu-quien">{operator}</span>
               <button type="button" role="menuitem" onClick={() => { setMenu(false); onCambiarUsuario() }}>
                 Cambiar de usuario

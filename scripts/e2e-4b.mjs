@@ -175,6 +175,31 @@ try {
       await js(`(() => { const b = document.getElementById('lat-salir'); return !!b && !!b.querySelector('svg') })()`),
       'y lleva su icono de salida'
     )
+
+    // El menú de sesión se abría DETRÁS del panel: la barra recorta lo que se
+    // sale, así que el desplegable quedaba escondido. Se comprueba que está
+    // dentro de la ventana y que es lo que hay delante en su propio centro,
+    // que es lo único que distingue "abierto" de "abierto y visible".
+    // Se cierra primero: el menu sigue abierto de la comprobacion de arriba, y
+    // pulsar el mismo boton lo cerraria en vez de abrirlo.
+    await js(`document.body.click()`)
+    await sleep(300)
+    const verMenu = await js(`(() => {
+      const b = document.getElementById('lat-quien'); if (!b) return { ok: false, por: 'sin boton' }
+      if (document.querySelector('.lat-menu')) return { ok: false, por: 'seguia abierto' }
+      b.click()
+      return new Promise((r) => setTimeout(() => {
+        const m = document.querySelector('.lat-menu')
+        if (!m) return r({ ok: false, por: 'no abrio' })
+        const c = m.getBoundingClientRect()
+        const dentro = c.left >= 0 && c.top >= 0 && c.right <= innerWidth && c.bottom <= innerHeight
+        const encima = document.elementFromPoint(Math.round(c.left + c.width / 2), Math.round(c.top + c.height / 2))
+        r({ ok: dentro && !!encima && m.contains(encima), dentro, delante: !!encima && m.contains(encima) })
+      }, 400))
+    })()`)
+    check(verMenu.ok === true, 'el menú de sesión se ve entero y por delante, no detrás del panel', JSON.stringify(verMenu))
+    await js(`document.body.click()`)
+    await sleep(300)
     // Navegar dejó de ser una opción de menú: es la barra, siempre visible. La
     // sección actual se marca con aria-current, que es lo que lee un lector.
     check(
