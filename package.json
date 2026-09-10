@@ -31,7 +31,9 @@
     "check:sin-red": "node scripts/check-sin-red.mjs",
     "check": "npm run typecheck && npm run check:tokens && npm run check:contrast && npm run check:sin-red",
     "bench:query": "node bench/bench_query.js",
-    "e2e:4b": "node scripts/e2e-4b.mjs"
+    "e2e:4b": "node scripts/e2e-4b.mjs",
+    "demo:ensayo": "node scripts/grabar-demo.mjs --ensayo",
+    "demo:grabar": "node scripts/grabar-demo.mjs"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",

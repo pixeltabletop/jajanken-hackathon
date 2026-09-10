@@ -272,6 +272,31 @@ Construido y **arrancado desde el ejecutable empaquetado**, no desde desarrollo:
 
 Lo que sigue sin probarse es un **perfil de Windows limpio**, que es distinto de esta máquina y es lo único que demuestra que otra persona puede instalarlo.
 
+**D67 · La coreografía del video es código, no memoria de quien graba.**
+
+`scripts/grabar-demo.mjs` conduce la aplicación por los trece planos del guion mientras ffmpeg graba la pantalla. `npm run demo:ensayo` hace el recorrido cronometrando sin gastar una toma; `npm run demo:grabar` lo mismo, grabando.
+
+El motivo no es comodidad. Solo hay una oportunidad de entregar el video, y coreografiar cinco minutos a mano significa repetir la coreografía entera cada vez que algo sale mal, desviándose un poco cada vez. Aquí, si una toma sale mal, se repite idéntica.
+
+Se niega a grabar si falta algo, porque descubrir al final de cinco minutos que un modelo no estaba cargado es tirar el trabajo: los tres modelos listos, memoria suficiente, ffmpeg presente, ventana bastante ancha, y la app en la pantalla de acceso.
+
+**Dos cosas salieron del propio ensayo, y ninguna se habría visto de otro modo.**
+
+*Un clic que no pulsa nada.* Las coordenadas del protocolo de depuración son de la parte VISIBLE, no del documento. El botón de interpretar estaba a 904 píxeles en una ventana de 779 de alto, así que el clic caía en el vacío. Sin error, sin aviso: la toma simplemente se quedaba esperando un resultado que nadie había pedido. Ahora se desplaza antes de pulsar, y de paso se ve mejor en el video.
+
+*La memoria cambia los tiempos por un factor de doce.* En el primer ensayo completo, con 0,4 GB libres, interpretar la consulta del plano 9 tardó **175 segundos** en vez de los 30 presupuestados, y el total se fue a 7:23. Con 1,8 GB libres, la MISMA consulta tardó **13,7 s** y el total quedó en **4:58 exactos, con los trece planos sin desviación**.
+
+| Memoria libre | La consulta del plano 9 | Total del video |
+|---|---|---|
+| 0,4 GB | 175 s | 7:23, incumple el reto |
+| 1,8 GB | 13,7 s | 4:58 |
+
+Doce veces más lento, sin un solo error y sin ninguna señal en pantalla. Es el peor tipo de fallo: el que no avisa. El umbral de grabación quedó en 1,5 GB libres con los modelos cargados, y el riesgo está escrito con estas cifras en `docs/GUION-VIDEO.md`.
+
+Esto confirma además que los tiempos del README son correctos: los 11 a 22 segundos de interpretar una pregunta se cumplen cuando la máquina tiene memoria.
+
+**Lo que este arnés NO hace: la narración.** El guion trae el texto palabra por palabra con el conteo contra la capacidad de cada plano, para leerlo encima. La voz sintética del SDK habla español, pero es un modelo de varias piezas y varios gigas, y apostarlo a horas de la entrega en una máquina que ya se quedó sin memoria hoy no compensa.
+
 ## Pendientes de decisión
 
 - **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.

@@ -1,0 +1,38 @@
+{
+  "marca": "2026-09-10T18-24-37",
+  "ensayo": true,
+  "totalSegundos": 121.1,
+  "dentroDelLimite": true,
+  "planos": [
+    {
+      "n": 1,
+      "titulo": "la marca y el acceso",
+      "planificado": 12,
+      "real": 12,
+      "desvio": 0
+    },
+    {
+      "n": 2,
+      "titulo": "entrar sin credenciales",
+      "planificado": 20,
+      "real": 20,
+      "desvio": 0
+    },
+    {
+      "n": 3,
+      "titulo": "las dos columnas y las dos puertas",
+      "planificado": 18,
+      "real": 18,
+      "desvio": 0
+    },
+    {
+      "n": 4,
+      "titulo": "registrar: la nota",
+      "planificado": 28,
+      "real": 28,
+      "desvio": 0
+    }
+  ],
+  "desviados": [],
+  "video": null
+}
