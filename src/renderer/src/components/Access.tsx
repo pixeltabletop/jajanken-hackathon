@@ -32,8 +32,8 @@ export function Access({ initialName, onEnter, observations }: Props): JSX.Eleme
   return (
     <section className="access" aria-labelledby="acc-h">
       <form className="access-card" onSubmit={submit}>
-        <LogoMark size="mark" label="Eco" />
-        <h1 id="acc-h">Eco</h1>
+        <LogoMark size="mark" label="MAM" />
+        <h1 id="acc-h">MAM</h1>
         <p className="access-sub">Inteligencia de base instalada · 100 % local, sin nube</p>
 
         <label className="access-field" htmlFor="acc-user">

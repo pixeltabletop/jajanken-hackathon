@@ -148,7 +148,7 @@ export function registerIpc(store: Store): void {
         const all = await store.list()
         const pdf = await renderReportPdf(req, all, app.getAppPath())
         const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')
-        const base = `Eco-${req.kind}${req.facility ? '-' + req.facility.replace(/[^\p{L}\p{N}]+/gu, '-') : ''}-${stamp}.pdf`
+        const base = `MAM-${req.kind}${req.facility ? '-' + req.facility.replace(/[^\p{L}\p{N}]+/gu, '-') : ''}-${stamp}.pdf`
 
         if (action === 'save') {
           const r = await dialog.showSaveDialog({
@@ -166,9 +166,9 @@ export function registerIpc(store: Store): void {
         await writeFile(target, pdf)
         if (action === 'mail') {
           const def = REPORT_BY_KIND[req.kind]
-          const subject = encodeURIComponent(`${def.title} — Eco`)
+          const subject = encodeURIComponent(`${def.title} — MAM`)
           const body = encodeURIComponent(
-            `Adjunto el reporte "${def.title}" generado con Eco.
+            `Adjunto el reporte "${def.title}" generado con MAM.
 
 ` +
             `Solicitado por: ${req.requestedBy}

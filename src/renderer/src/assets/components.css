@@ -1,4 +1,4 @@
-/* Eco — estilos de los componentes, sobre los tokens de base.css.
+/* MAM — estilos de los componentes, sobre los tokens de base.css.
    Regla de la casa: la animación solo existe si comunica algo (que el micrófono
    entra, que el modelo avanza, que una fila cambió). Nada se mueve por adorno. */
 
@@ -801,11 +801,11 @@ main.fuera { max-width: 720px; margin: 0 auto; padding: 60px 32px; }
   height: 100vh; overflow-y: auto; overflow-x: hidden;
   display: flex; flex-direction: column; gap: 4px;
   padding: 14px 10px 12px;
-  background: var(--page-top);
-  /* Con --line el borde daba 1.28:1 contra el fondo de la barra y no separaba
-     nada: en tema claro la barra y el area de trabajo casi no se distinguen. Se
-     usa el mismo token que los bordes de campo, que ya se mide a 3:1. */
-  border-right: 1px solid var(--field-line);
+  /* Invertida respecto al panel. El borde ya no tiene que trabajar para separar
+     las dos zonas: lo hace el propio salto de tono. */
+  background: var(--rail-bg);
+  color: var(--rail-ink);
+  border-right: 1px solid var(--rail-line);
 }
 .lateral.estrecha { padding-left: 8px; padding-right: 8px; }
 
@@ -815,18 +815,24 @@ main.fuera { max-width: 720px; margin: 0 auto; padding: 60px 32px; }
   display: flex; align-items: center; gap: 9px; flex: 1 1 auto; min-width: 0;
   padding: 4px 6px; border-radius: 8px;
 }
-.lat-logo:hover { background: var(--surface-hover); }
+.lat-logo:hover { background: var(--rail-hover); }
 .lat-logo:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .lat-logo .logo { width: 28px !important; }
-.lat-nombre { font-size: 17px; font-weight: 700; color: var(--primary-deep); letter-spacing: -.3px; }
+.lat-nombre { font-size: 17px; font-weight: 700; color: var(--rail-ink); letter-spacing: -.3px; }
 .lateral.estrecha .lat-marca { flex-direction: column; gap: 6px; padding-bottom: 8px; }
 .lat-plegar { flex: 0 0 auto; }
+/* El boton de icono por defecto se pinta con los colores del panel. Dentro de la
+   barra invertida eso lo dejaba ilegible, asi que se reviste con los del riel. */
+.lateral .icon-btn { color: var(--rail-accent); background: transparent; border-color: var(--rail-line); }
+.lateral .icon-btn:hover { background: var(--rail-hover); color: var(--rail-ink); border-color: var(--rail-accent); }
+/* El semaforo llevaba la pildora del panel; aqui va sin relleno. */
+.lateral .dots { background: transparent; border-color: var(--rail-line); }
 
 .lat-grupo { display: flex; flex-direction: column; gap: 2px; }
-.lat-acciones { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.lat-acciones { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rail-line); }
 .lat-titulo {
   margin: 8px 8px 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .09em;
-  text-transform: uppercase; color: var(--muted);
+  text-transform: uppercase; color: var(--rail-muted);
 }
 
 /* Una fila de la barra. Estrecha se vuelve un cuadrado con solo el icono, pero
@@ -835,38 +841,43 @@ main.fuera { max-width: 720px; margin: 0 auto; padding: 60px 32px; }
   all: unset; box-sizing: border-box; cursor: pointer;
   display: flex; align-items: center; gap: 11px;
   width: 100%; padding: 9px 10px; border-radius: 8px;
-  font-size: 13.5px; color: var(--ink);
+  font-size: 13.5px; color: var(--rail-ink);
   border: 1px solid transparent;
   transition: background .16s var(--ease), color .16s var(--ease);
 }
-.lat-item:hover:not(:disabled) { background: var(--surface-hover); }
+/* La seccion actual NO se repinta al pasar el raton. Si el fondo cambiara sin
+   que cambie el texto, el blanco de la seccion actual se quedaria sobre el
+   fondo claro del hover: 1,27:1, invisible. Es la misma fuga que dejaba el
+   texto de las tarjetas sin leer, y la caza el auditor sobre la app viva. */
+.lat-item:hover:not(:disabled):not(.actual) { background: var(--rail-hover); }
+.lat-item.actual:hover { background: var(--rail-on-bg); color: var(--rail-on-ink); }
 .lat-item:focus-visible { outline: 2px solid var(--focus); outline-offset: -1px; }
-.lat-ico { flex: 0 0 auto; display: inline-flex; color: var(--primary-deep); }
+.lat-ico { flex: 0 0 auto; display: inline-flex; color: var(--rail-accent); }
 .lat-txt { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Sección actual. El par fondo/texto es el mismo que ya usan los chips y los
    encabezados de tabla, así que está medido y no inventa colores nuevos. */
-.lat-item.actual { background: var(--sky); color: var(--on-sky); font-weight: 700; border-color: var(--primary); }
-.lat-item.actual .lat-ico { color: var(--on-sky); }
+.lat-item.actual { background: var(--rail-on-bg); color: var(--rail-on-ink); font-weight: 700; border-color: var(--rail-on-bg); }
+.lat-item.actual .lat-ico { color: var(--rail-on-ink); }
 
 /* Accion encendida: no es "estas aqui", es "esto esta puesto". Tiene que verse
    DISTINTA de la seccion actual, no parecida: con el mismo relleno azul las dos
    se confundian y la barra dejaba de decir donde estabas. Aqui va sin relleno,
    solo el contorno y un punto al final. El punto es la senal que no depende del
    color, que es lo que pide la seccion de accesibilidad. */
-.lat-item.encendida { border-color: var(--primary); background: transparent; color: var(--ink); font-weight: 400; }
-.lat-item.encendida .lat-ico { color: var(--primary-deep); }
+.lat-item.encendida { border-color: var(--rail-accent); background: transparent; color: var(--rail-ink); font-weight: 400; }
+.lat-item.encendida .lat-ico { color: var(--rail-accent); }
 .lat-item.encendida::after {
   content: ''; flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--primary); margin-left: auto;
+  background: var(--rail-accent); margin-left: auto;
 }
 .lateral.estrecha .lat-item.encendida::after { display: none; }
 /* Estrecha no cabe el punto: el contorno se refuerza para que siga leyendose. */
 .lateral.estrecha .lat-item.encendida { border-width: 2px; }
 
 /* Deshabilitado sin opacidad: a 55 % el texto caía a 1.59:1. */
-.lat-item:disabled { cursor: default; color: var(--muted); background: var(--surface-2); }
-.lat-item:disabled .lat-ico { color: var(--muted); }
+.lat-item:disabled { cursor: default; color: var(--rail-muted); background: transparent; }
+.lat-item:disabled .lat-ico { color: var(--rail-muted); }
 
 .lateral.estrecha .lat-item { justify-content: center; padding: 10px 0; }
 .lateral.estrecha .lat-titulo { display: none; }
@@ -874,12 +885,15 @@ main.fuera { max-width: 720px; margin: 0 auto; padding: 60px 32px; }
 /* ---------- pie de la barra ---------- */
 
 .lat-pie {
-  margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line);
+  margin-top: auto; padding-top: 12px; border-top: 1px solid var(--rail-line);
   display: flex; flex-direction: column; gap: 3px;
 }
 .lat-semaforo { display: flex; align-items: center; gap: 9px; padding: 6px 8px; cursor: default; }
 .lat-semaforo .dots { padding: 5px 9px; }
-.lat-semaforo-txt { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lat-semaforo-txt { font-size: 11.5px; color: var(--rail-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Dentro de la barra invertida, la clase generica .muted trae el gris del panel
+   y se hunde a 2,83:1 sobre el azul profundo. Aqui manda el gris del riel. */
+.lateral .muted { color: var(--rail-muted); }
 .lateral.estrecha .lat-semaforo { justify-content: center; padding: 6px 0; }
 
 .lat-usuario { position: relative; }
@@ -887,7 +901,7 @@ main.fuera { max-width: 720px; margin: 0 auto; padding: 60px 32px; }
 .lat-avatar {
   flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--primary-deep); color: var(--on-primary);
+  background: var(--rail-avatar-bg); color: var(--rail-avatar-ink);
   font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
 }
 .lat-nombre-usuario { font-weight: 700; }

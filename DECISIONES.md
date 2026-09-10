@@ -237,6 +237,23 @@ Verificado: 84/84 sobre la app viva (cuatro comprobaciones nuevas), contraste de
 
 **El hallazgo que más pesaba, y lo que se hizo con él.** La regla dura del reto es que la inferencia corre en el dispositivo, y saltársela descalifica. La verificación en vivo leía las peticiones del renderer, pero **la inferencia no vive ahí**: vive en el proceso principal, que ninguna herramienta del navegador observa. Se añadió `npm run check:sin-red`, que revisa el código que se empaqueta y falla si aparece `fetch`, un socket, una dirección que no sea local u otro proveedor de IA. Se probó metiéndole un `fetch` a propósito: falla, lo nombra y sale con código 1. Está enganchado a `npm run check`.
 
+**D65 · La barra lateral va invertida, y el nombre pasa a MAM.**
+
+*Barra invertida.* La barra lateral deja de usar los tokens del panel y pasa a tener los suyos: fondo azul profundo, texto claro, iconos claros. En el tema claro el contraste con el panel blanco es el que Josué pidió, un juego con las dos tonalidades del mismo logo, y la pieza monocroma clara entra en la barra mientras la azul entra en el panel.
+
+Primero se hizo con la barra CLARA en el tema oscuro, que era la petición literal. Josué lo corrigió al verlo, y con razón: **una barra blanca dentro de un tema que se llama oscuro se contradice a sí misma.** Ahora la barra es azul profundo en los dos temas y el salto de tono va de blanco a azul o de negro a azul, según el panel.
+
+Dos fugas que salieron de esto, las dos cazadas por el auditor sobre la app viva y ninguna por la lista de pares:
+
+- La clase genérica `.muted` metía el gris del panel dentro de la barra: 2,83:1 sobre el azul profundo.
+- Al pasar el ratón por la sección actual, el fondo cambiaba al del hover y el texto seguía siendo blanco: **1,27:1, invisible**. Es exactamente la misma fuga que borraba el texto de las tarjetas, en otro sitio. La sección actual ya no se repinta al pasar el ratón.
+
+*Nombre.* La aplicación pasa a llamarse **MAM, Medical Asset Management**. Se renombró con límite de palabra y revisando sitio por sitio, porque `eco` es también la raíz de `ecógrafo` y `ecografía`, que son modalidades de equipo y no se tocan. Cambia el título de la ventana, el nombre en la barra y en el acceso, el pie, el nombre de los PDF y CSV exportados, el asunto del correo, el paquete, el ejecutable y el instalador, que pasa a `MAM-1.0.0-setup.exe`.
+
+Verificado: 85/85 sobre la app viva, contraste declarado 150/150 y contraste vivo sin fallos sobre 32 estados en los dos temas.
+
+**Una comprobación que dejó de mentir.** El paso de movimiento reducido esperaba 6,5 segundos a ojo tras recargar. Fallaba de vez en cuando por medio segundo, porque el arranque de marca dura 5 s y la recarga tarda lo que tarda. Ahora espera a que aparezca el acceso y a que aparezca la barra, no al reloj.
+
 ## Pendientes de decisión
 
 - **La carga real a `main`.** El remoto ya está configurado y el acceso de escritura probado (D59). Falta decidir cuándo se sube, y con eso muere la rama de prueba que quedó como predeterminada.

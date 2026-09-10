@@ -2,9 +2,9 @@
 
 > **AVISO · documento histórico.** Este es el blueprint con el que se arrancó, y
 > se conserva tal cual para que se vea de dónde salió cada decisión. Partes de él
-> ya no describen el producto: el nombre pasó de **FieldLens** a **Eco**, Recharts
+> ya no describen el producto: el nombre pasó de **FieldLens** a **Eco** y de ahí a **MAM** (Medical Asset Management), Recharts
 > se retiró y los gráficos se dibujan sin librería (D58), el instalador se llama
-> `eco-1.0.0-setup.exe`, la interfaz se reorganizó en barra lateral (D63), y la
+> `MAM-1.0.0-setup.exe`, la interfaz se reorganizó en barra lateral (D63), y la
 > declaración de bases preexistentes quedó corregida (D62).
 >
 > **La autoridad sobre lo que hay hoy es `README.md` y `DECISIONES.md`.** Este

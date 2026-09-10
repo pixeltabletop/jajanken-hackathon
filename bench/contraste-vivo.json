@@ -1,447 +1,6 @@
 {
-  "ok": false,
-  "problemas": [
-    {
-      "estado": "blanco · registro, todo pulsable con el raton encima",
-      "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-      "texto": "Eco",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 17,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · registro, todo pulsable con el raton encima",
-      "camino": "section > div.guide.open > button.guide-toggle",
-      "texto": "Qué contar en la notaocultar",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · registro, todo pulsable con el raton encima",
-      "camino": "div.guide.open > button.guide-toggle > span.muted",
-      "texto": "ocultar",
-      "ratio": 1.66,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(91,111,127)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · registro, todo pulsable con el raton encima",
-      "camino": "div.guide-body > p.guide-foot > button.linkish",
-      "texto": "Ver un ejemplo completo",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-      "texto": "Eco",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 17,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "section.follow > div.guide > button.guide-toggle",
-      "texto": "Cómo pedirloqué entiende y qué no",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.guide > button.guide-toggle > span.muted",
-      "texto": "qué entiende y qué no",
-      "ratio": 1.66,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(91,111,127)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuál es el estatus de las unidades en Pa",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuántas son de baja confianza",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "dame los ecógrafos de más de siete años",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "qué marcas hay en Ciudad de Panamá",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "camino": "section.follow > div.tabs > button.on",
-      "texto": "Resultados 51 filas",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-      "texto": "Eco",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 17,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "section.follow > div.guide > button.guide-toggle",
-      "texto": "Cómo pedirloqué entiende y qué no",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "div.guide > button.guide-toggle > span.muted",
-      "texto": "qué entiende y qué no",
-      "ratio": 1.66,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(91,111,127)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuál es el estatus de las unidades en Pa",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuántas son de baja confianza",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "dame los ecógrafos de más de siete años",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "qué marcas hay en Ciudad de Panamá",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "blanco · seguimiento, todo pulsable presionado",
-      "camino": "section.follow > div.tabs > button.on",
-      "texto": "Resultados 51 filas",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(0,75,147)",
-      "bg": "rgb(0,75,147)"
-    },
-    {
-      "estado": "negro · registro, todo pulsable con el raton encima",
-      "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-      "texto": "Eco",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 17,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · registro, todo pulsable con el raton encima",
-      "camino": "section > div.guide.open > button.guide-toggle",
-      "texto": "Qué contar en la notaocultar",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · registro, todo pulsable con el raton encima",
-      "camino": "div.guide.open > button.guide-toggle > span.muted",
-      "texto": "ocultar",
-      "ratio": 1.25,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(173,185,196)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · registro, todo pulsable con el raton encima",
-      "camino": "div.guide-body > p.guide-foot > button.linkish",
-      "texto": "Ver un ejemplo completo",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-      "texto": "Eco",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 17,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "section.follow > div.guide > button.guide-toggle",
-      "texto": "Cómo pedirloqué entiende y qué no",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.guide > button.guide-toggle > span.muted",
-      "texto": "qué entiende y qué no",
-      "ratio": 1.25,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(173,185,196)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuál es el estatus de las unidades en Pa",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuántas son de baja confianza",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "dame los ecógrafos de más de siete años",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "qué marcas hay en Ciudad de Panamá",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "camino": "section.follow > div.tabs > button.on",
-      "texto": "Resultados 51 filas",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-      "texto": "Eco",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 17,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "section.follow > div.guide > button.guide-toggle",
-      "texto": "Cómo pedirloqué entiende y qué no",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "div.guide > button.guide-toggle > span.muted",
-      "texto": "qué entiende y qué no",
-      "ratio": 1.25,
-      "min": 4.5,
-      "px": 12,
-      "ok": false,
-      "fg": "rgb(173,185,196)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuál es el estatus de las unidades en Pa",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "cuántas son de baja confianza",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "dame los ecógrafos de más de siete años",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "div.qbar > div.qbar-examples > button.linkish",
-      "texto": "qué marcas hay en Ciudad de Panamá",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 12.5,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    },
-    {
-      "estado": "negro · seguimiento, todo pulsable presionado",
-      "camino": "section.follow > div.tabs > button.on",
-      "texto": "Resultados 51 filas",
-      "ratio": 1,
-      "min": 4.5,
-      "px": 13,
-      "ok": false,
-      "fg": "rgb(154,212,248)",
-      "bg": "rgb(154,212,248)"
-    }
-  ],
+  "ok": true,
+  "problemas": [],
   "results": [
     {
       "estado": "acceso",
@@ -451,74 +10,33 @@
     },
     {
       "estado": "blanco · inicio en reposo",
-      "medidos": 48,
+      "medidos": 49,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · puertas con el raton encima",
-      "medidos": 48,
+      "medidos": 49,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · puertas presionadas",
-      "medidos": 48,
+      "medidos": 49,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · inicio y registro",
-      "medidos": 67,
+      "medidos": 68,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · registro, todo pulsable con el raton encima",
-      "medidos": 67,
-      "fallos": 4,
-      "malas": [
-        {
-          "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-          "texto": "Eco",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 17,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section > div.guide.open > button.guide-toggle",
-          "texto": "Qué contar en la notaocultar",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.guide.open > button.guide-toggle > span.muted",
-          "texto": "ocultar",
-          "ratio": 1.66,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(91,111,127)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.guide-body > p.guide-foot > button.linkish",
-          "texto": "Ver un ejemplo completo",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        }
-      ]
+      "medidos": 68,
+      "fallos": 0,
+      "malas": []
     },
     {
       "estado": "blanco · menú de sesión abierto",
@@ -528,316 +46,93 @@
     },
     {
       "estado": "blanco · base abierta y selector de columnas",
-      "medidos": 738,
+      "medidos": 772,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · seguimiento",
-      "medidos": 644,
+      "medidos": 678,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · seguimiento, todo pulsable con el raton encima",
-      "medidos": 644,
-      "fallos": 9,
-      "malas": [
-        {
-          "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-          "texto": "Eco",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 17,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section.follow > div.guide > button.guide-toggle",
-          "texto": "Cómo pedirloqué entiende y qué no",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.guide > button.guide-toggle > span.muted",
-          "texto": "qué entiende y qué no",
-          "ratio": 1.66,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(91,111,127)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuál es el estatus de las unidades en Pa",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuántas son de baja confianza",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "dame los ecógrafos de más de siete años",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "qué marcas hay en Ciudad de Panamá",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button.on",
-          "texto": "Resultados 51 filas",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button",
-          "texto": "Gráficos 113 equipos",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        }
-      ]
+      "medidos": 678,
+      "fallos": 0,
+      "malas": []
     },
     {
       "estado": "blanco · seguimiento, todo pulsable presionado",
-      "medidos": 644,
-      "fallos": 9,
-      "malas": [
-        {
-          "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-          "texto": "Eco",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 17,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section.follow > div.guide > button.guide-toggle",
-          "texto": "Cómo pedirloqué entiende y qué no",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.guide > button.guide-toggle > span.muted",
-          "texto": "qué entiende y qué no",
-          "ratio": 1.66,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(91,111,127)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuál es el estatus de las unidades en Pa",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuántas son de baja confianza",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "dame los ecógrafos de más de siete años",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "qué marcas hay en Ciudad de Panamá",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button.on",
-          "texto": "Resultados 51 filas",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button",
-          "texto": "Gráficos 113 equipos",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(0,75,147)",
-          "bg": "rgb(0,75,147)"
-        }
-      ]
+      "medidos": 678,
+      "fallos": 0,
+      "malas": []
     },
     {
       "estado": "blanco · guía de cómo pedirlo",
-      "medidos": 677,
+      "medidos": 711,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · gráfico con una barra elegida",
-      "medidos": 136,
+      "medidos": 137,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · nota abierta con la evidencia",
-      "medidos": 648,
+      "medidos": 682,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · barra lateral estrecha",
-      "medidos": 633,
+      "medidos": 666,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · barra con acción encendida y sección actual",
-      "medidos": 681,
+      "medidos": 715,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "blanco · barra lateral con el raton encima",
-      "medidos": 681,
+      "medidos": 715,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · inicio en reposo",
-      "medidos": 48,
+      "medidos": 49,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · puertas con el raton encima",
-      "medidos": 48,
+      "medidos": 49,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · puertas presionadas",
-      "medidos": 48,
+      "medidos": 49,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · inicio y registro",
-      "medidos": 67,
+      "medidos": 68,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · registro, todo pulsable con el raton encima",
-      "medidos": 67,
-      "fallos": 4,
-      "malas": [
-        {
-          "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-          "texto": "Eco",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 17,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section > div.guide.open > button.guide-toggle",
-          "texto": "Qué contar en la notaocultar",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.guide.open > button.guide-toggle > span.muted",
-          "texto": "ocultar",
-          "ratio": 1.25,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(173,185,196)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.guide-body > p.guide-foot > button.linkish",
-          "texto": "Ver un ejemplo completo",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        }
-      ]
+      "medidos": 68,
+      "fallos": 0,
+      "malas": []
     },
     {
       "estado": "negro · menú de sesión abierto",
@@ -847,243 +142,61 @@
     },
     {
       "estado": "negro · base abierta y selector de columnas",
-      "medidos": 738,
+      "medidos": 772,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · seguimiento",
-      "medidos": 644,
+      "medidos": 678,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · seguimiento, todo pulsable con el raton encima",
-      "medidos": 644,
-      "fallos": 9,
-      "malas": [
-        {
-          "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-          "texto": "Eco",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 17,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section.follow > div.guide > button.guide-toggle",
-          "texto": "Cómo pedirloqué entiende y qué no",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.guide > button.guide-toggle > span.muted",
-          "texto": "qué entiende y qué no",
-          "ratio": 1.25,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(173,185,196)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuál es el estatus de las unidades en Pa",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuántas son de baja confianza",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "dame los ecógrafos de más de siete años",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "qué marcas hay en Ciudad de Panamá",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button.on",
-          "texto": "Resultados 51 filas",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button",
-          "texto": "Gráficos 113 equipos",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        }
-      ]
+      "medidos": 678,
+      "fallos": 0,
+      "malas": []
     },
     {
       "estado": "negro · seguimiento, todo pulsable presionado",
-      "medidos": 644,
-      "fallos": 9,
-      "malas": [
-        {
-          "camino": "div.lat-marca > button.lat-logo > span.lat-nombre",
-          "texto": "Eco",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 17,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section.follow > div.guide > button.guide-toggle",
-          "texto": "Cómo pedirloqué entiende y qué no",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.guide > button.guide-toggle > span.muted",
-          "texto": "qué entiende y qué no",
-          "ratio": 1.25,
-          "min": 4.5,
-          "px": 12,
-          "ok": false,
-          "fg": "rgb(173,185,196)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuál es el estatus de las unidades en Pa",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "cuántas son de baja confianza",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "dame los ecógrafos de más de siete años",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "div.qbar > div.qbar-examples > button.linkish",
-          "texto": "qué marcas hay en Ciudad de Panamá",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 12.5,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button.on",
-          "texto": "Resultados 51 filas",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        },
-        {
-          "camino": "section.follow > div.tabs > button",
-          "texto": "Gráficos 113 equipos",
-          "ratio": 1,
-          "min": 4.5,
-          "px": 13,
-          "ok": false,
-          "fg": "rgb(154,212,248)",
-          "bg": "rgb(154,212,248)"
-        }
-      ]
+      "medidos": 678,
+      "fallos": 0,
+      "malas": []
     },
     {
       "estado": "negro · guía de cómo pedirlo",
-      "medidos": 677,
+      "medidos": 711,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · gráfico con una barra elegida",
-      "medidos": 136,
+      "medidos": 137,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · nota abierta con la evidencia",
-      "medidos": 648,
+      "medidos": 682,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · barra lateral estrecha",
-      "medidos": 633,
+      "medidos": 666,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · barra con acción encendida y sección actual",
-      "medidos": 681,
+      "medidos": 715,
       "fallos": 0,
       "malas": []
     },
     {
       "estado": "negro · barra lateral con el raton encima",
-      "medidos": 681,
+      "medidos": 715,
       "fallos": 0,
       "malas": []
     }

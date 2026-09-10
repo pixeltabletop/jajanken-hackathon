@@ -1,14 +1,16 @@
-# Eco · Jajanken
+# MAM · Medical Asset Management
+
+Entrega del equipo **Jajanken**.
 
 Inteligencia de base instalada con IA **100 % local**. De la voz al dato, sin nube.
 
-Entrega del equipo **Jajanken** para el **Track 01 de Philips** (Customer Installed
-Base Intelligence) del ISD Summit 2026.
+Para el **Track 01 de Philips** (Customer Installed Base Intelligence) del ISD
+Summit 2026.
 
 **▶ Video de demostración (5 min):** _pendiente de publicar._ El enlace va aquí,
 en la primera línea, y abre sin pedir credenciales.
 
-> **Aviso:** prototipo del equipo Jajanken para el reto Philips · Hackathon ISD
+> **Aviso:** MAM · Medical Asset Management · prototipo del equipo Jajanken para el reto Philips · Hackathon ISD
 > Summit 2026 · **No es un producto oficial de Philips.** Todos los clientes,
 > marcas, modelos e inventarios son **inventados**, con la convención DemoCare.
 > Las ciudades sí son ciudades reales de Panamá, porque el filtro geográfico

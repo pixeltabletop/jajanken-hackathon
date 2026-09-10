@@ -24,12 +24,12 @@ async function findPage() {
   for (let i = 0; i < 40; i++) {
     try {
       const t = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const p = t.find((x) => x.type === 'page' && /localhost:5173|Eco/i.test(`${x.url} ${x.title}`))
+      const p = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
       if (p) return p
     } catch { /* aún no */ }
     await sleep(1000)
   }
-  throw new Error('No encontré la ventana de Eco en el puerto 9222')
+  throw new Error('No encontré la ventana de MAM en el puerto 9222')
 }
 
 const page = await findPage()
@@ -85,8 +85,8 @@ try {
   const readyMs = await waitFor(`document.querySelectorAll('.dot.ready').length === 3`, 'tres modelos listos', 240000, 2000)
   summary.modelsReadyMs = readyMs
   check(true, 'los tres modelos quedan listos', `${(readyMs / 1000).toFixed(0)} s desde que abrió la ventana`)
-  check(await js(`document.title === 'Eco'`), 'la ventana se llama Eco')
-  check(await js(`document.querySelector('h1').textContent.trim() === 'Eco'`), 'el encabezado dice Eco')
+  check(await js(`document.title === 'MAM'`), 'la ventana se llama MAM')
+  check(await js(`/MAM/.test(document.querySelector('h1').textContent)`), 'el encabezado dice MAM')
   check(!(await js(`document.body.textContent.includes('INSTALLED BASE INTELLIGENCE')`)), 'se quitó "INSTALLED BASE INTELLIGENCE"')
   check(!(await js(`document.body.textContent.includes('FieldLens')`)), 'no queda ningún rastro de FieldLens')
   const dotsTitle = await js(`(document.querySelector('.dots')||{}).title || ''`)

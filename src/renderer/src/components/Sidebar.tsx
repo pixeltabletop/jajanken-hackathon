@@ -221,11 +221,14 @@ export function Sidebar({
           type="button"
           className="lat-logo"
           onClick={() => onIr('home')}
-          title="Eco · ir al inicio"
-          aria-label="Eco, ir al inicio"
+          title="MAM · Medical Asset Management · ir al inicio"
+          aria-label="MAM, Medical Asset Management. Ir al inicio"
         >
-          <LogoMark size="inline" theme={theme} label="" />
-          {abierta && <span className="lat-nombre">Eco</span>}
+          {/* La barra es oscura en los DOS temas, asi que aqui siempre entra la
+              pieza monocroma clara. En el panel entra la que toque por tema, y
+              ahi esta el juego con las dos tonalidades del mismo logo. */}
+          <LogoMark size="inline" theme="negro" label="" />
+          {abierta && <span className="lat-nombre">MAM</span>}
         </button>
         <button
           type="button"

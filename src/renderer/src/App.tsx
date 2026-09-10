@@ -470,7 +470,7 @@ export default function App(): JSX.Element {
       <main className="fuera">
         <section>
           <p className="empty">
-            Esta interfaz solo funciona dentro de la aplicación Eco, porque los modelos
+            Esta interfaz solo funciona dentro de la aplicación MAM, porque los modelos
             corren en el proceso principal de Electron. Ábrela con <code>npm run dev</code> o
             desde el instalador.
           </p>

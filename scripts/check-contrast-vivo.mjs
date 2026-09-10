@@ -23,12 +23,12 @@ async function findPage() {
   for (let i = 0; i < 40; i++) {
     try {
       const t = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const p = t.find((x) => x.type === 'page' && /localhost:5173|Eco/i.test(`${x.url} ${x.title}`))
+      const p = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
       if (p) return p
     } catch { /* aún no */ }
     await sleep(1000)
   }
-  throw new Error('No encontré la ventana de Eco en el puerto 9222')
+  throw new Error('No encontré la ventana de MAM en el puerto 9222')
 }
 
 const page = await findPage()

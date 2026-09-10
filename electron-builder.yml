@@ -1,5 +1,5 @@
 appId: com.jajanken.eco
-productName: Eco
+productName: MAM
 asar: false
 directories:
   buildResources: build
@@ -40,7 +40,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: Eco
+  executableName: MAM
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

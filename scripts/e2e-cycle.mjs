@@ -24,12 +24,12 @@ async function findPage() {
   for (let i = 0; i < 30; i++) {
     try {
       const targets = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const page = targets.find((t) => t.type === 'page' && /localhost:5173|Eco/i.test(`${t.url} ${t.title}`))
+      const page = targets.find((t) => t.type === 'page' && /localhost:5173|MAM/i.test(`${t.url} ${t.title}`))
       if (page) return page
     } catch { /* aún no escucha */ }
     await sleep(1000)
   }
-  throw new Error(`No encontré la ventana de Eco en el puerto ${PORT}. ¿Está corriendo npm run dev con --remote-debugging-port?`)
+  throw new Error(`No encontré la ventana de MAM en el puerto ${PORT}. ¿Está corriendo npm run dev con --remote-debugging-port?`)
 }
 
 const page = await findPage()

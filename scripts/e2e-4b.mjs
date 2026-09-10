@@ -38,12 +38,12 @@ async function findPage() {
   for (let i = 0; i < 40; i++) {
     try {
       const t = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json()
-      const p = t.find((x) => x.type === 'page' && /localhost:5173|Eco/i.test(`${x.url} ${x.title}`))
+      const p = t.find((x) => x.type === 'page' && /localhost:5173|MAM/i.test(`${x.url} ${x.title}`))
       if (p) return p
     } catch { /* aún no */ }
     await sleep(1000)
   }
-  throw new Error(`No encontré la ventana de Eco en el puerto ${PORT}`)
+  throw new Error(`No encontré la ventana de MAM en el puerto ${PORT}`)
 }
 
 const page = await findPage()
@@ -132,7 +132,7 @@ try {
   check(!!logo && logo.ancho > 150, 'el logo ocupa el centro de la pantalla', logo ? `${logo.tag} de ${Math.round(logo.ancho)} px` : 'sin logo')
   const legal = await js(`(document.querySelector('.splash-legal')||{}).textContent||''`)
   check(/No es un producto oficial de Philips/.test(legal) && /Jajanken/.test(legal), 'el pie legal se lee durante el arranque')
-  check(/Eco/.test(await js(`(document.querySelector('.splash-name')||{}).textContent||''`)), 'el nombre aparece junto al logo')
+  check(/MAM/.test(await js(`(document.querySelector('.splash-name')||{}).textContent||''`)), 'el nombre aparece junto al logo')
   await shot('4b-01-arranque')
   // Esc antes del segundo 5 no salta
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 })
@@ -501,11 +501,12 @@ try {
   console.log('\n--- 12. movimiento reducido ---')
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
   await send('Page.reload', { ignoreCache: false })
-  await sleep(6500)
-  // Tras recargar vuelve a salir el acceso: se atraviesa igual que al principio.
+  // Se espera a que APAREZCA el acceso, no un tiempo fijo. El arranque de marca
+  // dura 5 s y la recarga tarda lo que tarde; con un sleep a ojo, la prueba
+  // fallaba de vez en cuando por medio segundo.
+  await waitFor(`!!document.querySelector('.access')`, 'el acceso tras recargar', 20000, 300)
   await js(`(() => { const b=[...document.querySelectorAll('.access button')].find(x=>/Entrar/.test(x.textContent)); if(b) b.click() })()`)
-  await sleep(700)
-  await sleep(500)
+  await waitFor(`!!document.getElementById('nav-follow')`, 'la barra lateral tras entrar', 15000, 300)
   // Se navega por la barra lateral, que es lo que hace una persona, y no por la
   // tarjeta del inicio: con movimiento reducido la barra es el único camino que
   // no depende de ninguna animación.

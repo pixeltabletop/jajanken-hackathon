@@ -1,7 +1,7 @@
 {
-  "name": "eco",
+  "name": "mam",
   "version": "1.0.0",
-  "description": "Eco — de la voz al dato, sin nube. Inteligencia de base instalada con IA 100% local (QVAC).",
+  "description": "MAM — Medical Asset Management. Inteligencia de base instalada con IA 100% local (QVAC). De la voz al dato, sin nube.",
   "main": "./out/main/index.js",
   "author": "Equipo Jajanken",
   "scripts": {

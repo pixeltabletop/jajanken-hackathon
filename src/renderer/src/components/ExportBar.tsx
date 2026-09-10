@@ -69,7 +69,7 @@ export function ExportBar({ plan, result, question, columns, operator, onOperato
     const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `Eco-consulta-${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `MAM-consulta-${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
     URL.revokeObjectURL(a.href)
     setMsg(`CSV con ${result.rows} filas, incluida la columna de evidencia.`)

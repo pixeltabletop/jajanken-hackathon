@@ -65,6 +65,26 @@ export interface ThemeTokens {
    * es opaco, así que el recuadro solo desaparece si la caja lleva ese color.
    */
   logoBg: string
+
+  /* La barra lateral va INVERTIDA respecto al panel: barra oscura con panel
+     claro, barra clara con panel oscuro. Es un juego con las dos tonalidades
+     del mismo logo, y obliga a que la barra tenga sus propios colores: si
+     reutilizara los del panel, al invertirla el texto quedaria del color
+     equivocado sobre el fondo equivocado, que es exactamente el fallo que
+     llevamos toda la semana persiguiendo. */
+  railBg: string
+  railInk: string
+  railMuted: string
+  railLine: string
+  railHover: string
+  /** Iconos y nombre del producto dentro de la barra. */
+  railAccent: string
+  /** Seccion actual: relleno y texto. */
+  railOnBg: string
+  railOnInk: string
+  /** Avatar de la sesion. */
+  railAvatarBg: string
+  railAvatarInk: string
 }
 
 export interface Theme {
@@ -115,7 +135,18 @@ export const THEMES: Theme[] = [
       alertInk: '#4a3a10',
       barOn: '#004b93',
       barOff: '#6693b6',
-      logoBg: '#f4f8fb'
+      logoBg: '#f4f8fb',
+      // Panel claro, barra azul profundo.
+      railBg: '#00294d',
+      railInk: '#eef6fc',
+      railMuted: '#a9c8de',
+      railLine: '#5d87a8',
+      railHover: '#073a63',
+      railAccent: '#8fd0f5',
+      railOnBg: '#0076ce',
+      railOnInk: '#ffffff',
+      railAvatarBg: '#8fd0f5',
+      railAvatarInk: '#00294d'
     }
   },
   {
@@ -152,7 +183,22 @@ export const THEMES: Theme[] = [
       alertInk: '#f6e6c8',
       barOn: '#9ad4f8',
       barOff: '#5c8fb0',
-      logoBg: '#000000'
+      logoBg: '#000000',
+      // Panel negro, barra azul profundo. NO clara: una barra blanca dentro de
+      // un tema llamado oscuro se contradice a si misma, y Josue lo corrigio
+      // despues de verla. El juego se mantiene igual, con la barra separada del
+      // panel por el tono, solo que el salto va de negro a azul en vez de a
+      // blanco.
+      railBg: '#08243d',
+      railInk: '#eaf4fb',
+      railMuted: '#a3c3da',
+      railLine: '#5787ab',
+      railHover: '#0f3557',
+      railAccent: '#7ec8f2',
+      railOnBg: '#1276c6',
+      railOnInk: '#ffffff',
+      railAvatarBg: '#7ec8f2',
+      railAvatarInk: '#08243d'
     }
   }
 ]

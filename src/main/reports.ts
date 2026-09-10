@@ -246,7 +246,7 @@ export async function buildReportHtml(req: ReportRequest, all: Observation[], lo
       <div class="logo">${logoDataUri ? `<img src="${logoDataUri}" alt="Philips">` : ''}</div>
       <div style="flex:1">
         <h1>${esc(title)}</h1>
-        <p class="sub">${esc(def.purpose)} · Generado con Eco, inteligencia de base instalada 100% local</p>
+        <p class="sub">${esc(def.purpose)} · Generado con MAM, Medical Asset Management, 100% local</p>
         <div class="meta">
           <b>Solicitado por:</b> ${esc(req.requestedBy || '—')} &nbsp;·&nbsp;
           <b>Generado:</b> ${esc(now.toLocaleString('es-PA'))} &nbsp;·&nbsp;
@@ -258,7 +258,7 @@ export async function buildReportHtml(req: ReportRequest, all: Observation[], lo
     ${req.note ? `<div class="note">${esc(req.note)}</div>` : ''}
     ${bodyFor(req, all, rows)}
     <div class="foot">
-      Eco · Prototipo del equipo Jajanken para el reto Philips · Hackathon ISD Summit 2026 · No es un producto oficial de Philips.<br>
+      MAM · Medical Asset Management · Prototipo del equipo Jajanken para el reto Philips · Hackathon ISD Summit 2026 · No es un producto oficial de Philips.<br>
       Datos sintéticos. Todos los clientes, marcas y equipos son ficticios. Ninguna cifra describe una institución real.<br>
       Generado sin conexión: la extracción, la transcripción y la deduplicación corren dentro de esta computadora con QVAC.
     </div>
@@ -291,7 +291,7 @@ export async function renderReportPdf(req: ReportRequest, all: Observation[], ap
       headerTemplate: '<div></div>',
       footerTemplate:
         '<div style="width:100%;font-size:8px;color:#5b6f7f;padding:0 14mm;display:flex;justify-content:space-between">' +
-        '<span>Eco · Jajanken · reto Philips · datos sintéticos</span>' +
+        '<span>MAM · Jajanken · reto Philips · datos sintéticos</span>' +
         '<span>Página <span class="pageNumber"></span> de <span class="totalPages"></span></span></div>'
     })
   } finally {

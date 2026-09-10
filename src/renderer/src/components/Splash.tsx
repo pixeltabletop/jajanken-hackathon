@@ -87,7 +87,7 @@ export function Splash({ theme, status, timings, observations, onDone }: Props):
     >
       <div className="splash-center">
         <LogoMotion size="splash" theme={theme} />
-        <h1 className="splash-name">Eco <span>· Jajanken</span></h1>
+        <h1 className="splash-name">MAM <span>· Medical Asset Management</span></h1>
         <p className="splash-line" aria-live="polite">{line}</p>
         {timings['load:all'] && !ready && (
           <p className="splash-hint muted">El arranque completo suele tardar {fmt(timings['load:all'].avgMs)}</p>

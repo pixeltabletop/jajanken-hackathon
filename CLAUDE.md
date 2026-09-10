@@ -1,4 +1,4 @@
-# Eco · Jajanken
+# MAM · Medical Asset Management
 
 Aplicación de escritorio para Windows que convierte notas de campo de técnicos
 en registros estructurados de base instalada, con inteligencia artificial **100 %
