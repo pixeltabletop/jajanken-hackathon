@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "total": 84,
+  "total": 85,
   "failed": 0,
   "results": [
     {
@@ -26,12 +26,12 @@
     {
       "ok": true,
       "label": "Esc antes del segundo 5 no salta el arranque",
-      "detail": "1.7 s desde la recarga"
+      "detail": "1.8 s desde la recarga"
     },
     {
       "ok": true,
       "label": "el arranque dura al menos 5 segundos",
-      "detail": "5.8 s"
+      "detail": "5.9 s"
     },
     {
       "ok": true,
@@ -41,7 +41,7 @@
     {
       "ok": true,
       "label": "aparece la pantalla de acceso",
-      "detail": "7 ms tras el arranque"
+      "detail": "4 ms tras el arranque"
     },
     {
       "ok": true,
@@ -65,12 +65,17 @@
     },
     {
       "ok": true,
-      "label": "la sesión se cierra desde el pie de la barra lateral",
+      "label": "desde el nombre se cambia de usuario",
       "detail": ""
     },
     {
       "ok": true,
-      "label": "y ahí mismo se cambia de usuario",
+      "label": "cerrar sesión se ve sin abrir ningún menú",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "label": "y lleva su icono de salida",
       "detail": ""
     },
     {
@@ -85,8 +90,8 @@
     },
     {
       "ok": true,
-      "label": "el tema ya estaba elegido y no se vuelve a preguntar",
-      "detail": "settings.json guardado"
+      "label": "el tema no se pregunta al arrancar: empieza en blanco y se cambia cuando se quiera",
+      "detail": ""
     },
     {
       "ok": true,
@@ -121,12 +126,12 @@
     {
       "ok": true,
       "label": "la barra lateral trae navegación, tema y sesión",
-      "detail": "Inicio · Registrar equipos · Seguimiento y reportes · Tema oscuro · Sesión de Auditoría 27453"
+      "detail": "Inicio · Registrar equipos · Seguimiento y reportes · Tema claro · Sesión de Auditoría 03896. Cambiar de usuario · Cerrar sesión"
     },
     {
       "ok": true,
       "label": "el nombre del acceso llega al selector",
-      "detail": "Entraste como Auditoría 27453. Todo lo que registres queda a"
+      "detail": "Entraste como Auditoría 03896. Todo lo que registres queda a"
     },
     {
       "ok": true,
@@ -186,7 +191,7 @@
     {
       "ok": true,
       "label": "la tabla creció tras guardar",
-      "detail": "50 → 51 filas"
+      "detail": "52 → 53 filas"
     },
     {
       "ok": true,
@@ -261,12 +266,12 @@
     {
       "ok": true,
       "label": "la frase redactada responde con cifras",
-      "detail": "Con país: Panamá: 66 equipos registrados en 19 sitios, sobre 19 observaciones. Por estatus: Confirmado 14, Rep"
+      "detail": "Con país: Panamá: 70 equipos registrados en 21 sitios, sobre 21 observaciones. Por estatus: Confirmado 16, Rep"
     },
     {
       "ok": true,
       "label": "los números del desglose suman el total de equipos",
-      "detail": "14+40+12+0 = 66 · KPI 66"
+      "detail": "16+42+12+0 = 70 · KPI 70"
     },
     {
       "ok": true,
@@ -301,7 +306,7 @@
     {
       "ok": true,
       "label": "dos pestañas, cada una declara cuántas filas trae",
-      "detail": "Resultados 33 filas | Gráficos 66 equipos"
+      "detail": "Resultados 35 filas | Gráficos 70 equipos"
     },
     {
       "ok": true,
@@ -326,7 +331,7 @@
     {
       "ok": true,
       "label": "un clic en una barra recalcula los KPI",
-      "detail": "66/19/19/1 → 24/13/13/0"
+      "detail": "70/21/21/1 → 28/15/15/0"
     },
     {
       "ok": true,
@@ -381,7 +386,7 @@
     {
       "ok": true,
       "label": "el PDF de la consulta se genera",
-      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-16-30.pdf"
+      "detail": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-17-13.pdf"
     },
     {
       "ok": true,
@@ -406,7 +411,7 @@
     {
       "ok": true,
       "label": "cambiar de tema no pierde el filtro ni el resultado",
-      "detail": "52 → 52 filas"
+      "detail": "54 → 54 filas"
     },
     {
       "ok": true,
@@ -425,32 +430,32 @@
     }
   ],
   "summary": {
-    "stamp": "27453",
-    "site": "Policlínica DemoCare Prueba 27453",
-    "splashMs": 5816,
+    "stamp": "03896",
+    "site": "Policlínica DemoCare Prueba 03896",
+    "splashMs": 5940,
     "doorsHome": [
       "Registrar equipos",
       "Seguimiento y reportes"
     ],
-    "extractMs": 17315,
-    "gemmaReadyMs": 3,
-    "queryMs": 17227,
+    "extractMs": 21535,
+    "gemmaReadyMs": 1,
+    "queryMs": 22446,
     "breakdown": {
       "desglose": [
-        14,
-        40,
+        16,
+        42,
         12,
         0
       ],
-      "suma": 66,
-      "kpi": 66
+      "suma": 70,
+      "kpi": 70
     },
     "chipComplejo": [
       "país: Panamá",
       "confianza: Media o Baja",
       "texto: \"San Francisco\""
     ],
-    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-16-30.pdf",
+    "pdf": "C:\\Users\\JOSUEC~1\\AppData\\Local\\Temp\\Eco-consulta-2026-09-10-17-13.pdf",
     "tema_negro": {
       "fondo": "rgb(20, 22, 25)",
       "texto": "rgb(244, 246, 248)"

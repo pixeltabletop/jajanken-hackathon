@@ -30,7 +30,6 @@ import {
 } from './components/Sidebar.tsx'
 import { Splash } from './components/Splash.tsx'
 import { Stats } from './components/Stats.tsx'
-import { ThemeFirstRun } from './components/ThemePicker.tsx'
 import { TopBar } from './components/TopBar.tsx'
 import { call } from './lib/api.ts'
 import { applyFilter, EMPTY_FILTER, flatten } from './lib/filter.ts'
@@ -82,7 +81,6 @@ export default function App(): JSX.Element {
 
   // Bloque 4B: arranque de marca, elección de tema y dos puertas.
   const [booting, setBooting] = useState(true)
-  const [askTheme, setAskTheme] = useState(false)
   /** Acceso: hoy no valida nada, solo recoge el nombre. Ver Access.tsx. */
   const [entered, setEntered] = useState(false)
   const [mode, setMode] = useState<Mode>('home')
@@ -141,7 +139,9 @@ export default function App(): JSX.Element {
       .then((s) => {
         setOperator(s.operator)
         if (isThemeId(s.theme)) setTheme(s.theme)
-        else { setTheme(DEFAULT_THEME); setAskTheme(true) }
+        // El tema arranca SIEMPRE en blanco. El oscuro es una eleccion, no una
+        // pregunta: quien lo quiera lo cambia con el sol del pie de la barra.
+        else setTheme(DEFAULT_THEME)
       })
       .catch(() => setTheme(DEFAULT_THEME))
     refreshTimings()
@@ -479,7 +479,7 @@ export default function App(): JSX.Element {
     )
   }
 
-  if (!booting && !askTheme && !entered) {
+  if (!booting && !entered) {
     return (
       <Access
         initialName={operator}
@@ -510,7 +510,6 @@ export default function App(): JSX.Element {
   return (
     <div className={`shell mode-${mode}${latAbierta ? '' : ' lat-estrecha'}`}>
       <span id="mode-live" className="sr-only" aria-live="polite" />
-      <ModeFlash show={flash} theme={theme} />
 
       <Sidebar
         abierta={latAbierta}
@@ -528,7 +527,12 @@ export default function App(): JSX.Element {
         onLogout={logout}
       />
 
+      {/* El cruce vive DENTRO del area de trabajo, no sobre la ventana entera.
+          La barra lateral es el menu: no cambia, asi que no tiene por que
+          cargar ni difuminarse. Josue: "la transicion debe ser nada mas en el
+          recuadro del lado derecho". */}
       <main className="workspace">
+        <ModeFlash show={flash} theme={theme} />
         <TopBar
           titulo={MODE_LABEL[mode]}
           sub={MODE_SUB[mode]}
@@ -538,13 +542,7 @@ export default function App(): JSX.Element {
         />
 
         <div className="workspace-body">
-          {askTheme ? (
-            <ThemeFirstRun
-              value={theme}
-              onChange={onTheme}
-              onDone={() => { onTheme(theme); setAskTheme(false) }}
-            />
-          ) : mode === 'home' ? (
+          {mode === 'home' ? (
             <div key="home" className="mode-enter">
               <Home
                 rows={rows} total={observations.length}

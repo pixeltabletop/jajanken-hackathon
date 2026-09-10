@@ -261,26 +261,47 @@ td.cell-long { max-width: 260px; overflow: hidden; text-overflow: ellipsis; whit
 
 /* ---------- destello de marca entre pantallas ---------- */
 /* No bloquea: deja pasar el ratón y el modo nuevo ya está montado debajo. */
+/* El cruce entre secciones.
+   ABSOLUTO dentro del area de trabajo, nunca fijo sobre la ventana: la barra
+   lateral es el menu, no cambia, y taparla o difuminarla al navegar es decirle
+   a la persona que se esta recargando algo que no se recarga.
+   El velo es leve a proposito. Con el difuminado, un velo fuerte se lee como un
+   bloqueo; lo que se busca es que el fondo se ablande mientras cambia. */
+/* Fijo en la ventana para que la marca quede centrada en lo que se VE, pero
+   empezando donde termina la barra lateral. Con `position: absolute` dentro del
+   panel, en una pantalla larga la marca se centraba en el alto total del
+   contenido y quedaba fuera de la vista. Y encerrar el panel con overflow para
+   arreglarlo rompia el desplazamiento y el pegado de la franja superior. */
 .mode-flash {
-  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  position: fixed; top: 0; right: 0; bottom: 0; left: var(--lat-ancha);
+  z-index: 60; pointer-events: none;
   display: flex; align-items: center; justify-content: center;
-  background: rgb(var(--shadow-rgb) / 20%);
-  animation: flashInOut .9s cubic-bezier(.33, 0, .2, 1) both;
+  background: rgb(var(--shadow-rgb) / 10%);
+  animation: flashInOut 1.2s cubic-bezier(.4, 0, .2, 1) both;
 }
 /* La marca entra creciendo un poco y sale encogiendo: el cambio de tamaño es lo
    que hace que se lea como una transición y no como un fotograma suelto. */
-.mode-flash .logo { animation: flashMark .9s cubic-bezier(.33, 0, .2, 1) both; }
+.shell.lat-estrecha .mode-flash { left: var(--lat-estrecha); }
+/* Las piezas de marca llevaban el fondo de su tema horneado dentro del video, y
+   sobre cualquier otra cosa se veian como un recuadro pegado. Se pidio dos veces
+   que el logo fuera el logo y nada mas. Fundirlas con mix-blend-mode no sirve:
+   la capa del cruce crea su propio contexto de apilamiento y el fundido no lo
+   atraviesa. Se recorto el fondo a transparencia de verdad, en el propio
+   archivo, con alpha en WebM. Ver la cabecera de LogoMotion.tsx. */
+.mode-flash .logo { animation: flashMark 1.2s cubic-bezier(.4, 0, .2, 1) both; }
+/* El difuminado sube y baja con la opacidad. Si apareciera de golpe, el velo se
+   veria como un corte aunque la opacidad entrara despacio. */
 @keyframes flashInOut {
-  0% { opacity: 0; }
-  26% { opacity: 1; }
-  68% { opacity: 1; }
-  100% { opacity: 0; }
+  0% { opacity: 0; backdrop-filter: blur(0); }
+  20% { opacity: 1; backdrop-filter: blur(2.5px); }
+  68% { opacity: 1; backdrop-filter: blur(2.5px); }
+  100% { opacity: 0; backdrop-filter: blur(0); }
 }
 @keyframes flashMark {
-  0% { opacity: 0; transform: scale(.86); }
-  26% { opacity: 1; transform: scale(1); }
+  0% { opacity: 0; transform: scale(.9); }
+  20% { opacity: 1; transform: scale(1); }
   68% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.06); }
+  100% { opacity: 0; transform: scale(1.05); }
 }
 @media (prefers-reduced-motion: reduce) { .mode-flash { display: none !important; } }
 

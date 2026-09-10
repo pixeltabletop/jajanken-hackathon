@@ -99,6 +99,9 @@ const Sol = (): JSX.Element => svg(
 
 const Luna = (): JSX.Element => svg(<path d="M20.5 14.6A8.6 8.6 0 1 1 9.4 3.5a6.8 6.8 0 0 0 11.1 11.1Z" />)
 
+/** Flecha saliendo. Cerrar sesion es salir, y se lee sin leer. */
+const Salir = (): JSX.Element => svg(<><path d="M14.4 4.6H6.8a2 2 0 0 0-2 2v10.8a2 2 0 0 0 2 2h7.6" /><path d="M18.4 12H10" /><path d="m15.4 8.8 3.2 3.2-3.2 3.2" /></>)
+
 // ------------------------------------------------------------------ semáforo
 
 const NOMBRE: Record<ModelKey, string> = { whisper: 'Voz', embed: 'Deduplicación', gemma: 'Extracción' }
@@ -291,6 +294,10 @@ export function Sidebar({
           abierta={abierta}
         />
 
+        {/* Quien eres: informacion, y de paso el sitio para cambiar de usuario.
+            Cerrar sesion NO vive aqui dentro: Josue no lo encontraba, y tenia
+            razon, porque estaba escondido detras de un avatar que no parece un
+            menu. Ahora es una fila propia, siempre a la vista. */}
         <div className="lat-usuario" ref={caja}>
           <button
             type="button"
@@ -299,8 +306,8 @@ export function Sidebar({
             aria-haspopup="menu"
             aria-expanded={menu}
             onClick={() => setMenu((o) => !o)}
-            title={`${operator} · sesión`}
-            aria-label={`Sesión de ${operator}`}
+            title={`${operator} · cambiar de usuario`}
+            aria-label={`Sesión de ${operator}. Cambiar de usuario`}
           >
             <span className="lat-avatar" aria-hidden="true">{iniciales(operator)}</span>
             {abierta && <span className="lat-txt lat-nombre-usuario">{operator}</span>}
@@ -311,12 +318,17 @@ export function Sidebar({
               <button type="button" role="menuitem" onClick={() => { setMenu(false); onCambiarUsuario() }}>
                 Cambiar de usuario
               </button>
-              <button type="button" role="menuitem" className="menu-salir" onClick={() => { setMenu(false); onLogout() }}>
-                Cerrar sesión
-              </button>
             </div>
           )}
         </div>
+
+        <Fila
+          id="lat-salir"
+          icono={<Salir />}
+          label="Cerrar sesión"
+          onClick={onLogout}
+          abierta={abierta}
+        />
       </div>
     </nav>
   )

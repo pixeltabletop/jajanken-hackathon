@@ -163,8 +163,18 @@ try {
     await js(`(() => { const b=document.querySelector('#lat-quien'); if (b) b.click() })()`)
     await sleep(300)
     const opciones = await js(`[...document.querySelectorAll('.menu-list button')].map(b => ({ t: b.textContent.trim().slice(0, 30), dis: b.disabled }))`)
-    check(opciones.some((o) => /Cerrar sesión/.test(o.t)), 'la sesión se cierra desde el pie de la barra lateral')
-    check(opciones.some((o) => /Cambiar de usuario/.test(o.t)), 'y ahí mismo se cambia de usuario')
+    check(opciones.some((o) => /Cambiar de usuario/.test(o.t)), 'desde el nombre se cambia de usuario')
+    // Cerrar sesión NO vive dentro de ese menú: Josué no lo encontraba, y tenía
+    // razón, porque estaba detrás de un avatar que no parece un menú. Ahora es
+    // una fila propia del pie, visible sin abrir nada.
+    check(
+      await js(`(() => { const b = document.getElementById('lat-salir'); return !!b && /Cerrar sesión/.test(b.getAttribute('aria-label') || '') })()`),
+      'cerrar sesión se ve sin abrir ningún menú'
+    )
+    check(
+      await js(`(() => { const b = document.getElementById('lat-salir'); return !!b && !!b.querySelector('svg') })()`),
+      'y lleva su icono de salida'
+    )
     // Navegar dejó de ser una opción de menú: es la barra, siempre visible. La
     // sección actual se marca con aria-current, que es lo que lee un lector.
     check(
@@ -184,7 +194,10 @@ try {
     await clickText('Continuar')
     await sleep(600)
   } else {
-    check(true, 'el tema ya estaba elegido y no se vuelve a preguntar', 'settings.json guardado')
+    check(
+      await js(`!document.querySelector('.theme-first')`),
+      'el tema no se pregunta al arrancar: empieza en blanco y se cambia cuando se quiera'
+    )
   }
 
   // ---- 2. selector de dos puertas (punto 1) -------------------------------
@@ -492,10 +505,12 @@ try {
   // Tras recargar vuelve a salir el acceso: se atraviesa igual que al principio.
   await js(`(() => { const b=[...document.querySelectorAll('.access button')].find(x=>/Entrar/.test(x.textContent)); if(b) b.click() })()`)
   await sleep(700)
-  await js(`(() => { const b=document.querySelector('.theme-first button.primary'); if(b) b.click() })()`)
   await sleep(500)
+  // Se navega por la barra lateral, que es lo que hace una persona, y no por la
+  // tarjeta del inicio: con movimiento reducido la barra es el único camino que
+  // no depende de ninguna animación.
   const rm = await js(`(() => {
-    const d = document.getElementById('door-follow')
+    const d = document.getElementById('nav-follow')
     if (!d) return null
     d.click()
     return true

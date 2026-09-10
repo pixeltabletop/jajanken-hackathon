@@ -13,47 +13,6 @@ interface Props {
 }
 
 /** Paso de primera ejecución, con una miniatura de cada tema. */
-export function ThemeFirstRun({ value, onChange, onDone }: Props & { onDone: () => void }): JSX.Element {
-  return (
-    <section className="theme-first" aria-labelledby="theme-h">
-      <h2 id="theme-h">Elige cómo se ve la aplicación</h2>
-      <p className="muted">Se puede cambiar cuando quieras desde el encabezado. Por defecto, Blanco clásico.</p>
-      <div className="theme-cards">
-        {THEMES.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`theme-card${value === t.id ? ' on' : ''}`}
-            aria-pressed={value === t.id}
-            onClick={() => onChange(t.id)}
-          >
-            <span
-              className="theme-thumb"
-              style={{ background: t.tokens.page, borderColor: t.tokens.line }}
-            >
-              <span className="theme-thumb-bar" style={{ background: t.tokens.primary }} />
-              <span className="theme-thumb-card" style={{ background: t.tokens.surface, borderColor: t.tokens.line }}>
-                <span className="theme-thumb-ink" style={{ background: t.tokens.ink }} />
-                <span className="theme-thumb-mark" style={{ background: t.tokens.mark }} />
-              </span>
-            </span>
-            <b>{value === t.id && <span aria-hidden="true">✓ </span>}{t.label}</b>
-            <span className="muted">{t.hint}</span>
-          </button>
-        ))}
-      </div>
-      <div className="actions">
-        <button type="button" className="primary" onClick={onDone}>Continuar</button>
-      </div>
-    </section>
-  )
-}
-
-/**
- * Selector compacto del encabezado. Lleva la etiqueta "Tema" a la vista: un
- * desplegable que solo muestra el valor elegido no dice para qué sirve, y hay
- * que abrirlo para averiguarlo.
- */
 export function ThemeSwitch({ value, onChange }: Props): JSX.Element {
   return (
     <label className="theme-switch">
