@@ -83,6 +83,27 @@ export function evidenceIsValid(rawText: string, evidence: string): boolean {
   return normalize(rawText).includes(normalize(evidence))
 }
 
+/**
+ * ¿La marca que devolvió el modelo se dijo de verdad en la nota?
+ *
+ * El catálogo de marcas es cerrado y el esquema obliga a elegir un índice, así
+ * que cuando la nota nombra una marca que no está en la lista el modelo tiende
+ * a poner la que más se le parece en vez de dejarlo vacío. Medido: una nota que
+ * decía "tres tomógrafos Siemens" salió con marca NovaMed y confianza Alta,
+ * porque la cita textual sí era correcta y la cita es lo único que se validaba.
+ *
+ * Se acepta el nombre completo o su primera palabra, que es como se dicta:
+ * nadie dice "Zenith MedTech" entero dos veces seguidas.
+ */
+export function brandIsSupported(rawText: string, brand: string): boolean {
+  const nota = normalize(rawText)
+  const completo = normalize(brand)
+  if (!completo) return false
+  if (nota.includes(completo)) return true
+  const primera = completo.split(' ')[0]
+  return primera.length >= 4 && nota.includes(primera)
+}
+
 const AGE_WORDS: Array<[RegExp, (typeof AGE_QUALITATIVE)[number]]> = [
   [/muy viej|antiqu|catorce|quince|obsolet/i, 'very old'],
   [/viej|antig|con anios|con años/i, 'old'],
@@ -119,17 +140,24 @@ export function resolveCompact(
   const equipment: Equipment[] = parsed.eq.map((r, i) => {
     const valid = evidenceIsValid(opts.rawText, r.ev)
     if (!valid) warnings.push(`Fila ${i + 1}: la cita no aparece en la nota, se marca confianza Baja`)
+    const brand = r.b === -1 ? null : BRANDS[r.b]
+    // La cita puede ser correcta y la marca no: son dos cosas distintas y hasta
+    // ahora solo se comprobaba la primera.
+    const marcaDicha = brand === null || brandIsSupported(opts.rawText, brand)
+    if (!marcaDicha) {
+      warnings.push(`Fila ${i + 1}: la marca ${brand} no se dice en la nota, se marca confianza Baja`)
+    }
     const age = r.a !== null && Number.isFinite(r.a) ? Math.round(r.a) : null
     return {
       modality: MODALITIES[r.m],
       quantity: r.q,
       quantityIsEstimate: r.e,
-      brand: r.b === -1 ? null : BRANDS[r.b],
+      brand,
       model: null,
       approxAgeYears: age,
       ageQualitative: age === null ? ageQualitativeFrom(r.ev) : null,
       installYearEstimate: age !== null ? year - age : null,
-      confidence: valid ? CONFIDENCE[r.c] : 'Low',
+      confidence: valid && marcaDicha ? CONFIDENCE[r.c] : 'Low',
       status: STATUSES[r.s],
       evidence: r.ev,
       evidenceInvalid: !valid,

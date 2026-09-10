@@ -134,7 +134,9 @@ export function normalizeTranscript(
 
       // Conserva la mayúscula inicial si la traía.
       const replacement = /^[A-ZÁÉÍÓÚÑ]/.test(phrase.trim()) || /^[A-Z]/.test(best.term) ? best.term : best.term.toLowerCase()
-      fixes.push({ from: phrase.trim(), to: replacement })
+      // Una correccion que deja el texto igual no se ensena: al usuario le
+      // aparecia "DemoCare -> DemoCare" como si se hubiera cambiado algo.
+      if (phrase.trim() !== replacement) fixes.push({ from: phrase.trim(), to: replacement })
       words[from] = replacement
       for (let w = from + 1; w <= to; w++) words[w] = ''
     }
