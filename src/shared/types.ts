@@ -121,6 +121,8 @@ export interface TranscribeResult {
   fixes: import('./transcript.ts').TranscriptFix[]
   /** Lo que devolvió Whisper antes de corregir, para poder auditar. */
   rawText: string
+  /** En cuántos tramos se troceó el audio. 1 es una nota corta. */
+  segments?: number
 }
 
 export interface ApiError {
