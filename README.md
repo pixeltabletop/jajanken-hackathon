@@ -254,8 +254,11 @@ propia ni de terceros.
    hoy está montado: modo Seguimiento, deduplicación, temas, verificación
    automatizada y empaquetado.
 
-El historial de `git log` refleja el trabajo commit por commit, todo dentro de la
-ventana del reto.
+Todo el trabajo cabe dentro de la ventana del reto. El historial de `git log`
+aparece casi entero bajo una sola cuenta porque las dos partes se fusionaron en
+un repositorio nuevo, y esa fusión aplanó la autoría original. El reparto real
+es el de los tres puntos de arriba, y esta declaración es la que manda sobre el
+historial.
 
 ### Lo que no escribimos nosotros, y va declarado
 
