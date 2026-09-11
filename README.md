@@ -6,8 +6,8 @@ Installed Base Intelligence) del ISD Summit 2026.
 Inteligencia de base instalada con IA **100 % local**. De la voz al dato, sin
 nube.
 
-**▶ Video de demostración (5 min):** _pendiente de publicar._ El enlace va aquí,
-en la primera línea, y abre sin pedir credenciales.
+**▶ [Video de demostración (3:42)](https://drive.google.com/file/d/13pkMDdLWSLnn2YIxVTa-ASXJP9H_h4RA/view?usp=sharing)**
+— abre sin pedir credenciales, comprobado sin sesión iniciada.
 
 > **Aviso.** Prototipo para el reto Philips del Hackathon ISD Summit 2026. **No
 > es un producto oficial de Philips.** Todos los clientes, marcas, modelos e
@@ -278,6 +278,11 @@ de terceros.
 
 Código propio bajo MIT (`LICENSE`). Electron y Chromium bajo sus respectivas
 licencias. Los modelos del catálogo de QVAC bajo Apache-2.0.
+
+**Música del video.** «Inspired», de Kevin MacLeod (incompetech.com), bajo
+Creative Commons Atribución 4.0, que pide este crédito. Aparece también en el
+último plano del video. No forma parte de la aplicación: solo suena en el video
+de demostración.
 
 **El alcance exacto está en [`NOTICE.md`](NOTICE.md):** qué cubre la licencia
 MIT, qué no cubre, y de dónde salen los datos de demostración.
